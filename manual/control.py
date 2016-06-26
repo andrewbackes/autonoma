@@ -20,3 +20,6 @@ def repl():
         elif k == "x":
             break
     print "done"
+
+if __name__ == "__main__":
+    repl()
