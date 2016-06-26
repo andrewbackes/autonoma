@@ -24,8 +24,9 @@ def distance(measure='cm'):
         
     start = time.time()
     
-    while gpio.input(echo) == 1 and lapsed = time.time() - start < 0.004:
-        pass
+    lapsed = time.time() - start
+    while gpio.input(echo) == 1 and lapsed < 0.004:
+        lapsed = time.time() - start
     
     if measure == 'cm':
         distance = lapsed / 0.000058
