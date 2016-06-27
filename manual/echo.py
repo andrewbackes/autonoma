@@ -12,7 +12,7 @@ sensors = {
         'trigger': 22 }
 }
 
-def distance(sensor='front', measure='cm'):
+def distance(sensor, measure='cm'):
     gpio.setmode(gpio.BOARD)
     gpio.setup(sensor['trigger'], gpio.OUT)
     gpio.setup(sensor['echo'], gpio.IN)
