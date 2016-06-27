@@ -14,9 +14,9 @@ def repl():
         elif k == "s":
             backward(t)
         elif k == "a":
-            pivot_left(t)
+            counter_clockwise(t)
         elif k == "d":
-            pivot_right(t)
+            clockwise(t)
         elif k == "x":
             break
     print "done"
