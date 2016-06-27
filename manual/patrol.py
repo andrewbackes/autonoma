@@ -52,7 +52,13 @@ def unblocked_position():
     return None
 
 
+def three_sixty():
+    face(positions)
+
 if __name__ == "__main__":
+    print "Spinning arround"
+    three_sixty()
+    time.sleep(10.0)
     print "Patrolling..."
     print "Speed: " + str(detect_speed())
     
