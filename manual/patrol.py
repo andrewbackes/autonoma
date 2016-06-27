@@ -39,12 +39,11 @@ def face(pos):
 
 
 def detect_speed():
-    pos = furthest_blocked_pos()
-    face(pos)
     before = echo.distance(echo.sensors['front'])
     move.forward(increment)
     after = echo.distance(echo.sensors['front'])
     return (after - before)/increment
+
 
 def unblocked_position():
     for pos in range(positions):
@@ -62,6 +61,7 @@ if __name__ == "__main__":
     print "Facings the best path"
     pos = furthest_blocked_pos()
     face(pos)
+    print "Detecting speed"
     #print "Patrolling..."
     #print "Speed: " + str(detect_speed())
     
