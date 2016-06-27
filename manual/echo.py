@@ -13,6 +13,7 @@ sensors = {
 }
 
 def distance(sensor, measure='cm'):
+    
     gpio.setmode(gpio.BOARD)
     gpio.setup(sensor['trigger'], gpio.OUT)
     gpio.setup(sensor['echo'], gpio.IN)
@@ -52,6 +53,7 @@ def distance(sensor, measure='cm'):
 if __name__ == "__main__":
     try:
         for sensor in sensors:
+            print sensor
             distance(sensor, 'in')
     except KeyboardInterrupt:
         gpio.cleanup()
