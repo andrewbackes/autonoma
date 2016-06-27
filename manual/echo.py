@@ -3,29 +3,34 @@
 import time
 import RPi.GPIO as gpio
 
-#pin number
-echo = 16       # gpio 23
-trigger = 12    # gpio 15
+sensor = {
+    'front' : {
+        'echo': 16,
+        'trigger': 12 },
+    'back' : {
+        'echo': 18,
+        'trigger': 22 }
+}
 
-def distance(measure='cm'):
+def distance(sensor='front', measure='cm'):
     gpio.setmode(gpio.BOARD)
-    gpio.setup(trigger, gpio.OUT)
-    gpio.setup(echo, gpio.IN)
+    gpio.setup(sensor['trigger'], gpio.OUT)
+    gpio.setup(sensor['echo'], gpio.IN)
 
-    gpio.output(trigger, True)
+    gpio.output(sensor['trigger'], True)
     time.sleep(0.00001) # specified wait time for this hardware
-    gpio.output(trigger, False)
+    gpio.output(sensor['trigger'], False)
     print "Ultrasonic sensor:"
     
-    print gpio.input(echo)
+    print gpio.input(sensor['echo'])
 
-    while gpio.input(echo) == 0:
+    while gpio.input(sensor['echo']) == 0:
         pass
         
     start = time.time()
     
     lapsed = time.time() - start
-    while gpio.input(echo) == 1:
+    while gpio.input(sensor['echo']) == 1:
         lapsed = time.time() - start
         if lapsed > 0.004:
             print "nothing in range"
@@ -46,6 +51,7 @@ def distance(measure='cm'):
 
 if __name__ == "__main__":
     try:
-        distance('in')
+        for sensor in sensors:
+            distance(sensor, 'in')
     except KeyboardInterrupt:
         gpio.cleanup()

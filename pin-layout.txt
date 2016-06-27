@@ -1,0 +1,12 @@
+The GPIO pins are used by:
+
+07 - motor driver IN4
+11 - motor driver IN3
+13 - motor driver IN2
+15 - motor driver IN1
+
+12 - ultrasonic trigger
+16 - ultrasonic echo
+
+18 - ultrasonic echo
+22 - ultrasonic trigger
