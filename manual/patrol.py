@@ -40,9 +40,9 @@ def face(pos):
 def detect_speed():
     pos = furthest_blocked_pos()
     face(pos)
-    before = echo.distance()
+    before = echo.distance(echo.sensors['front'])
     move.forward(increment)
-    after = echo.distance()
+    after = echo.distance(echo.sensors['front'])
     return (after - before)/increment
 
 def unblocked_position():
