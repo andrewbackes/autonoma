@@ -13,8 +13,7 @@ unit = 'in'
 # learn this value on startup
 speed = None
 
-
-def furthest_blocked_pos():
+def spin_detect():
     distances = [None] * positions
     for pos in range(positions/2):
         d = echo.distances(unit)
@@ -22,6 +21,11 @@ def furthest_blocked_pos():
         distances[pos * 2] = d['back']
         move.clockwise(increment)
         time.sleep(0.03)
+    return distances
+
+
+def furthest_blocked_pos():
+    distances = spin_detect()
     max = 0
     max_pos = None
     for pos in range(len(distances)): 
@@ -44,7 +48,11 @@ def detect_speed():
     move.forward(increment)
     after = echo.distance(echo.sensors['front'])
     print after
-    return (after - before)/increment
+    # hmmm.... not yet sure what to return on error
+    try:
+        return (before - after)/increment
+    except:
+        return None
 
 
 def unblocked_position():
@@ -57,13 +65,10 @@ def three_sixty():
     face(positions)
 
 if __name__ == "__main__":
-    print "Spinning arround"
-    three_sixty()
-    time.sleep(10.0)
-    print "Facings the best path"
-    pos = furthest_blocked_pos()
-    face(pos)
-    print "Detecting speed"
+    print "Surroundings:"
+    print spin_detect()
+    
+    #print "Detecting speed"
     #print "Patrolling..."
     #print "Speed: " + str(detect_speed())
     
