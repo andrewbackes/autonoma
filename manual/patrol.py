@@ -21,6 +21,7 @@ def furthest_blocked_pos():
         distances[pos] = d['front']
         distances[pos * 2] = d['back']
         move.clockwise(increment)
+        time.sleep(0.03)
     max = 0
     max_pos = None
     for pos in range(len(distances)): 
