@@ -32,13 +32,13 @@ def turn_left(t):
 def turn_right(t):
     toggle(True, True, True, False, t)
 
-def pivot_left(t):
+def counter_clockwise(t):
     toggle(False, True, False, True, t)
 
-def pivot_right(t):
+def clockwise(t):
     toggle(True, False, True, False, t)
 
 
 if __name__ == "__main__":
-    pivot_left(0.1)
-    pivot_right(0.1)
+    counter_clockwise(0.1)
+    clockwise(0.1)

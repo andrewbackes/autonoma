@@ -40,18 +40,23 @@ def distance(sensor, measure='cm'):
     elif measure == 'in':
         distance = lapsed / 0.000148
     else:
-        print 'unsupported measurement'
+        raise ValueError('unsupported measurement')
         distance = None
     gpio.cleanup()
 
     print str(distance) + ' ' + measure
     return distance
 
+def distances(measure="in"):
+    distances = {}
+    for sensor in sensors:
+        distances[sensor] = distance(sensors[sensor], 'in')
+    print distances
+    return distances
+
 
 if __name__ == "__main__":
     try:
-        for pos in sensors:
-            print pos + " - " + str(sensors[pos])
-            distance(sensors[pos], 'in')
+        distances('in')
     except KeyboardInterrupt:
         gpio.cleanup()
