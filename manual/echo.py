@@ -3,7 +3,7 @@
 import time
 import RPi.GPIO as gpio
 
-sensor = {
+sensors = {
     'front' : {
         'echo': 16,
         'trigger': 12 },
