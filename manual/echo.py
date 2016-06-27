@@ -52,8 +52,8 @@ def distance(sensor, measure='cm'):
 
 if __name__ == "__main__":
     try:
-        for pos, sensor in sensors:
-            print pos + " - " + str(sensor)
-            distance(sensor, 'in')
+        for pos in sensors:
+            print pos + " - " + str(sensors[pos])
+            distance(sensors[pos], 'in')
     except KeyboardInterrupt:
         gpio.cleanup()
