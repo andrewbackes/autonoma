@@ -59,8 +59,11 @@ if __name__ == "__main__":
     print "Spinning arround"
     three_sixty()
     time.sleep(10.0)
-    print "Patrolling..."
-    print "Speed: " + str(detect_speed())
+    print "Facings the best path"
+    pos = furthest_blocked_pos()
+    face(pos)
+    #print "Patrolling..."
+    #print "Speed: " + str(detect_speed())
     
     # loop:
         # spin in a circle
