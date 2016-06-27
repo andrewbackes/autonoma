@@ -40,8 +40,10 @@ def face(pos):
 
 def detect_speed():
     before = echo.distance(echo.sensors['front'])
+    print before
     move.forward(increment)
     after = echo.distance(echo.sensors['front'])
+    print after
     return (after - before)/increment
 
 
