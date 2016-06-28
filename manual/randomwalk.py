@@ -14,7 +14,7 @@ def move_until_blocked(dist):
     while True:
         d = echo.distance(echo.sensors['front'], unit)
         print("Nearest object: " + str(d)) 
-        if d <= dist:
+        if d and d <= dist:
             return
         move.forward(increment)
 
@@ -25,7 +25,7 @@ def find_unblocked_path(dist):
     while open_positions < 3:
         move.clockwise(increment)
         d = echo.distance(echo.sensors['front'], unit)
-        if d < dist*2:
+        if not d or d < dist*2:
             open_positions += 1
         else:
             open_positions = 0
