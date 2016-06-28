@@ -22,11 +22,11 @@ def move_until_blocked(dist):
         time.sleep(delay)
 
 
-def find_unblocked_path(dist):
+def find_unblocked_path(dist, clockwise, counterclockwise):
     print("rotating")
     open_positions = 0
     while open_positions < 3:
-        move.clockwise(increment)
+        clockwise(increment)
         d = echo.distance(echo.sensors['front'], unit)
         if not d or d < dist*2:
             open_positions += 1
@@ -34,15 +34,18 @@ def find_unblocked_path(dist):
             open_positions = 0
         time.sleep(delay)
     print("FOUND PATH")
-    move.counter_clockwise(increment)
+    counterclockwise(increment)
     
 
 def walk():
+    counter = 0
+    funcs = [move.clockwise, move.counterclockwise]
     while True:
         move_until_blocked(range)
         time.sleep(0.1)
-        find_unblocked_path(range)
+        find_unblocked_path(range, funcs[counter % 2], funcs[ (counter+1) % 2])
         time.sleep(0.1)
+        counter += 1
 
 
 if __name__ == "__main__":
