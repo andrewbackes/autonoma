@@ -10,7 +10,7 @@ spin_increment = 0.25
 forward_increment = 0.1
 unit = 'in'
 shortest_dist = 12
-delay = 0.3
+delay = 0.01
 
 """
 def spin_detect(positions):
