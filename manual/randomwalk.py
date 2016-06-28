@@ -11,7 +11,7 @@ unit = 'in'
 def move_until_blocked(dist):
     print("moving")
     blocked = false
-    while True
+    while True:
         d = echo.distance(echo.sensors['front'], unit)
         print("Nearest object: " + str(d)) 
         if d <= dist:
