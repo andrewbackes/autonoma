@@ -12,7 +12,7 @@ delay = 0.3
 
 def spin_detect(positions):
     distances = [None] * positions
-    for pos in range(positions/2):
+    for pos in range(int(positions/2)):
         d = echo.distances(unit)
         distances[pos] = d['front']
         distances[pos * 2] = d['back']
