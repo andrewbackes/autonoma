@@ -5,9 +5,9 @@ import RPi.GPIO as gpio
 import move
 import echo
 
-increment = 0.1
+increment = 0.3
 unit = 'in'
-range = 10
+range = 15
 delay = 0.3
 
 def move_until_blocked(dist):
