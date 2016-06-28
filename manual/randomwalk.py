@@ -8,7 +8,7 @@ import ir
 
 increment = 0.3
 unit = 'in'
-shortest_dist = 15
+shortest_dist = 12
 delay = 0.3
 
 """
@@ -34,10 +34,9 @@ def spin_detect(positions):
 def move_until_blocked(dist):
     print("moving")
     while True:
-        #d = echo.distance(echo.sensors['front'], unit)
-        #print("Nearest object: " + str(d)) 
-        ## d and d <= dist:
-        if ir.blocked(): 
+        d = echo.distance(echo.sensors['front'], unit)
+        blocked = d and d <= dist
+        if ir.blocked() or blocked: 
             print("BLOCKED")
             return
         move.forward(increment)
