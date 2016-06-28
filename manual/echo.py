@@ -21,7 +21,6 @@ def distance(sensor, measure='cm'):
     gpio.output(sensor['trigger'], True)
     time.sleep(0.00001) # specified wait time for this hardware
     gpio.output(sensor['trigger'], False)
-    print("Ultrasonic sensor:")
 
     while gpio.input(sensor['echo']) == 0:
         pass
@@ -32,7 +31,6 @@ def distance(sensor, measure='cm'):
     while gpio.input(sensor['echo']) == 1:
         lapsed = time.time() - start
         if lapsed > 0.004:
-            print("nothing in range")
             return None
     
     if measure == 'cm':
@@ -44,7 +42,6 @@ def distance(sensor, measure='cm'):
         distance = None
     gpio.cleanup()
 
-    print(str(distance) + ' ' + measure)
     return distance
 
 def distances(measure="in"):

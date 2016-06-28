@@ -8,6 +8,7 @@ import echo
 increment = 0.1
 unit = 'in'
 range = 10
+delay = 0.3
 
 def move_until_blocked(dist):
     print("moving")
@@ -15,8 +16,10 @@ def move_until_blocked(dist):
         d = echo.distance(echo.sensors['front'], unit)
         print("Nearest object: " + str(d)) 
         if d and d <= dist:
+            print("BLOCKED")
             return
         move.forward(increment)
+        time.sleep(delay)
 
 
 def find_unblocked_path(dist):
@@ -29,6 +32,8 @@ def find_unblocked_path(dist):
             open_positions += 1
         else:
             open_positions = 0
+        time.sleep(delay)
+    print("FOUND PATH")
     move.counter_clockwise(increment)
     
 
