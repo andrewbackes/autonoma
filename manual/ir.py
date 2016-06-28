@@ -2,9 +2,7 @@
 
 import RPi.GPIO as gpio
 
-def init():
+def blocked():
     gpio.setmode(gpio.BOARD)
     gpio.setup(32, gpio.IN)
-
-def blocked():
     return gpio.input(32) == 0
