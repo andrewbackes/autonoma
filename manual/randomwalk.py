@@ -58,7 +58,6 @@ def find_unblocked_path(dist, clockwise, counterclockwise):
     
 
 def walk():
-    ir.init()
     counter = 0
     funcs = [move.clockwise, move.counter_clockwise]
     while True:
