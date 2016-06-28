@@ -7,6 +7,7 @@ import echo
 
 increment = 0.1
 unit = 'in'
+range = 10
 
 def move_until_blocked(dist):
     print("moving")
@@ -34,9 +35,9 @@ def find_unblocked_path(dist):
 
 def walk():
     while True:
-        move_until_blocked()
+        move_until_blocked(range)
         time.sleep(0.1)
-        find_unblocked_path
+        find_unblocked_path(range)
         time.sleep(0.1)
 
 
