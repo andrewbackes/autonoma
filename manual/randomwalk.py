@@ -14,8 +14,15 @@ def spin_detect(positions):
     distances = [None] * positions
     for pos in range(int(positions/2)):
         d = echo.distances(unit)
+        print(pos)
+        print(d['front'])
         distances[pos] = d['front']
-        distances[ int(positions/2) + 1 + pos ] = d['back']
+
+        b = int(positions/2) + pos
+        print(b)
+        print(d['back'])
+        distances[ b ] = d['back']
+        
         move.clockwise(increment)
         time.sleep(0.03)
     return distances
