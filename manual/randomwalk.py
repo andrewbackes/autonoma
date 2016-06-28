@@ -38,7 +38,7 @@ def move_until_blocked(dist):
         d = echo.distance(echo.sensors['front'], unit)
         blocked = d and d <= dist
         if ir.blocked() or blocked: 
-            print("BLOCKED")
+            print("BLOCKED - (IR: " + str(ir.blocked()) + " SONIC: " + str(blocked))
             return
         move.forward(forward_increment)
         time.sleep(delay)
@@ -66,7 +66,7 @@ def find_unblocked_path(dist, clockwise, counterclockwise):
     start = time.time()
     while ir.blocked():
         clockwise(spin_increment)
-        time.sleep(0.001)
+        #time.sleep(0.001)
     lapsed = time.time() - start
     clockwise(lapsed)
 
