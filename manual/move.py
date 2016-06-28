@@ -1,8 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import time
 import RPi.GPIO as gpio
-import readchar
 
 def init():
     gpio.setmode(gpio.BOARD)
