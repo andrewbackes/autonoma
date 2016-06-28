@@ -6,11 +6,12 @@ import move
 import echo
 import ir
 
-increment = 0.3
+increment = 0.2
 unit = 'in'
 shortest_dist = 15
 delay = 0.3
 
+"""
 def spin_detect(positions):
     distances = [None] * positions
     for pos in range(int(positions/2)):
@@ -27,20 +28,23 @@ def spin_detect(positions):
         move.clockwise(increment)
         time.sleep(0.03)
     return distances
+"""
 
 
 def move_until_blocked(dist):
     print("moving")
     while True:
-        d = echo.distance(echo.sensors['front'], unit)
-        print("Nearest object: " + str(d)) 
-        if ir.blocked() or d and d <= dist:
+        #d = echo.distance(echo.sensors['front'], unit)
+        #print("Nearest object: " + str(d)) 
+        ## d and d <= dist:
+        if ir.blocked(): 
             print("BLOCKED")
             return
         move.forward(increment)
         time.sleep(delay)
 
 
+"""
 def find_unblocked_path(dist, clockwise, counterclockwise):
     print("rotating")
     open_positions = 0
@@ -55,7 +59,16 @@ def find_unblocked_path(dist, clockwise, counterclockwise):
         time.sleep(delay)
     print("FOUND PATH")
     counterclockwise(increment * 3)
-    
+"""    
+
+def fine_unblocked_path(dist, clockwise, counterclockwise):
+    print("rotating")
+    start = time.time()
+    while ir.blocked():
+        clockwise(increment)
+    lapsed = time.time() - start
+    clockwise(lapsed)
+
 
 def walk():
     counter = 0
