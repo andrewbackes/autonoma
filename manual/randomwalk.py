@@ -4,6 +4,7 @@ import time
 import RPi.GPIO as gpio
 import move
 import echo
+import ir
 
 increment = 0.3
 unit = 'in'
@@ -22,7 +23,7 @@ def spin_detect(positions):
         print(b)
         print(d['back'])
         distances[ b ] = d['back']
-        
+
         move.clockwise(increment)
         time.sleep(0.03)
     return distances
@@ -33,7 +34,7 @@ def move_until_blocked(dist):
     while True:
         d = echo.distance(echo.sensors['front'], unit)
         print("Nearest object: " + str(d)) 
-        if d and d <= dist:
+        if ir.blocked() or d and d <= dist:
             print("BLOCKED")
             return
         move.forward(increment)
@@ -46,7 +47,8 @@ def find_unblocked_path(dist, clockwise, counterclockwise):
     while open_positions < 5:
         clockwise(increment)
         d = echo.distance(echo.sensors['front'], unit)
-        if not d or d < dist*2:
+        far_enough = not d or d < dist*2
+        if not ir.blocked() and far_enough:
             open_positions += 1
         else:
             open_positions = 0
@@ -56,6 +58,7 @@ def find_unblocked_path(dist, clockwise, counterclockwise):
     
 
 def walk():
+    ir.init()
     counter = 0
     funcs = [move.clockwise, move.counter_clockwise]
     while True:
@@ -64,6 +67,7 @@ def walk():
         find_unblocked_path(shortest_dist, funcs[counter % 2], funcs[ (counter+1) % 2])
         time.sleep(0.1)
         counter += 1
+    gpio.cleanup()
 
 
 if __name__ == "__main__":
