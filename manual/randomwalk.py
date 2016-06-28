@@ -10,6 +10,17 @@ unit = 'in'
 range = 15
 delay = 0.3
 
+def spin_detect(positions):
+    distances = [None] * positions
+    for pos in range(positions/2):
+        d = echo.distances(unit)
+        distances[pos] = d['front']
+        distances[pos * 2] = d['back']
+        move.clockwise(increment)
+        time.sleep(0.03)
+    return distances
+
+
 def move_until_blocked(dist):
     print("moving")
     while True:
