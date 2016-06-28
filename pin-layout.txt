@@ -10,3 +10,5 @@ The GPIO pins are used by:
 
 18 - ultrasonic echo
 22 - ultrasonic trigger
+
+32 - IR detector
