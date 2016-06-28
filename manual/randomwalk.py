@@ -25,7 +25,7 @@ def move_until_blocked(dist):
 def find_unblocked_path(dist, clockwise, counterclockwise):
     print("rotating")
     open_positions = 0
-    while open_positions < 3:
+    while open_positions < 5:
         clockwise(increment)
         d = echo.distance(echo.sensors['front'], unit)
         if not d or d < dist*2:
@@ -34,7 +34,7 @@ def find_unblocked_path(dist, clockwise, counterclockwise):
             open_positions = 0
         time.sleep(delay)
     print("FOUND PATH")
-    counterclockwise(increment)
+    counterclockwise(increment * 3)
     
 
 def walk():
