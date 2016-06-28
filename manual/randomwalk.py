@@ -6,7 +6,7 @@ import move
 import echo
 import ir
 
-increment = 0.2
+increment = 0.3
 unit = 'in'
 shortest_dist = 15
 delay = 0.3
