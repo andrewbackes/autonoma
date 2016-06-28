@@ -61,7 +61,7 @@ def find_unblocked_path(dist, clockwise, counterclockwise):
     counterclockwise(increment * 3)
 """    
 
-def fine_unblocked_path(dist, clockwise, counterclockwise):
+def find_unblocked_path(dist, clockwise, counterclockwise):
     print("rotating")
     start = time.time()
     while ir.blocked():
