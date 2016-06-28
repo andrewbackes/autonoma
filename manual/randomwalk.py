@@ -7,7 +7,7 @@ import echo
 
 increment = 0.3
 unit = 'in'
-range = 15
+shortest_dist = 15
 delay = 0.3
 
 def spin_detect(positions):
@@ -52,9 +52,9 @@ def walk():
     counter = 0
     funcs = [move.clockwise, move.counter_clockwise]
     while True:
-        move_until_blocked(range)
+        move_until_blocked(shortest_dist)
         time.sleep(0.1)
-        find_unblocked_path(range, funcs[counter % 2], funcs[ (counter+1) % 2])
+        find_unblocked_path(shortest_dist, funcs[counter % 2], funcs[ (counter+1) % 2])
         time.sleep(0.1)
         counter += 1
 
