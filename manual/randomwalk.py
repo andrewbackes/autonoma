@@ -6,7 +6,8 @@ import move
 import echo
 import ir
 
-increment = 0.3
+spin_increment = 0.25
+forward_increment = 0.1
 unit = 'in'
 shortest_dist = 12
 delay = 0.3
@@ -39,7 +40,7 @@ def move_until_blocked(dist):
         if ir.blocked() or blocked: 
             print("BLOCKED")
             return
-        move.forward(increment)
+        move.forward(forward_increment)
         time.sleep(delay)
 
 
@@ -64,7 +65,7 @@ def find_unblocked_path(dist, clockwise, counterclockwise):
     print("rotating")
     start = time.time()
     while ir.blocked():
-        clockwise(increment)
+        clockwise(spin_increment)
     lapsed = time.time() - start
     clockwise(lapsed)
 
