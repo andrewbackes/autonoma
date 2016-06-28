@@ -83,4 +83,7 @@ def walk():
 
 
 if __name__ == "__main__":
-    walk() 
+    try:
+        walk() 
+    except KeyboardInterrupt:
+        gpio.cleanup()
