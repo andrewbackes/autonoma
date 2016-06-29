@@ -2,7 +2,12 @@
 
 import RPi.GPIO as gpio
 
-def blocked():
+sensors = {
+    'left': 32,
+    'right': 36
+}
+
+def blocked(sensor):
     gpio.setmode(gpio.BOARD)
-    gpio.setup(32, gpio.IN)
-    return gpio.input(32) == 0
+    gpio.setup(sensor, gpio.IN)
+    return gpio.input(sensor) == 0
