@@ -51,6 +51,10 @@ def distances(measure="in"):
     print(distances)
     return distances
 
+def blocked(dist):
+    d = distance(echo.sensors['front'], unit)
+    bl = d and d <= dist
+    return bl
 
 if __name__ == "__main__":
     try:
