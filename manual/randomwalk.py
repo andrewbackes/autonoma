@@ -6,7 +6,7 @@ import move
 import echo
 import ir
 
-spin_increment = 0.25
+spin_increment = 0.2
 forward_increment = 0.1
 unit = 'in'
 shortest_dist = 12
@@ -42,6 +42,7 @@ def move_until_blocked(dist):
             return
         move.forward(forward_increment)
         time.sleep(delay)
+    move.backward(forward_increment * 2)
 
 
 """
