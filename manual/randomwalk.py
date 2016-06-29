@@ -65,7 +65,7 @@ def find_unblocked_path(dist, clockwise, counterclockwise):
 def find_unblocked_path(dist, clockwise, counterclockwise):
     print("rotating")
     start = time.time()
-    while ir.blocked() or echo.blocked(shortest_dist):
+    while ir.blocked() or echo.blocked(shortest_dist, unit):
         clockwise(spin_increment)
         #time.sleep(0.001)
     lapsed = time.time() - start

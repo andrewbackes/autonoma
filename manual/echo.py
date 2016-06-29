@@ -51,7 +51,7 @@ def distances(measure="in"):
     print(distances)
     return distances
 
-def blocked(dist):
+def blocked(dist, unit):
     d = distance(sensors['front'], unit)
     bl = d and d <= dist
     return bl
