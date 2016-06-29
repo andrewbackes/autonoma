@@ -52,7 +52,7 @@ def distances(measure="in"):
     return distances
 
 def blocked(dist):
-    d = distance(echo.sensors['front'], unit)
+    d = distance(sensors['front'], unit)
     bl = d and d <= dist
     return bl
 
