@@ -4,7 +4,7 @@ import time
 import RPi.GPIO as gpio
 
 
-GPIO.setmode(GPIO.BOARD)
+gpio.setmode(gpio.BOARD)
 
 # motors
 gpio.setup(7, gpio.OUT)
