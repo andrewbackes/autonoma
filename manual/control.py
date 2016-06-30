@@ -20,10 +20,10 @@ def repl():
         elif k == "d":
             clockwise(t, speed)
         elif k == 'r':
-            speed = max(0, speed - step)
+            speed = min(100, speed + step)
             print speed
         elif k == 'f':
-            speed = min(100, speed + step)
+            speed = max(0, speed - step)
             print speed
         elif k == "x":
             break
