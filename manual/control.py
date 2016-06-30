@@ -3,7 +3,6 @@
 import RPi.GPIO as gpio
 import readchar
 from move import *
-import math
 
 def repl():
     print "Use w,a,s,d to control the vehicle. x to exit"
@@ -21,9 +20,11 @@ def repl():
         elif k == "d":
             clockwise(t, speed)
         elif k == 'r':
-            speed = math.max(0, speed - step)
+            speed = max(0, speed - step)
+            print speed
         elif k == 'f':
-            speed = math.min(100, speed + step)
+            speed = min(100, speed + step)
+            print speed
         elif k == "x":
             break
     print "done"
