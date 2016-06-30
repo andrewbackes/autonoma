@@ -14,3 +14,6 @@ The GPIO pins are used by:
 32 - IR detector
 
 36 - IR detector
+
+38 - Left motor PWM
+40 - Right motor PWM
