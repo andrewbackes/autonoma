@@ -17,11 +17,11 @@ gpio.output(13, True)
 gpio.output(15, False)
 
 # pwd
-GPIO.setup(40, GPIO.OUT)
+gpio.setup(40, gpio.OUT)
 time.sleep(1.0)
 
 
-p = GPIO.PWM(40, 50)
+p = gpio.PWM(40, 50)
 p.start(50)
 time.sleep(2.0)
 
@@ -30,4 +30,4 @@ p.ChangeFrequency(100)
 
 time.sleep(2.0)
 p.stop()
-GPIO.cleanup()
+gpio.cleanup()
