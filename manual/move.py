@@ -26,7 +26,7 @@ def init():
     gpio.setup(pwm['left'], gpio.OUT)
     gpio.setup(pwm['right'], gpio.OUT)
 
-def run_at_speed(t, power=80):
+def run_at_power(t, power=80):
     p = {}
     p['left'] = gpio.PWM(pwm['left'], 100) # 100 hz
     p['right'] = gpio.PWM(pwm['right'], 100)
