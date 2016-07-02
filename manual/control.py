@@ -3,6 +3,7 @@
 import RPi.GPIO as gpio
 import readchar
 from move import *
+import heading
 
 def repl():
     print "Use w,a,s,d to control the vehicle. x to exit"
@@ -10,6 +11,7 @@ def repl():
     speed = 50
     step = 10
     while True:
+        print heading.degrees() + "\370"
         k = readchar.readkey()
         if k == "w":
             forward(t, speed)
