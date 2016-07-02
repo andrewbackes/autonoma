@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import RPi.GPIO as gpio
-import readchar
-from move import *
+import move
 import heading
+from getch import *
 
 def repl():
     print "Use w,a,s,d to control the vehicle. x to exit"
@@ -11,16 +11,16 @@ def repl():
     speed = 50
     step = 10
     while True:
-        print heading.degrees() + "\370"
-        k = readchar.readkey()
+        print(str(heading.degrees()) + "\370" + " @ " + str(speed) + "% power.")
+        k = getch()
         if k == "w":
-            forward(t, speed)
+            move.forward(t, speed)
         elif k == "s":
-            backward(t, speed)
+            move.backward(t, speed)
         elif k == "a":
-            counter_clockwise(t, speed)
+            move.counter_clockwise(t, speed)
         elif k == "d":
-            clockwise(t, speed)
+            move.clockwise(t, speed)
         elif k == 'r':
             speed = min(100, speed + step)
             print speed
