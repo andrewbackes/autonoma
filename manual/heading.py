@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import time
 
 #export QUICK2WIRE_API_HOME=/usr/local/autonoma/manual/quick2wire-python-api
 #export PYTHONPATH=$PYTHONPATH:$QUICK2WIRE_API_HOME
