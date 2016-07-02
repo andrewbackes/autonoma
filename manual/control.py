@@ -6,7 +6,7 @@ import heading
 from getch import *
 
 def repl():
-    print "Use w,a,s,d to control the vehicle. x to exit"
+    print("Use w,a,s,d to control the vehicle. x to exit")
     t = 0.2
     speed = 50
     step = 10
@@ -23,13 +23,11 @@ def repl():
             move.clockwise(t, speed)
         elif k == 'r':
             speed = min(100, speed + step)
-            print speed
         elif k == 'f':
             speed = max(0, speed - step)
-            print speed
         elif k == "x":
             break
-    print "done"
+    print("done")
 
 if __name__ == "__main__":
     repl()
