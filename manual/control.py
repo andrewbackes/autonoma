@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import RPi.GPIO as gpio
 import move
@@ -11,7 +12,7 @@ def repl():
     speed = 50
     step = 10
     while True:
-        print(str(heading.degrees()) + "\370" + " @ " + str(speed) + "% power.")
+        print(str(heading.degrees()) + "°" + " @ " + str(speed) + "% power.")
         k = getch()
         if k == "w":
             move.forward(t, speed)
