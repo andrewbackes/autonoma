@@ -17,7 +17,9 @@ def spin_speed(t, power):
         h1 = heading.degrees()
         move.clockwise(t, power)
         h2 = heading.degrees()
-        sum += diff(h1, h2)
+        d = diff(h1, h2)
+        sum += d
+        print(str(h1) + ", " + str(h2) + ", " + str(d))
     return sum/attempts
 
 if __name__ == "__main__":
