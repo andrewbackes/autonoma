@@ -13,6 +13,7 @@ def spin_speed(t, power):
     attempts = 3
     sum = 0
     for _ in range(attempts):
+        time.sleep(0.1)
         h1 = heading.degrees()
         move.clockwise(t, power)
         h2 = heading.degrees()
