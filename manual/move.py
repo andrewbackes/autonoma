@@ -26,42 +26,42 @@ def init():
     gpio.setup(pwm['left'], gpio.OUT)
     gpio.setup(pwm['right'], gpio.OUT)
 
-def run_at_speed(t, speed=100):
+def run_at_speed(t, power=80):
     p = {}
     p['left'] = gpio.PWM(pwm['left'], 100) # 100 hz
     p['right'] = gpio.PWM(pwm['right'], 100)
-    p['left'].start(speed)
-    p['right'].start(speed)
+    p['left'].start(power)
+    p['right'].start(power)
     time.sleep(t)
     p['left'].stop()
     p['right'].stop()
 
-def toggle(a, b, c, d, t, speed=100):
+def toggle(a, b, c, d, t, power=80):
     init()
     gpio.output(7, a)
     gpio.output(11, b)
     gpio.output(13, c)
     gpio.output(15, d)
-    run_at_speed(t, speed)
+    run_at_power(t, power)
     gpio.cleanup()
 
-def forward(t, speed=100):
-    toggle(False, True, True, False, t, speed)
+def forward(t, power=80):
+    toggle(False, True, True, False, t, power)
 
-def backward(t, speed=100):
-    toggle(True, False, False, True, t, speed)
+def backward(t, power=80):
+    toggle(True, False, False, True, t, power)
 
-def turn_left(t, speed=100):
-    toggle(False, True, False, False, t, speed)
+def turn_left(t, power=80):
+    toggle(False, True, False, False, t, power)
 
-def turn_right(t, speed=100):
-    toggle(True, True, True, False, t, speed)
+def turn_right(t, power=80):
+    toggle(True, True, True, False, t, power)
 
-def counter_clockwise(t, speed=100):
-    toggle(False, True, False, True, t, speed)
+def counter_clockwise(t, power=80):
+    toggle(False, True, False, True, t, power)
 
-def clockwise(t, speed=100):
-    toggle(True, False, True, False, t, speed)
+def clockwise(t, power=80):
+    toggle(True, False, True, False, t, power)
 
 
 if __name__ == "__main__":

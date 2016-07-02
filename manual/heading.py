@@ -3,8 +3,6 @@
 import os
 import time
 
-#export QUICK2WIRE_API_HOME=/usr/local/autonoma/manual/quick2wire-python-api
-#export PYTHONPATH=$PYTHONPATH:$QUICK2WIRE_API_HOME
 os.environ["QUICK2WIRE_API_HOME"] = "/usr/local/autonoma/manual/quick2wire-python-api"
 os.environ["PYTHONPATH"] += ":/usr/local/autonoma/manual/quick2wire-python-api"
 
