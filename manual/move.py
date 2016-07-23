@@ -46,10 +46,14 @@ def toggle(a, b, c, d, t, power=80):
     gpio.cleanup()
 
 def forward(t, power=80):
+    print("forward @ " + str(power) + " for t=" + str(t))
     toggle(False, True, True, False, t, power)
+    print("movement done")
 
 def backward(t, power=80):
+    print("backward @ " + str(power) + " for t=" + str(t))
     toggle(True, False, False, True, t, power)
+    print("movement done")
 
 def turn_left(t, power=80):
     toggle(False, True, False, False, t, power)
@@ -58,10 +62,14 @@ def turn_right(t, power=80):
     toggle(True, True, True, False, t, power)
 
 def counter_clockwise(t, power=80):
+    print("counter_clockwise @ " + str(power) + " for t=" + str(t))
     toggle(False, True, False, True, t, power)
+    print("movement done")
 
 def clockwise(t, power=80):
+    print("clockwise @ " + str(power) + " for t=" + str(t))
     toggle(True, False, True, False, t, power)
+    print("movement done")
 
 
 if __name__ == "__main__":
