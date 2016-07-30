@@ -19,7 +19,7 @@ def send_payload(sensor, location, reading):
     upd_send(sensor + " " + location + " " + reading)
 
 
-def start(sesor):
+def start():
     print("Emitting sensor data.")
     while True:
         send_payload("ir", "left", ir.blocked('left'))
