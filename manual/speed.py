@@ -13,9 +13,14 @@ def spin_speed(t, power):
     attempts = 3
     sum = 0
     for _ in range(attempts):
-        time.sleep(0.1)
+        
+        time.sleep(0.2)
+        heading.degrees()
         h1 = heading.degrees()
         move.clockwise(t, power)
+        
+        time.sleep(0.2)
+        heading.degrees()
         h2 = heading.degrees()
         d = diff(h1, h2)
         sum += d
@@ -23,4 +28,4 @@ def spin_speed(t, power):
     return sum/attempts
 
 if __name__ == "__main__":
-    print(spin_speed(0.1, 80))
+    print(spin_speed(0.25, 80))

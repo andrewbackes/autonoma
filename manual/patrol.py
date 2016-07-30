@@ -1,80 +1,86 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+print("starting")
 
 import time
 import RPi.GPIO as gpio
 import move
 import echo
+import ir
+import heading
+from random import randint
 
-# hardcode these for now:
-increment = 0.1
-positions = 16
+spin_increment = 0.2
+spin_power = 80
+
+forward_increment = 0.1
+forward_power = 50
+forward_delay = 0.05
+
 unit = 'in'
-
-# learn this value on startup
-speed = None
-
-def spin_detect():
-    distances = [None] * positions
-    for pos in range(positions/2):
-        d = echo.distances(unit)
-        distances[pos] = d['front']
-        distances[pos * 2] = d['back']
-        move.clockwise(increment)
-        time.sleep(0.03)
-    return distances
+shortest_dist = 12
+delay = 0.2
 
 
-def furthest_blocked_pos():
-    distances = spin_detect()
-    max = 0
-    max_pos = None
-    for pos in range(len(distances)): 
-        dist = distances[pos]
-        if dist and dist > max:
-            max = dist
-            max_pos = pos 
-    # face forward
-    move.clockwise(increment*(positions/2))
-    return max_pos
+def move_until_blocked(dist):
+    print("moving forward @ " + str(heading.degrees()) + "°" )
+    while True:
+        l, r, sf = ir.blocked('left'), ir.blocked('right'), echo.blocked(shortest_dist, unit)
+        print("Sensors blocked - left: " + str(l) + " right: " + str(r) + " sonic-front: " + str(sf))
+        if l or r or sf: #or blocked: 
+            print("blocked")
+            return
+        move.forward(forward_increment, forward_power)
+        time.sleep(forward_delay)
+    
 
-def face(pos):
-    # assume facing forward for now
-    move.clockwise(increment*(pos))
+def spin_direction():
+    print("finding safe direction")
+    l, r, sf = ir.blocked('left'), ir.blocked('right'), echo.blocked(shortest_dist, unit)
+    if l and not r:
+        return move.clockwise
+    if r and not l:
+        return move.counter_clockwise
+    funcs = [move.clockwise, move.counter_clockwise]
+    r = randint(0,1)
+    print("choosing random spin direction (" + str(r) + ")")
+    return funcs[r]
+    
+def face_unblocked_path(dist):
+    print("rotating")
+    start = time.time()
+    while True:
+        l, r, sf = ir.blocked('left'), ir.blocked('right'), echo.blocked(shortest_dist, unit)
+        print("Sensors blocked - left: " + str(l) + " right: " + str(r) + " sonic-front: " + str(sf))
+        spin = spin_direction()
+        spin(spin_increment)
+        time.sleep(0.1)
+        if not l and not r and not sf:
+            break
+    lapsed = time.time() - start
+    print("spin time: " + str(lapsed))
+    spin = spin_direction()
+    spin(lapsed)
 
 
-def detect_speed():
-    before = echo.distance(echo.sensors['front'])
-    print before
-    move.forward(increment)
-    after = echo.distance(echo.sensors['front'])
-    print after
-    # hmmm.... not yet sure what to return on error
-    try:
-        return (before - after)/increment
-    except:
-        return None
+def walk():
+    funcs = [move.clockwise, move.counter_clockwise]
+    while True:
+        move_until_blocked(shortest_dist)
+        time.sleep(delay)
+        spin = spin_direction()
+        time.sleep(delay)
+        #move.backward(forward_increment * 2, forward_power)
+        face_unblocked_path(shortest_dist)
+        print("found unblocked path")
+        time.sleep(delay)
+    print("exit walk - cleaning up")
+    gpio.cleanup()
 
-
-def unblocked_position():
-    for pos in range(positions):
-        print "something"
-    return None
-
-
-def three_sixty():
-    face(positions)
 
 if __name__ == "__main__":
-    print "Surroundings:"
-    print spin_detect()
-    
-    #print "Detecting speed"
-    #print "Patrolling..."
-    #print "Speed: " + str(detect_speed())
-    
-    # loop:
-        # spin in a circle
-            # record front/back sensors
-            # break when front sensor traces the back one
-        # spin to the open path
-            # move until until a wall is detected
+    try:
+        walk() 
+    except KeyboardInterrupt:
+        gpio.cleanup()

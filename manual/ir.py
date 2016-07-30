@@ -8,20 +8,14 @@ sensors = {
     'right': 32
 }
 
-def blocked():
+def blocked(sensor="all"):
     gpio.setmode(gpio.BOARD)
-    gpio.setup(sensors['left'], gpio.IN)
-    gpio.setup(sensors['right'], gpio.IN)
-    return gpio.input(sensors['left']) == 0 and gpio.input(sensors['right']) == 0 
-
-
-def dashboard():
-    while True:
-        l = blocked(sensors['left'])
-        r = blocked(sensors['right'])
-        block = {
-            'left': l,
-            'right': r
-        }
-        print(block)
-        time.sleep(0.5)
+    if sensor == 'all':
+        gpio.setup(sensors['left'], gpio.IN)
+        gpio.setup(sensors['right'], gpio.IN)
+        blocked = gpio.input(sensors['left']) == 0 and gpio.input(sensors['right']) == 0
+    else:
+        gpio.setup(sensors[sensor], gpio.IN)
+        blocked = gpio.input(sensors[sensor]) == 0
+    gpio.cleanup()
+    return blocked    
