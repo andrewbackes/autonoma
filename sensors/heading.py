@@ -5,8 +5,9 @@ import time
 
 os.environ["QUICK2WIRE_API_HOME"] = "/usr/local/autonoma/sensors/quick2wire-python-api"
 if 'PYTHONPATH' in os.environ:
+    os.environ["PYTHONPATH"] += ":/usr/local/autonoma/sensors/quick2wire-python-api"
+else:
     os.environ["PYTHONPATH"] = "/usr/local/autonoma/sensors/quick2wire-python-api"
-os.environ["PYTHONPATH"] += ":/usr/local/autonoma/sensors/quick2wire-python-api"
 
 from i2clibraries import i2c_hmc5883l
 
