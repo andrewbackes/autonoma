@@ -16,7 +16,7 @@ def udp_send(msg):
 
 
 def send_payload(sensor, location, reading):
-    udp_send(sensor + " " + location + " " + reading)
+    udp_send(sensor + " " + location + " " + str(reading))
 
 
 def start():
