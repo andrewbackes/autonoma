@@ -7,7 +7,7 @@ import echo
 #import heading
 
 ip = "10.0.0.11"
-port =  "9090"
+port =  9090
 interval = 0.01 
 
 def udp_send(msg):
