@@ -4,7 +4,7 @@ import socket
 
 import ir
 import echo
-import heading
+#import heading
 
 ip = "10.0.0.11"
 port =  "9090"
@@ -26,7 +26,7 @@ def start(sensor):
         send_payload("ir", "right", ir.blocked('right'))
         send_payload("echo", "front", echo.distance(echo.sensors['front']))
         send_payload("echo", "back", echo.distance(echo.sensors['back']))
-        send_payload("heading", "front", heading.degrees())
+        #send_payload("heading", "front", heading.degrees())
         time.sleep(interval)
 
 
