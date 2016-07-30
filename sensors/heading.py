@@ -21,6 +21,7 @@ def degrees():
     (h, m) = hmc5883l.getHeading()
     return h
 
+
 if __name__ == "__main__":
     hmc5883l = init()
     while True:
