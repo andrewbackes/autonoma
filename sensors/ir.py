@@ -19,4 +19,3 @@ def blocked(sensor="all"):
         blocked = gpio.input(sensors[sensor]) == 0
     gpio.cleanup()
     return blocked
-

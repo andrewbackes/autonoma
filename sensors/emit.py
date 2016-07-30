@@ -27,7 +27,7 @@ def start():
         send_payload("ir", "right", ir.blocked('right'))
         send_payload("echo", "front", echo.distance(echo.sensors['front']))
         send_payload("echo", "back", echo.distance(echo.sensors['back']))
-        #send_payload("heading", "front", heading.degrees())
+        #send_payload("compass", "heading", heading.degrees())
         time.sleep(interval)
 
 
