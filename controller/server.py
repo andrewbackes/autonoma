@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-#import RPi.GPIO as gpio
+import RPi.GPIO as gpio
 import socket
-
-'''
 import move
 
 def handle_move(dir, t, power):
@@ -16,13 +14,14 @@ def handle_move(dir, t, power):
         move.counter_clockwise(t, power)
     elif k == "clockwise":
         move.clockwise(t, power)
-'''
+
 def handle(data):
     # ex: move forward 1000 80
-    terms  = data.split(" ")
+    stripped = data.strip("\n").strip("\r")
+    terms  = stripped.split(" ")
     if terms[0] == "move" and len(terms) >= 4:
         pass
-        #handle_move(terms[1], terms[2], terms[3])
+        handle_move(terms[1], terms[2], terms[3])
     print(terms)
 
 def listen_and_serve():    
@@ -34,20 +33,24 @@ def listen_and_serve():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((TCP_IP, TCP_PORT))
     s.listen(1)
-
+    exit = False
     while True:
         conn, addr = s.accept()
         print('Connection address:', addr)
         while True:
-            msg = conn.recv(BUFFER_SIZE)
-            if not msg: break
-            handle(msg)
+            try:
+                msg = conn.recv(BUFFER_SIZE)
+                if not msg: break
+                handle(str(msg, "utf-8"))
+            except KeyboardInterrupt:
+                print("Exit")
+                exit = True
+                break
         conn.close()
         print("Connection closed.")
+        if exit:
+            break
 
 
 if __name__ == "__main__":
-    try:
-        listen_and_serve()
-    except KeyboardInterrupt:
-        print("Exit")
+    listen_and_serve()
