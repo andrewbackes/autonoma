@@ -9,6 +9,9 @@ if 'PYTHONPATH' in os.environ:
 else:
     os.environ["PYTHONPATH"] = "/usr/local/autonoma/sensors/quick2wire-python-api"
 
+print("QUICK2WIRE_API_HOME=" + os.environ["QUICK2WIRE_API_HOME"])
+print("PYTHONPATH=" + os.environ["PYTHONPATH"])
+
 from i2clibraries import i2c_hmc5883l
 
 def init():
