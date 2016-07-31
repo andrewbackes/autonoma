@@ -16,12 +16,12 @@ def handle_move(dir, t, power):
         move.clockwise(t, power)
 
 def handle(data):
-    # ex: move forward 1000 80
+    # ex: move forward 1.0 80
     stripped = data.strip("\n").strip("\r")
     terms  = stripped.split(" ")
     if terms[0] == "move" and len(terms) >= 4:
         pass
-        handle_move(terms[1], terms[2], terms[3])
+        handle_move(terms[1], float(terms[2]), int(terms[3]))
     print(terms)
 
 def listen_and_serve():    
