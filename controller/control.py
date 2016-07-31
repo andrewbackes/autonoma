@@ -3,8 +3,8 @@
 
 import RPi.GPIO as gpio
 import move
-import heading
-import ir
+#import heading
+#import ir
 from getch import *
 
 def repl():
@@ -13,8 +13,9 @@ def repl():
     speed = 50
     step = 10
     while True:
-        print(str(heading.degrees()) + "°" + " @ " + str(speed) + "% power.")
-        print("Sensors blocked - left: " + str(ir.blocked('left')) + " right: " + str(ir.blocked('right')) )#+ " SONIC: " + str(d) + "")
+        #print(str(heading.degrees()) + "°" + " @ " + str(speed) + "% power.")
+        print(" @ " + str(speed) + "% power.")
+        #print("Sensors blocked - left: " + str(ir.blocked('left')) + " right: " + str(ir.blocked('right')) )#+ " SONIC: " + str(d) + "")
         k = getch()
         if k == "w":
             move.forward(t, speed)

@@ -27,6 +27,6 @@ func avoidObstacles(b *Bot, s *Sensors) {
 	for {
 		dir := chooseDir(s)
 		b.Move(dir, 100*time.Millisecond, 75)
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(250 * time.Millisecond)
 	}
 }
