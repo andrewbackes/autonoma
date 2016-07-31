@@ -6,13 +6,13 @@ import socket
 import move
 
 def handle_move(dir, t, power):
-    if k == "forward":
+    if dir == "forward":
         move.forward(t, power)
-    elif k == "backward":
+    elif dir == "backward":
         move.backward(t, power)
-    elif k == "counter_clockwise":
+    elif dir == "counter_clockwise":
         move.counter_clockwise(t, power)
-    elif k == "clockwise":
+    elif dir == "clockwise":
         move.clockwise(t, power)
 
 def handle(data):
@@ -26,7 +26,7 @@ def handle(data):
 
 def listen_and_serve():    
     print("Listening for connection.")
-    TCP_IP = '127.0.0.1'
+    TCP_IP = '10.0.0.14'
     TCP_PORT = 9091
     BUFFER_SIZE = 256
     
