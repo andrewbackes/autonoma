@@ -46,6 +46,7 @@ def spin_direction():
     r = randint(0,1)
     print("choosing random spin direction (" + str(r) + ")")
     return funcs[r]
+
     
 def face_unblocked_path(dist):
     print("rotating")

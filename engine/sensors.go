@@ -18,7 +18,7 @@ type IRSensors struct {
 }
 
 func (s IRSensors) String() string {
-	return fmt.Sprint("IR: [left: ", s.Left, "], right: ", s.Right, "]")
+	return fmt.Sprintf("IR: [left: %t, right: %t]", s.Left, s.Right)
 }
 
 func (s *IRSensors) Set(pos, value string) {
@@ -75,7 +75,7 @@ type Compass struct {
 }
 
 func (s Compass) String() string {
-	return fmt.Sprint("Compass: [heading: ", s.Heading, "]")
+	return fmt.Sprintf("Compass: [heading: %d°]", s.Heading)
 }
 
 func (s *Compass) Set(pos, value string) {
