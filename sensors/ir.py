@@ -36,4 +36,5 @@ def distance():
     return cm
 
 if __name__ == "__main__":
+    print(blocked())
     print(str(distance()) + "cm")
