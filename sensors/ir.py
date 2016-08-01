@@ -34,3 +34,6 @@ def distance():
     if value:
         distance = 12343.85 * (value**-1.15)
     return cm
+
+if __name__ == "__main__":
+    print(distance() + "cm")
