@@ -32,7 +32,7 @@ def distance():
     value = mcp.read_adc(2)
     cm = 0
     if value:
-        distance = 12343.85 * (value**-1.15)
+        cm = 12343.85 * (value**-1.15)
     return cm
 
 if __name__ == "__main__":
