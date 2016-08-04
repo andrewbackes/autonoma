@@ -16,7 +16,7 @@ poslist = [leftpos, middlepos, rightpos, middlepos]
 positions = {
     "left" : leftpos,
     "middle" : middlepos,
-    "right": right }
+    "right": rightpos }
 
 msPerCylce = 1000 / freq
 
