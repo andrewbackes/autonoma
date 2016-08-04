@@ -3,14 +3,9 @@
 import time
 import RPi.GPIO as gpio
 
-
 servo_pin = 37
 
-gpio.setmode(gpio.BOARD)
-
-gpio.setup(servo_pin, gpio.OUT)
 freq = 50
-pwm = gpio.PWM(servo_pin, freq)
 
 leftpos = 0.75
 rightpos = 2.5
@@ -18,17 +13,34 @@ middlepos = (rightpos - leftpos) / 2 + leftpos
 
 poslist = [leftpos, middlepos, rightpos, middlepos]
 
+positions = {
+    "left" : leftpos,
+    "middle" : middlepos,
+    "right": right }
+
 msPerCylce = 1000 / freq
 
+def move(pos):
+    gpio.setmode(gpio.BOARD)
+    gpio.setup(servo_pin, gpio.OUT)
+    pwm = gpio.PWM(servo_pin, freq)
+    
+    dutyPerc = positions[pos] * 100 / msPerCylce
+    pwm.start(dutyPerc)
+    time.sleep(0.02)
+    pwm.stop()
+    gpio.cleanup()
 
-for i in range(3):
-    for pos in poslist:
-        dutyPerc = pos * 100 / msPerCylce
-        print("Pos: " + str(pos))
-        print("Duty: " + str(dutyPerc) )
-        print()
-        pwm.start(dutyPerc)
-        time.sleep(0.5)
-
-pwm.stop()
-gpio.cleanup()
+'''
+def all():
+    def f():
+        for i in range(3):
+            for pos in poslist:
+                dutyPerc = pos * 100 / msPerCylce
+                print("Pos: " + str(pos))
+                print("Duty: " + str(dutyPerc) )
+                print()
+                pwm.start(dutyPerc)
+                time.sleep(0.5)
+    setup(f)
+'''
