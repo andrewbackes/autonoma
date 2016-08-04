@@ -7,8 +7,8 @@ servo_pin = 37
 
 freq = 50
 
-leftpos = 1
-rightpos = 2
+leftpos = 0.001
+rightpos = 0.002
 middlepos = (rightpos - leftpos) / 2 + leftpos
 
 poslist = [leftpos, middlepos, rightpos, middlepos]
