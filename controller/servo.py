@@ -24,7 +24,7 @@ msPerCylce = 1000 / freq
 for i in range(3):
     for pos in poslist:
         dutyPerc = pos * 100 / msPerCylce
-        print("Pos: " + str(pos)
+        print("Pos: " + str(pos))
         print("Duty: " + str(dutyPerc) )
         print()
         pwm.start(dutyPerc)
