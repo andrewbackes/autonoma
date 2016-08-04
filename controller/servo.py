@@ -27,20 +27,22 @@ def move(pos):
     
     dutyPerc = positions[pos] * 100 / msPerCylce
     pwm.start(dutyPerc)
-    time.sleep(0.02)
+    time.sleep(0.5)
     pwm.stop()
     gpio.cleanup()
 
 '''
-def all():
-    def f():
-        for i in range(3):
-            for pos in poslist:
-                dutyPerc = pos * 100 / msPerCylce
-                print("Pos: " + str(pos))
-                print("Duty: " + str(dutyPerc) )
-                print()
-                pwm.start(dutyPerc)
-                time.sleep(0.5)
-    setup(f)
+
+for i in range(3):
+    for pos in poslist:
+        dutyPerc = pos * 100 / msPerCylce
+        print("Pos: " + str(pos))
+        print("Duty: " + str(dutyPerc) )
+        print()
+        pwm.start(dutyPerc)
+        time.sleep(0.5)
+
+pwm.stop()
+gpio.cleanup()
+
 '''
