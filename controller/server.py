@@ -4,6 +4,7 @@
 import RPi.GPIO as gpio
 import socket
 import move
+import servo
 
 def handle_move(dir, t, power):
     if dir == "forward":
@@ -15,13 +16,20 @@ def handle_move(dir, t, power):
     elif dir == "clockwise":
         move.clockwise(t, power)
 
+
+def handle_servo(deg):
+    if deg != ""
+        servo.move(int(deg))
+
 def handle(data):
-    # ex: move forward 1.0 80
     stripped = data.strip("\n").strip("\r")
     terms  = stripped.split(" ")
     if terms[0] == "move" and len(terms) >= 4:
-        pass
+        # ex: move forward 1.0 80
         handle_move(terms[1], float(terms[2]), int(terms[3]))
+    if terms[0] == "servo" and len(terms) >= 3:
+        # ex: servo pos -90
+        handle_servo(terms[2])
     print(terms)
 
 def listen_and_serve():    
