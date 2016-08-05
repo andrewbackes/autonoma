@@ -27,21 +27,3 @@ def move(deg):
     time.sleep(0.5)
     pwm.stop()
     gpio.cleanup()
-
-    
-
-'''
-
-for i in range(3):
-    for pos in poslist:
-        dutyPerc = pos * 100 / msPerCylce
-        print("Pos: " + str(pos))
-        print("Duty: " + str(dutyPerc) )
-        print()
-        pwm.start(dutyPerc)
-        time.sleep(0.5)
-
-pwm.stop()
-gpio.cleanup()
-
-'''

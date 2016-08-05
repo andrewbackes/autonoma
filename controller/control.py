@@ -3,6 +3,7 @@
 
 import RPi.GPIO as gpio
 import move
+import servo
 #import heading
 #import ir
 from getch import *
@@ -12,6 +13,8 @@ def repl():
     t = 0.2
     speed = 50
     step = 10
+    servo_pos = 0
+    servo.move(servo_pos)
     while True:
         #print(str(heading.degrees()) + "°" + " @ " + str(speed) + "% power.")
         print(" @ " + str(speed) + "% power.")
@@ -29,6 +32,12 @@ def repl():
             speed = min(100, speed + step)
         elif k == 'f':
             speed = max(0, speed - step)
+        elif k == "q":
+            servo_pos = max(-90, servo_pos - 15)
+            servo.move(servo_pos)
+        elif k == "e":
+            servo_pos = min(90, servo_pos + 15)
+            servo.move(servo_pos)
         elif k == "x":
             break
     print("done")
