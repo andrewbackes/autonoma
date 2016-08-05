@@ -21,6 +21,7 @@ def handle_servo(deg):
     if deg != ""
         servo.move(int(deg))
 
+
 def handle(data):
     stripped = data.strip("\n").strip("\r")
     terms  = stripped.split(" ")
@@ -31,6 +32,7 @@ def handle(data):
         # ex: servo pos -90
         handle_servo(terms[2])
     print(terms)
+
 
 def listen_and_serve():    
     print("Listening for connection.")
