@@ -14,7 +14,7 @@ middlepos = (rightpos - leftpos) / 2 + leftpos
 msPerCylce = 1000 / freq
 
 def pos(deg):
-    pos = 180 - ((leftpos - rightpos) / 180)
+    pos = ((180 - leftpos - rightpos) / 180)
     return pos*deg + leftpos
 
 def move(deg):
