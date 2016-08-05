@@ -33,10 +33,10 @@ def repl():
         elif k == 'f':
             speed = max(0, speed - step)
         elif k == "q":
-            servo_pos = max(-90, servo_pos - 30)
+            servo_pos = max(-90, servo_pos - 45)
             servo.move(servo_pos)
         elif k == "e":
-            servo_pos = min(90, servo_pos + 30)
+            servo_pos = min(90, servo_pos + 45)
             servo.move(servo_pos)
         elif k == "x":
             break
