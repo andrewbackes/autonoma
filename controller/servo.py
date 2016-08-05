@@ -14,11 +14,11 @@ middlepos = (rightpos - leftpos) / 2 + leftpos
 msPerCylce = 1000 / freq
 
 def pos(deg):
-    pos = ((180 - leftpos - rightpos) / 180)
+    pos = ((leftpos - rightpos) / 180)
     return pos*deg + leftpos
 
 def move(deg):
-    interval = pos(deg + 90)
+    interval = pos((deg + 90)*-1)
     gpio.setmode(gpio.BOARD)
     gpio.setup(servo_pin, gpio.OUT)
     pwm = gpio.PWM(servo_pin, freq)
