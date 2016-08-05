@@ -17,7 +17,7 @@ def repl():
     servo.move(servo_pos)
     while True:
         #print(str(heading.degrees()) + "°" + " @ " + str(speed) + "% power.")
-        print(" @ " + str(speed) + "% power.")
+        print(str(speed) + "% power." + " servo pos: " + str(servo_pos) + "°")
         #print("Sensors blocked - left: " + str(ir.blocked('left')) + " right: " + str(ir.blocked('right')) )#+ " SONIC: " + str(d) + "")
         k = getch()
         if k == "w":
@@ -33,10 +33,10 @@ def repl():
         elif k == 'f':
             speed = max(0, speed - step)
         elif k == "q":
-            servo_pos = max(-90, servo_pos - 15)
+            servo_pos = max(-90, servo_pos - 30)
             servo.move(servo_pos)
         elif k == "e":
-            servo_pos = min(90, servo_pos + 15)
+            servo_pos = min(90, servo_pos + 30)
             servo.move(servo_pos)
         elif k == "x":
             break
