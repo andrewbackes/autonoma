@@ -7,8 +7,8 @@ servo_pin = 37
 
 freq = 50
 
-rightpos = 0.25
-leftpos = 2.25
+rightpos = 0.5
+leftpos = 2.5
 middlepos = (leftpos - rightpos) / 2 + leftpos
 
 msPerCylce = 1000 / freq
