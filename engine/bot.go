@@ -12,11 +12,20 @@ const (
 )
 
 type Bot struct {
-	conn net.Conn
+	conn        net.Conn
+	moveHistory []BotMove
 }
 
 func NewBot() *Bot {
-	return &Bot{}
+	return &Bot{
+		moveHistory: make([]BotMove, 0),
+	}
+}
+
+type BotMove struct {
+	dir string
+	t   time.Duration
+	pwr int64
 }
 
 func (b *Bot) connect() error {
@@ -32,21 +41,29 @@ func (b *Bot) connect() error {
 	return nil
 }
 
-func (b *Bot) Move(dir string, t time.Duration, pwr int64) {
+func (b *Bot) Make(m BotMove) {
 	if b.conn == nil {
 		b.connect()
 	}
-	msg := formatMove(dir, t, pwr)
+	msg := format(m)
 	_, err := b.conn.Write(msg)
 	if err != nil {
 		fmt.Println(err)
 	}
+	b.updateHistory(m)
 }
 
-func formatMove(dir string, t time.Duration, pwr int64) []byte {
-	sec := t.Seconds()
+func (b *Bot) updateHistory(m BotMove) {
+	b.moveHistory = append(b.moveHistory, m)
+	if len(b.moveHistory) > 1000 {
+		b.moveHistory = b.moveHistory[len(b.moveHistory)-1000:]
+	}
+}
+
+func format(m BotMove) []byte {
+	sec := m.t.Seconds()
 	s := strconv.FormatFloat(sec, 'E', -1, 64)
-	p := strconv.FormatInt(pwr, 10)
-	msg := fmt.Sprintf("move %s %s %s ", dir, s, p)
+	p := strconv.FormatInt(m.pwr, 10)
+	msg := fmt.Sprintf("move %s %s %s ", m.dir, s, p)
 	return []byte(msg)
 }

@@ -23,6 +23,7 @@ def send_payload(sensor, location, reading):
 def start():
     print("Emitting sensor data.")
     while True:
+        send_payload("ir_distance", "servo", ir.distance())
         send_payload("ir", "left", ir.blocked('left'))
         send_payload("ir", "right", ir.blocked('right'))
         send_payload("echo", "front", echo.distance(echo.sensors['front']))
