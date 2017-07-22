@@ -6,5 +6,5 @@ import (
 
 // Maker is an interface for creating maps.
 type Maker interface {
-	Mark(x, y int, s sensor.Measurement) error
+	Mark(o sensor.Origin, s sensor.Measurement) error
 }

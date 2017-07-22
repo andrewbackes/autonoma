@@ -5,6 +5,7 @@ import (
 	"github.com/andrewbackes/autonoma/engine/sensor"
 	"image"
 	"image/color"
+	"math"
 )
 
 // Grid represents a map. It represents the probability that an area is occupied vs open.
@@ -15,49 +16,45 @@ type Grid struct {
 	path   []bool
 	height int
 	width  int
+	pos    point
 
-	// Grid implements engine.mapper
+	colorModel color.Model
+	pathColor  color.Color
+	colors     map[uint8]color.Color
 
+	maxProbability uint8
 }
-
-var colorModel = color.RGBAModel
-
-var pathColor = color.RGBA{R: 255, G: 0, B: 0, A: 255}
-var occColors = map[uint8]color.Color{
-	0:  color.RGBA{R: 0, G: 0, B: 0, A: 255},
-	1:  color.RGBA{R: 25, G: 25, B: 25, A: 255},
-	2:  color.RGBA{R: 50, G: 50, B: 50, A: 255},
-	3:  color.RGBA{R: 75, G: 75, B: 75, A: 255},
-	4:  color.RGBA{R: 100, G: 100, B: 100, A: 255},
-	5:  color.RGBA{R: 125, G: 125, B: 125, A: 255},
-	6:  color.RGBA{R: 150, G: 150, B: 150, A: 255},
-	7:  color.RGBA{R: 175, G: 175, B: 175, A: 255},
-	8:  color.RGBA{R: 200, G: 200, B: 200, A: 255},
-	9:  color.RGBA{R: 225, G: 225, B: 225, A: 255},
-	10: color.RGBA{R: 250, G: 250, B: 250, A: 255},
-}
-
-const initPixelProbability = 5
-const probabilityIncrement = 1
 
 // NewGrid returns a new Grid of the given size.
-func NewGrid(height, width int) *Grid {
-	o := make([]uint8, height*width)
-	p := make([]bool, height*width)
-	for i := 0; i < len(o); i++ {
-		o[i] = initPixelProbability
+func NewGrid(height, width int, maxProbability int) *Grid {
+	g := &Grid{
+		occ:            make([]uint8, height*width),
+		path:           make([]bool, height*width),
+		height:         height,
+		width:          width,
+		pos:            point{width / 2, height / 2},
+		colorModel:     color.RGBAModel,
+		colors:         make(map[uint8]color.Color),
+		pathColor:      color.RGBA{R: 255, G: 0, B: 0, A: 255},
+		maxProbability: uint8(maxProbability),
 	}
-	return &Grid{
-		occ:    o,
-		path:   p,
-		height: height,
-		width:  width,
+	for i := 0; i < len(g.occ); i++ {
+		g.occ[i] = g.maxProbability / 2
 	}
+	for i := uint8(0); i <= g.maxProbability; i++ {
+		c := uint8((g.maxProbability - i) * (250 / g.maxProbability))
+		g.colors[i] = color.RGBA{R: c, G: c, B: c, A: 255}
+	}
+	return g
+}
+
+func NewDefaultGrid(height, width int) *Grid {
+	return NewGrid(height, width, 10)
 }
 
 // ColorModel returns the Image's color model.
 func (g *Grid) ColorModel() color.Model {
-	return colorModel
+	return g.colorModel
 }
 
 // Bounds returns the domain for which At can return non-zero color.
@@ -70,9 +67,9 @@ func (g *Grid) Bounds() image.Rectangle {
 // At(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
 func (g *Grid) At(x, y int) color.Color {
 	if g.path[g.index(x, y)] {
-		return pathColor
+		return g.pathColor
 	}
-	return occColors[g.occ[g.index(x, y)]]
+	return g.colors[g.occ[g.index(x, y)]]
 }
 
 // Center returns the coordates of the center of the Grid.
@@ -80,27 +77,71 @@ func (g *Grid) Center() (x, y int) {
 	return g.width / 2, g.height / 2
 }
 
-// index converts coordinates to array index.
+func (g *Grid) Move(x, y int) {
+	// TODO
+}
+
+// index converts coordinates to an array index.
 func (g *Grid) index(x, y int) int {
 	return y*g.width + x
 }
 
-func (g *Grid) increase(x, y int) {
-	if g.occ[g.index(x, y)] == 10 {
-		return
+// Mark will adjust the probability of an obstruction on the grid.
+func (g *Grid) Mark(o sensor.Origin, m sensor.Measurement) error {
+	// TODO(andrewbackes): offsets.
+	marked := newPointset()
+	startAngle := math.Mod(m.Angle-m.ConeSize/2, 360)
+	endAngle := math.Mod(m.Angle+m.ConeSize/2, 360)
+	for a := startAngle; a <= endAngle; a += 0.25 {
+		em := sensor.Measurement{
+			Distance: m.Distance,
+			Angle:    a,
+		}
+		ep := g.point(o, em)
+		if !marked.contains(ep) {
+			g.increase(ep)
+			marked.add(ep)
+		}
+		for d := float64(0); d < m.Distance; d++ {
+			im := sensor.Measurement{
+				Distance: d,
+				Angle:    a,
+			}
+			ip := g.point(o, im)
+			if !marked.contains(ip) {
+				g.decrease(ip)
+				marked.add(ip)
+			}
+		}
 	}
-	g.occ[g.index(x, y)] = g.occ[g.index(x, y)] + probabilityIncrement
-}
-
-func (g *Grid) decrease(x, y int) {
-	if g.occ[g.index(x, y)] == 0 {
-		return
-	}
-	g.occ[g.index(x, y)] = g.occ[g.index(x, y)] - probabilityIncrement
-}
-
-// Mark with adjust the probability of an obstruction on the grid.
-// x,y are the origin locations.
-func (g *Grid) Mark(x, y int, m sensor.Measurement) error {
 	return nil
+}
+
+func (g *Grid) point(o sensor.Origin, m sensor.Measurement) point {
+	angle := math.Mod(m.Angle+o.Heading-90, 360)
+	destX, destY := polarToCart(m.Distance, angle)
+	centerX, centerY := g.Center()
+	destX += centerX + o.X
+	destY += centerY - o.Y
+	return point{x: destX, y: destY}
+}
+
+func polarToCart(dist, angle float64) (x, y int) {
+	return int(dist * math.Cos(toRadians(angle))), int(dist * math.Sin(toRadians(angle)))
+}
+
+func toRadians(deg float64) float64 {
+	return (deg * math.Pi) / 180
+}
+
+func (g *Grid) increase(p point) {
+	if g.occ[g.index(p.x, p.y)] != g.maxProbability {
+		g.occ[g.index(p.x, p.y)] = g.occ[g.index(p.x, p.y)] + 1
+	}
+}
+
+func (g *Grid) decrease(p point) {
+	if g.occ[g.index(p.x, p.y)] != 0 {
+		g.occ[g.index(p.x, p.y)] = g.occ[g.index(p.x, p.y)] - 1
+	}
 }

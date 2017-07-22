@@ -1,5 +1,12 @@
-package main
+package receiver
 
+type Receiver struct{}
+
+func New() *Receiver {
+	return &Receiver{}
+}
+
+/*
 import (
 	"fmt"
 	"net"
@@ -26,11 +33,11 @@ func (r *Receiver) Start() {
 	fmt.Println("Starting Receiver.")
 	go r.readQueue()
 
-	/* Lets prepare a address at any address at port 10001*/
+	// Lets prepare a address at any address at port 10001
 	ServerAddr, err := net.ResolveUDPAddr("udp", ":9090")
 	check(err)
 
-	/* Now listen at selected port */
+	// Now listen at selected port
 	ServerConn, err := net.ListenUDP("udp", ServerAddr)
 	check(err)
 	defer ServerConn.Close()
@@ -69,3 +76,4 @@ func check(err error) {
 		os.Exit(0)
 	}
 }
+*/
