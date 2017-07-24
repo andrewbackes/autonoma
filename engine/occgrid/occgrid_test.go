@@ -1,28 +1,44 @@
 package occgrid
 
 import (
-	"github.com/andrewbackes/autonoma/engine/sensor"
+	//"github.com/andrewbackes/autonoma/engine/sensor"
 	"github.com/stretchr/testify/assert"
 	"image/jpeg"
 	"os"
 	"testing"
 )
 
-func TestIndexConversion(t *testing.T) {
+func TestIndexConversionSmall(t *testing.T) {
+	/*
+		Quadrants:
+		4 4 | 1 1
+		4 4 | 1 1
+		- - - - -
+		3 3 | 2 2
+		3 3 | 2 2
+
+		Indices:
+		0  1  2  3  4
+		5  6  7  8  9
+		10 11 12 13 14
+		15 16 17 18 19
+		20 21 22 23 24
+
+		Note: Don't forget the axis
+	*/
 	var assert = assert.New(t)
-	g := NewDefaultGrid(2, 2)
-	assert.Equal(3, g.index(1, 1))
-	assert.Equal(2, g.index(0, 1))
-	assert.Equal(1, g.index(1, 0))
-	assert.Equal(0, g.index(0, 0))
+	g := NewDefaultGrid(5, 5)
+	assert.Equal(12, g.index(0, 0))
 
-	g10 := NewDefaultGrid(10, 10)
-	assert.Equal(99, g10.index(9, 9))
-}
+	assert.Equal(8, g.index(1, 1))
+	assert.Equal(16, g.index(-1, -1))
+	assert.Equal(6, g.index(-1, 1))
+	assert.Equal(18, g.index(1, -1))
 
-func TestExampleImage(t *testing.T) {
-	g := NewDefaultGrid(1000, 1000)
-	save(g, "test_output/grid_empty.jpeg")
+	assert.Equal(4, g.index(2, 2))
+	assert.Equal(0, g.index(-2, 2))
+	assert.Equal(24, g.index(2, -2))
+	assert.Equal(20, g.index(-2, -2))
 }
 
 /*
@@ -37,6 +53,14 @@ func TestExampleFullCircle(t *testing.T) {
 	save(g, "grid_fullcircle.jpeg")
 }
 */
+
+/*
+func TestExampleImage(t *testing.T) {
+	g := NewDefaultGrid(1000, 1000)
+	save(g, "test_output/grid_empty.jpeg")
+}
+
+
 
 func TestExampleHollowCircle(t *testing.T) {
 	g := NewGrid(500, 500, 10)
@@ -137,6 +161,8 @@ func TestExampleMultiOrigin(t *testing.T) {
 
 	save(g, "test_output/grid_multi_origin.jpeg")
 }
+
+*/
 
 func save(g *Grid, filename string) {
 	f, _ := os.Create(filename)

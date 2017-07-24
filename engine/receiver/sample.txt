@@ -1,0 +1,2 @@
+{"id": "circle", "type": "sensor", "coneWidth": 360}
+{"id": "circle", "output": 100}
