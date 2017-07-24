@@ -14,7 +14,6 @@ type Grid struct {
 	path   []bool
 	height int
 	width  int
-	pos    point
 
 	colorModel color.Model
 	pathColor  color.Color
@@ -30,7 +29,6 @@ func NewGrid(height, width int, maxProbability int) *Grid {
 		path:           make([]bool, height*width),
 		height:         height,
 		width:          width,
-		pos:            point{width / 2, height / 2},
 		colorModel:     color.RGBAModel,
 		colors:         make(map[uint8]color.Color),
 		pathColor:      color.RGBA{R: 255, G: 0, B: 0, A: 255},

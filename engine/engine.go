@@ -24,7 +24,7 @@ type Starter interface {
 
 // NewEngine returns an engine with default parameters.
 func NewEngine() *Engine {
-	grid := occgrid.NewGrid(1000, 1000, 2)
+	grid := occgrid.NewGrid(1000, 1000, 10)
 	return &Engine{
 		hud:        hud.New(grid),
 		controller: controller.New(grid),

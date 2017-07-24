@@ -57,8 +57,8 @@ func Process(s *Sensor, r *Reading) (occupied, vacant LocationSet) {
 			}
 		}
 	}
-	log.Println("Occupied:", occupied)
-	log.Println("Vacant:", vacant)
+	//log.Println("Occupied:", occupied)
+	//log.Println("Vacant:", vacant)
 	return
 }
 
