@@ -10,8 +10,10 @@ import (
 type Grid struct {
 
 	// Grid implements image.Image
-	prob   []uint8
-	path   []bool
+	probability []uint8
+	occupied    []bool
+	path        []bool
+
 	height int
 	width  int
 
@@ -20,12 +22,13 @@ type Grid struct {
 	colors     map[uint8]color.Color
 
 	maxProbability uint8
+	cellSize       uint8
 }
 
 // NewGrid returns a new Grid of the given size.
-func NewGrid(height, width int, maxProbability int) *Grid {
+func NewGrid(height, width, maxProbability, cellSize int) *Grid {
 	g := &Grid{
-		prob:           make([]uint8, height*width),
+		probability:    make([]uint8, height*width),
 		path:           make([]bool, height*width),
 		height:         height,
 		width:          width,
@@ -33,9 +36,10 @@ func NewGrid(height, width int, maxProbability int) *Grid {
 		colors:         make(map[uint8]color.Color),
 		pathColor:      color.RGBA{R: 255, G: 0, B: 0, A: 255},
 		maxProbability: uint8(maxProbability),
+		cellSize:       uint8(cellSize),
 	}
-	for i := 0; i < len(g.prob); i++ {
-		g.prob[i] = g.maxProbability / 2
+	for i := 0; i < len(g.probability); i++ {
+		g.probability[i] = g.maxProbability / 2
 	}
 	for i := uint8(0); i <= g.maxProbability; i++ {
 		c := uint8((g.maxProbability - i) * (250 / g.maxProbability))
@@ -45,7 +49,7 @@ func NewGrid(height, width int, maxProbability int) *Grid {
 }
 
 func NewDefaultGrid(height, width int) *Grid {
-	return NewGrid(height, width, 10)
+	return NewGrid(height, width, 10, 5)
 }
 
 // ColorModel returns the Image's color model.
@@ -66,7 +70,7 @@ func (g *Grid) At(x, y int) color.Color {
 	if g.path[g.index(x, y)] {
 		return g.pathColor
 	}
-	return g.colors[g.prob[g.index(x, y)]]
+	return g.colors[g.probability[g.index(x, y)]]
 }
 
 // Center returns the coordates of the center of the Grid.
@@ -89,6 +93,9 @@ func (g *Grid) Path(x, y int) {
 // Occupied marks a square as having an object in it.
 func (g *Grid) Occupied(x, y int) {
 	g.increaseProbability(x, y)
+	if g.probability[g.index(x, y)] == g.maxProbability {
+		// TODO(andrewbackes): fill in the occupancy cell.
+	}
 }
 
 // Vacant marks a square as having an object in it.
@@ -97,13 +104,13 @@ func (g *Grid) Vacant(x, y int) {
 }
 
 func (g *Grid) increaseProbability(x, y int) {
-	if g.prob[g.index(x, y)] != g.maxProbability {
-		g.prob[g.index(x, y)] = g.prob[g.index(x, y)] + 1
+	if g.probability[g.index(x, y)] != g.maxProbability {
+		g.probability[g.index(x, y)] = g.probability[g.index(x, y)] + 1
 	}
 }
 
 func (g *Grid) decreaseProbability(x, y int) {
-	if g.prob[g.index(x, y)] != 0 {
-		g.prob[g.index(x, y)] = g.prob[g.index(x, y)] - 1
+	if g.probability[g.index(x, y)] != 0 {
+		g.probability[g.index(x, y)] = g.probability[g.index(x, y)] - 1
 	}
 }

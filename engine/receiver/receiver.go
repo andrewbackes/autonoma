@@ -10,11 +10,13 @@ import (
 	"strings"
 )
 
+// Receiver takes sensor data over UDP.
 type Receiver struct {
 	mapWriter gridmap.Writer
 	sensors   map[string]*sensor.Sensor
 }
 
+// New creates a Receiver.
 func New(m gridmap.Writer) *Receiver {
 	return &Receiver{
 		mapWriter: m,
@@ -22,6 +24,7 @@ func New(m gridmap.Writer) *Receiver {
 	}
 }
 
+// Start begins listening for data over UDP.
 func (r *Receiver) Start() {
 	fmt.Println("Starting Receiver.")
 
@@ -52,7 +55,7 @@ func (r *Receiver) Start() {
 func (r *Receiver) process(msg []byte) {
 	// TODO: This method kind of sucks.
 	s := string(msg)
-	if strings.Contains(s, "reading") {
+	if strings.Contains(s, "sensorId") {
 		reading := sensor.DecodeReading(msg)
 		occupied, vacant := sensor.Process(r.sensors[reading.SensorID], reading)
 		for o := range occupied {
@@ -61,58 +64,16 @@ func (r *Receiver) process(msg []byte) {
 		for v := range vacant {
 			r.mapWriter.Vacant(v.X, v.Y)
 		}
-	} else if strings.Contains(s, "sensor") {
+	} else if strings.Contains(s, "\"id\"") {
 		s := sensor.DecodeSensor(msg)
 		log.Println("Registering sensor:", s)
 		r.sensors[s.ID] = s
 	}
 }
 
-/*
-func (r *Receiver) readQueue() {
-	for reading := range r.q {
-		//fmt.Println(reading)
-		spl := strings.Split(reading, " ")
-		if len(spl) >= 3 {
-			sensor, pos, value := spl[0], spl[1], spl[2]
-			r.s.Set(sensor, pos, value)
-		}
-	}
-}
-*/
 func check(err error) {
 	if err != nil {
 		fmt.Println("Error: ", err)
 		os.Exit(0)
 	}
 }
-
-/*
-import (
-	"fmt"
-	"net"
-	"os"
-	"strings"
-)
-
-// Receiver takes information sent from the bot over udp.
-type Receiver struct {
-	s *Sensors
-	q chan string
-}
-
-// NewReceiver turns a new Receiver.
-func NewReceiver(s *Sensors) *Receiver {
-	return &Receiver{
-		s: s,
-		q: make(chan string, 1024),
-	}
-}
-
-
-// Stop shuts down the receiver.
-func (r *Receiver) Stop() {
-	// TODO
-}
-
-*/

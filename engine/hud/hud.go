@@ -1,3 +1,4 @@
+// Package hud is for displaying real time bot data.
 package hud
 
 import (
@@ -9,16 +10,19 @@ import (
 	"net/http"
 )
 
+// Hud is a Heads Up Display. It is for showing real time bot data.
 type Hud struct {
 	mapReader gridmap.Reader
 }
 
+// New creates a Hud.
 func New(r gridmap.Reader) *Hud {
 	return &Hud{
 		mapReader: r,
 	}
 }
 
+// Start broadcasts real time data via http.
 func (h *Hud) Start() {
 	fmt.Println("Starting HUD.")
 	m := mux.NewRouter()

@@ -18,13 +18,14 @@ type Engine struct {
 	wg *sync.WaitGroup
 }
 
+// Starter can begin a service.
 type Starter interface {
 	Start()
 }
 
 // NewEngine returns an engine with default parameters.
 func NewEngine() *Engine {
-	grid := occgrid.NewGrid(1000, 1000, 10)
+	grid := occgrid.NewGrid(1000, 1000, 10, 5)
 	return &Engine{
 		hud:        hud.New(grid),
 		controller: controller.New(grid),
@@ -43,6 +44,7 @@ func (e *Engine) start(s Starter) {
 	}
 }
 
+// Start turns on the engine.
 func (e *Engine) Start() {
 	e.start(e.hud)
 	e.start(e.controller)
