@@ -7,7 +7,7 @@ import (
 
 // Sensor represents a physical sensor on the bot.
 type Sensor struct {
-	// Id is the sensor's unique identifier.
+	// ID is the sensor's unique identifier.
 	ID string `json:"id"`
 
 	// MaxDistance is the maximum range of the sensor.
@@ -19,7 +19,7 @@ type Sensor struct {
 	Inclusive bool `json:"inclusive"`
 
 	// AngleOffset is the direction the sensor is mounted.
-	AngleOffset float64
+	AngleOffset float64 `json:"angleOffset"`
 	// Xoffset is how far left or right the sensor is from the center of mass.
 	XOffset int `json:"xOffset"`
 	// Xoffset is how far up or down the sensor is from the center of mass.
