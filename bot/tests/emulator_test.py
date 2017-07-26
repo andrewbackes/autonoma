@@ -9,10 +9,10 @@ class TestEmulator(unittest.TestCase):
         sensor = {
             "id": "front_ultrasonic",
             "coneWidth": 15.0,  # degrees
-            "maxDistance": 5.0,
+            "maxDistance": 7.0,
         }
         e = Emulator(sensor, {})
         e.face(45.0)
-        Emulator.occupied = set({(2, 2)})
-        r = format(e.read(), '.2f')
-        self.assertEqual(r, '2.83')
+        Emulator.occupied = set({(3, 4)})
+        r = e.read()
+        self.assertEqual(r, 5)
