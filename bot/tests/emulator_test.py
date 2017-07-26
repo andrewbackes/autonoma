@@ -14,6 +14,5 @@ class TestEmulator(unittest.TestCase):
         e = Emulator(sensor, {})
         e.face(45.0)
         Emulator.occupied = set({(2, 2)})
-        r = e.read()
-        self.assertGreater(r, 2.8)
-        self.assertLess(r, 2.9)
+        r = format(e.read(), '.2f')
+        self.assertEqual(r, '2.83')
