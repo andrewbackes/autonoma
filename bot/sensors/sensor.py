@@ -4,19 +4,18 @@
 class Sensor(object):
 
     def __init__(self, metadata, config):
-        """ metadata =
-        {
-            'id': id,
-            'xOffset': x_offset,
-            'yOffset': y_offset,
-            'maxDistance': max_dist,
-            'minDistance': min_dist,
-            'coneWidth': cone_width,
-            'inclusive': inclusive,
-            'angleOffset': angle_offset,
+        initial_metadata = {
+            'id': "no-id",
+            'xOffset': 0.0,
+            'yOffset': 0.0,
+            'maxDistance': 0.0,
+            'minDistance': 0.0,
+            'coneWidth': 0.0,
+            'inclusive': False,
+            'angleOffset': 0.0,
         }
-        """
-        self.metadata = metadata
+        self.metadata = initial_metadata
+        self.metadata.update(metadata)
         self.config = config
 
     def read(self):

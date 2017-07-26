@@ -5,6 +5,9 @@ from sensors.sensor import Sensor
 from motors.driver import Driver
 from motors.servo import Servo
 
+from emulation.courses import box
+from emulation.emulator import Emulator
+
 
 def run_emulator():
     emulated_sensors = {
@@ -17,8 +20,9 @@ def run_emulator():
         "driver": Driver,
         "servo": Servo,
     }
-    Emulator = Bot(emulated_sensors, emulated_motors)
-    Emulator.start()
+    Emu = Bot(emulated_sensors, emulated_motors)
+    Emulator.occupied = box.occupied
+    Emu.start()
 
 if __name__ == "__main__":
     print("Running Emulator")

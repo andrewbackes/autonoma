@@ -9,8 +9,5 @@ class Driver(object):
     def face(self, heading):
         pass
 
-    def forward(self, distance):
-        pass
-
-    def backward(self, distance):
+    def move(self, distance, location):
         pass
