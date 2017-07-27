@@ -70,7 +70,7 @@ class SensorEmulator(Sensor):
         SensorEmulator.heading = heading
         return
 
-    def look(self, degrees):
+    def position(self, degrees):
         SensorEmulator.servo_position = degrees
         return
 

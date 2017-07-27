@@ -70,7 +70,7 @@ class Bot(object):
         if 'driver' not in self.motors:
             logger.error("No driver loaded, can not rotate.")
             return
-        self.motors['driver'].rotate(distance)
+        self.motors['driver'].rotate(heading)
         self._set_heading(heading)
 
     def _look(self, degrees):
