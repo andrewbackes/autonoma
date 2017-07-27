@@ -1,8 +1,12 @@
 import unittest
+import logging
 
 
 from emulation.courses import box
 from emulator import Emulator
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class TestBot(unittest.TestCase):
@@ -21,6 +25,8 @@ class TestBot(unittest.TestCase):
                     "y": 10 }}
             """
         self.bot._handle(test_payload)
+        self.assertEqual(self.bot.location_x, 0)
+        self.assertEqual(self.bot.location_y, 10)
 
     def test_handle_rotate(self):
         '''Test rotation handler.
@@ -30,6 +36,7 @@ class TestBot(unittest.TestCase):
                "heading": 45.0 }
             """
         self.bot._handle(test_payload)
+        self.assertEqual(self.bot.heading, 45.0)
 
     def test_handle_look(self):
         '''Test look handler.
@@ -39,6 +46,7 @@ class TestBot(unittest.TestCase):
                "degrees": -15.0 }
         """
         self.bot._handle(test_payload)
+        self.assertEqual(self.bot.servo_position, -15)
 
     def test_handle_read(self):
         '''Test sensor reader handler.
@@ -48,3 +56,9 @@ class TestBot(unittest.TestCase):
                "sensor_id": "all" }
         """
         self.bot._handle(test_payload)
+
+        def capture_msg(msg):
+            logger.debug(msg)
+        self.bot._report = capture_msg
+
+        self.assertTrue(False)

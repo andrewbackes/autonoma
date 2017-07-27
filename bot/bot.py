@@ -81,15 +81,18 @@ class Bot(object):
         self.servo_position = degrees
 
     def _read(self, sensor_id):
-        if sensor_id is None:
-            logger.error("Can not read sensor_id: 'None'")
-            return
         if sensor_id == "all":
-            for sensor in self.sensors.items():
+            for sensor, sensor_obj in self.sensors.items():
+                print(sensor)
                 self._read(sensor)
-        r = self.sensors[sensor_id].read()
+        elif sensor_id is None:
+            logger.error("sensor_id can not be None")
+        elif sensor_id not in self.sensors:
+            logger.error("Invalid sensor: %s" % sensor_id)
+        else:
+            r = self.sensors[sensor_id].read()
 
-    def _send(self, payload):
+    def _report(self, payload):
         if self.conn:
             self.conn.sendto(payload)
         else:
