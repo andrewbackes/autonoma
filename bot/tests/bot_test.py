@@ -4,6 +4,7 @@ import logging
 
 from emulation.courses import box
 from emulator import Emulator
+from emulation.sensor import SensorEmulator
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -13,6 +14,7 @@ class TestBot(unittest.TestCase):
 
     def setUp(self):
         self.bot = Emulator(box.occupied)
+        SensorEmulator.reset()
 
     def test_handle_move(self):
         '''Test move handler.
@@ -51,6 +53,7 @@ class TestBot(unittest.TestCase):
     def test_handle_read(self):
         '''Test sensor reader handler.
         '''
+        logger.debug(SensorEmulator.heading)
         test_payload = """
             {  "action": "read",
                "sensor_id": "all" }
