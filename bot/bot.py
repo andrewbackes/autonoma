@@ -4,17 +4,17 @@ import logging
 import json
 import socket
 
-from bot.sensors.ultrasonic import Ultrasonic
-from bot.sensors.compass import Compass
-from bot.sensors.irdist import IRDistance
-from bot.sensors.irprox import IRProximity
+from sensors.ultrasonic import Ultrasonic
+from sensors.compass import Compass
+from sensors.irdist import IRDistance
+from sensors.irprox import IRProximity
 
-from bot.sensors.config import settings as sensor_settings
+from sensors.config import settings as sensor_settings
 
-from bot.motors.driver import Driver
-from bot.motors.servo import Servo
+from motors.driver import Driver
+from motors.servo import Servo
 
-from bot.motors.config import settings as motor_settings
+from motors.config import settings as motor_settings
 
 
 logger = logging.getLogger(__name__)
@@ -26,42 +26,29 @@ class Bot(object):
     bind_port = 9091
     conn_buffer_size = 256
 
-    def __init__(self, sensor_factory, motor_factory):
+    def __init__(self, sensor_constructors, motor_constructors):
         logger.info("Initializing Bot.")
-        self._register_sensors(sensor_factory)
-        self._register_motors(motor_factory)
+        self._register_sensors(sensor_constructors)
+        self._register_motors(motor_constructors)
         self._set_location(0, 0)
 
-    def _register_sensors(self, sensor_factory):
-        default = {
-            "ultrasonic": Ultrasonic,
-            "irdistance": IRDistance,
-            "irproximity": IRProximity,
-            "compass": Compass,
-        }
+    def _register_sensors(self, sensor_constructors):
         self.sensors = {}
         self._register(
-            sensor_factory,
-            default,
+            sensor_constructors,
             sensor_settings.items(),
             self.sensors)
 
-    def _register_motors(self, motor_factory):
-        default = {
-            "driver": Driver,
-            "servo": Servo,
-        }
+    def _register_motors(self, motor_constructors):
         self.motors = {}
         self._register(
-            motor_factory,
-            default,
+            motor_constructors,
             motor_settings.items(),
             self.motors)
 
-    def _register(self, factory, default_factory, items, member_map):
-        member_factory = factory if factory else default_factory
+    def _register(self, constructors, items, reference_map):
         for id, item in items:
-            member_map[id] = member_factory[item['type']](
+            reference_map[id] = constructors[item['type']](
                 item['metadata'], item['config'])
             logger.info("Registered", item)
 
@@ -86,7 +73,7 @@ class Bot(object):
         self.motors['driver'].rotate(distance)
         self._set_heading(heading)
 
-    def _rotate(self, heading):
+    def _look(self, degrees):
         if 'servo' not in self.motors:
             logger.error("No servo loaded, can not look around.")
             return
@@ -94,10 +81,10 @@ class Bot(object):
         self.servo_position = degrees
 
     def _read(self, sensor_id):
-        if sensor is None:
-            logger.error("Can not read sensor 'None'")
+        if sensor_id is None:
+            logger.error("Can not read sensor_id: 'None'")
             return
-        if sensor == "all":
+        if sensor_id == "all":
             for sensor in self.sensors.items():
                 self._read(sensor)
         r = self.sensors[sensor_id].read()
@@ -105,6 +92,8 @@ class Bot(object):
     def _send(self, payload):
         if self.conn:
             self.conn.sendto(payload)
+        else:
+            logging.error("Not connected. Can not send.")
 
     def _handle(self, payload):
         cmd = json.loads(payload)
@@ -159,20 +148,23 @@ class Bot(object):
         s.listen(1)
         exit = False
         while True:
-            self.conn, addr = s.accept()
-            print('Connection address:', addr)
-            while True:
-                try:
+            try:
+                self.conn, addr = s.accept()
+                print('Connection address:', addr)
+                while True:
                     msg = self.conn.recv(self.conn_buffer_size)
                     if not msg:
                         break
                     self._handle(str(msg, "utf-8"))
-                except KeyboardInterrupt:
-                    print("Exit")
-                    exit = True
-                    break
+            except KeyboardInterrupt:
+                print("User exit.")
+                exit = True
+                break
             self.conn.close()
             self.conn = None
             print("Connection closed.")
             if exit:
                 break
+
+if __name__ == "__main__":
+    print("Run Bernie via './bernie.py' or the emulator via './emulator.py'")

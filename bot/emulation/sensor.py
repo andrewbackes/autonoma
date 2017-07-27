@@ -1,8 +1,8 @@
 #!/usr/bin/evn python3
 
-from bot.sensors.sensor import Sensor
-from bot.motors.driver import Driver
-from bot.motors.servo import Servo
+from sensors.sensor import Sensor
+from motors.driver import Driver
+from motors.servo import Servo
 
 import math
 
@@ -12,14 +12,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-def frange(start, stop, step):
-    i = start
-    while i < stop:
-        yield i
-        i += step
-
-
-class Emulator(Sensor):
+class SensorEmulator(Sensor):
 
     # Static variables used to share state between Driver and Sensors
     location = (0, 0)
@@ -29,15 +22,15 @@ class Emulator(Sensor):
 
     def __init__(self, metadata, config):
         super().__init__(metadata, config)
-        logger.debug("Initializing Emulator.")
+        logger.debug("Initializing SensorEmulator.")
         logger.debug(self.metadata)
 
     def _read_compass(self):
-        return Emulator.heading
+        return SensorEmulator.heading
 
     def _read_distance(self):
         logger.debug("reading distance")
-        start_angle = (Emulator.heading +
+        start_angle = (SensorEmulator.heading +
                        self.metadata['angleOffset'] -
                        (self.metadata['coneWidth'] / 2)) % 360
         # can't mod 360 or the loop will end
@@ -57,13 +50,13 @@ class Emulator(Sensor):
                 logger.debug(
                     "Checking heading: %d   (Polor angle: %d degrees / %d radians)" %
                     (a, polar, rad))
-                x = Emulator.location[0] + math.floor(d * math.cos(rad))
-                y = Emulator.location[1] + math.floor(d * math.sin(rad))
+                x = SensorEmulator.location[0] + math.floor(d * math.cos(rad))
+                y = SensorEmulator.location[1] + math.floor(d * math.sin(rad))
                 logger.debug("Checking point (%d, %d)" % (x, y))
-                if (x, y) in Emulator.occupied:
+                if (x, y) in SensorEmulator.occupied:
                     dist = math.sqrt(
-                        (x - Emulator.location[0])**2 +
-                        (y - Emulator.location[1])**2
+                        (x - SensorEmulator.location[0])**2 +
+                        (y - SensorEmulator.location[1])**2
                     )
                     return dist
         return 0.0
@@ -74,13 +67,20 @@ class Emulator(Sensor):
         return self._read_distance()
 
     def rotate(self, heading):
-        Emulator.heading = heading
+        SensorEmulator.heading = heading
         return
 
     def look(self, degrees):
-        Emulator.servo_position = degrees
+        SensorEmulator.servo_position = degrees
         return
 
     def move(self, distance, location):
-        Emulator.location = location
+        SensorEmulator.location = location
         return
+
+
+def frange(start, stop, step):
+    i = start
+    while i < stop:
+        yield i
+        i += step

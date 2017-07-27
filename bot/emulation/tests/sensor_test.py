@@ -1,9 +1,9 @@
 import unittest
 
-from bot.emulation.emulator import Emulator
+from emulation.sensor import SensorEmulator
 
 
-class TestEmulator(unittest.TestCase):
+class TestSensorEmulator(unittest.TestCase):
 
     def test_distance(self):
         sensor = {
@@ -11,9 +11,9 @@ class TestEmulator(unittest.TestCase):
             "coneWidth": 15.0,  # degrees
             "maxDistance": 7.0,
         }
-        e = Emulator(sensor, {})
+        e = SensorEmulator(sensor, {})
         e.rotate(45.0)
-        Emulator.occupied = set({(3, 4)})
+        SensorEmulator.occupied = set({(3, 4)})
         r = e.read()
         self.assertEqual(r, 5)
 
@@ -23,9 +23,9 @@ class TestEmulator(unittest.TestCase):
             "coneWidth": 15.0,  # degrees
             "maxDistance": 3.0,
         }
-        e = Emulator(sensor, {})
+        e = SensorEmulator(sensor, {})
         e.rotate(45.0)
-        Emulator.occupied = set({(1, 1)})
+        SensorEmulator.occupied = set({(1, 1)})
         self.assertEqual(format(e.read(), ".2f"), "1.41")
 
     def test_quadrant_two(self):
@@ -34,9 +34,9 @@ class TestEmulator(unittest.TestCase):
             "coneWidth": 45.0,  # degrees
             "maxDistance": 3.0,
         }
-        e = Emulator(sensor, {})
+        e = SensorEmulator(sensor, {})
         e.rotate(315.0)
-        Emulator.occupied = set({(-1, 1)})
+        SensorEmulator.occupied = set({(-1, 1)})
         self.assertEqual(format(e.read(), ".2f"), "1.41")
 
     def test_quadrant_three(self):
@@ -45,9 +45,9 @@ class TestEmulator(unittest.TestCase):
             "coneWidth": 15.0,  # degrees
             "maxDistance": 3.0,
         }
-        e = Emulator(sensor, {})
+        e = SensorEmulator(sensor, {})
         e.rotate(225.0)
-        Emulator.occupied = set({(-1, -1)})
+        SensorEmulator.occupied = set({(-1, -1)})
         self.assertEqual(format(e.read(), ".2f"), "1.41")
 
     def test_quadrant_four(self):
@@ -56,7 +56,7 @@ class TestEmulator(unittest.TestCase):
             "coneWidth": 15.0,  # degrees
             "maxDistance": 3.0,
         }
-        e = Emulator(sensor, {})
+        e = SensorEmulator(sensor, {})
         e.rotate(115.0)
-        Emulator.occupied = set({(1, -1)})
+        SensorEmulator.occupied = set({(1, -1)})
         self.assertEqual(format(e.read(), ".2f"), "1.41")

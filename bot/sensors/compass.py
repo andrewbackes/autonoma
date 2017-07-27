@@ -5,7 +5,7 @@
 #   https://github.com/adafruit/Adafruit_Python_LSM303/blob/master/Adafruit_LSM303/LSM303.py
 #
 
-from bot.sensors.sensor import Sensor
+from sensors.sensor import Sensor
 
 
 class Compass(Sensor):

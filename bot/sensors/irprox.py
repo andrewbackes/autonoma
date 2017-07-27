@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from bot.sensors.sensor import Sensor
+from sensors.sensor import Sensor
 
 
 class IRProximity(Sensor):
