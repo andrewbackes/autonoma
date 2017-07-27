@@ -25,13 +25,12 @@ class Emulator(Sensor):
     location = (0, 0)
     heading = 0.0
     occupied = set({})
+    servo_position = 0
 
     def __init__(self, metadata, config):
         super().__init__(metadata, config)
         logger.debug("Initializing Emulator.")
         logger.debug(self.metadata)
-        Emulator.location = (0, 0)
-        Emulator.heading = 0.0
 
     def _read_compass(self):
         return Emulator.heading
@@ -52,8 +51,12 @@ class Emulator(Sensor):
             logger.debug("Checking distance: %d" % d)
 
             for a in frange(start_angle, stop_angle, 0.25):
-                logger.debug("Checking angle: %d" % a)
-                rad = ((a % 360) * math.pi) / 180
+                logger.debug("Checking heading: %d" % a)
+                polar = (-a + 90) % 360
+                rad = (polar * math.pi) / 180
+                logger.debug(
+                    "Checking heading: %d   (Polor angle: %d degrees / %d radians)" %
+                    (a, polar, rad))
                 x = Emulator.location[0] + math.floor(d * math.cos(rad))
                 y = Emulator.location[1] + math.floor(d * math.sin(rad))
                 logger.debug("Checking point (%d, %d)" % (x, y))
@@ -70,8 +73,12 @@ class Emulator(Sensor):
             return self._read_compass()
         return self._read_distance()
 
-    def face(self, heading):
+    def rotate(self, heading):
         Emulator.heading = heading
+        return
+
+    def look(self, degrees):
+        Emulator.servo_position = degrees
         return
 
     def move(self, distance, location):

@@ -6,7 +6,7 @@ class Driver(object):
     def __init__(self, metadata, config):
         pass
 
-    def face(self, heading):
+    def rotate(self, heading):
         pass
 
     def move(self, distance, location):
