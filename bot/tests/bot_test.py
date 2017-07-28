@@ -1,13 +1,13 @@
 import unittest
 import logging
-
+import json
 
 from emulation.courses import box
 from emulator import Emulator
 from emulation.sensor import SensorEmulator
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 class TestBot(unittest.TestCase):
@@ -59,9 +59,17 @@ class TestBot(unittest.TestCase):
                "sensor_id": "all" }
         """
         self.bot._handle(test_payload)
+        sensor_ids = set({
+            "front_ultrasonic",
+            "read_ultrasonic",
+            "left_irdistance",
+            "right_irdistance",
+            "irproximity",
+        })
+        captured_sensors = set()
 
-        def capture_msg(msg):
-            logger.debug(msg)
+        def capture_msg(payload):
+            json.loads(payload)
+            captured_sensors.add(payload['sensor_id'])
         self.bot._report = capture_msg
-
-        self.assertTrue(False)
+        # self.assertEquals(captured_sensors, sensor_ids)

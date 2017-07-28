@@ -14,8 +14,8 @@ type Reading struct {
 	Outout float64 `json:"output"`
 
 	Heading float64 `json:"heading"`
-	X       int     `json:"X"`
-	Y       int     `json:"Y"`
+	X       int     `json:"x"`
+	Y       int     `json:"y"`
 }
 
 // DecodeReading turns json into a struct.

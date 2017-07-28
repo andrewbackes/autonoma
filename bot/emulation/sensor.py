@@ -89,7 +89,7 @@ class SensorEmulator(Sensor):
         return
 
     def move(self, distance, location):
-        logger.debug("%s: moving distance %d to %d" %
+        logger.debug("%s: moving distance %d to %s" %
                      (self.metadata['id'], distance, location))
         SensorEmulator.location = location
         return

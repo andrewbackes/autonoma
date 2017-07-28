@@ -31,6 +31,8 @@ class Bot(object):
         self._register_sensors(sensor_constructors)
         self._register_motors(motor_constructors)
         self._set_location(0, 0)
+        self._set_heading(0)
+        self.conn = None
 
     def _register_sensors(self, sensor_constructors):
         self.sensors = {}
@@ -91,6 +93,17 @@ class Bot(object):
             logger.error("Invalid sensor: %s" % sensor_id)
         else:
             r = self.sensors[sensor_id].read()
+            self._report(self._create_payload(sensor_id, r))
+
+    def _create_payload(self, sensor_id, reading):
+        reading = {
+            'sensorId': sensor_id,
+            'output': reading,
+            'heading': self.heading,
+            'x': self.location_x,
+            'y': self.location_y
+        }
+        return json.dumps(reading)
 
     def _report(self, payload):
         if self.conn:
