@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"strconv"
 	"time"
@@ -34,7 +35,7 @@ func (b *Bot) connect() error {
 	}
 	c, err := net.DialTimeout("tcp", botAddr, 15*time.Second)
 	if err != nil {
-		fmt.Println("Could't connect to bot")
+		log.Println("Could't connect to bot")
 		return err
 	}
 	b.conn = c
@@ -48,7 +49,7 @@ func (b *Bot) Make(m BotMove) {
 	msg := format(m)
 	_, err := b.conn.Write(msg)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	b.updateHistory(m)
 }

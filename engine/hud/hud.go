@@ -2,7 +2,6 @@
 package hud
 
 import (
-	"fmt"
 	"github.com/andrewbackes/autonoma/engine/gridmap"
 	"github.com/gorilla/mux"
 	"image/jpeg"
@@ -22,14 +21,14 @@ func New(r gridmap.Reader) *Hud {
 	}
 }
 
-// Start broadcasts real time data via http.
-func (h *Hud) Start() {
-	fmt.Println("Starting HUD.")
+// Serve broadcasts real time data via http.
+func (h *Hud) Serve() {
+	log.Println("Starting HUD.")
 	m := mux.NewRouter()
 	m.HandleFunc("/health", healthCheck).Methods("GET")
 	m.HandleFunc("/map.jpeg", h.mapHandler).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8080", m))
-	fmt.Println("Stopped HUD.")
+	log.Println("Stopped HUD.")
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {

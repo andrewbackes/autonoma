@@ -35,8 +35,13 @@ func Process(s *Sensor, r *Reading) (occupied, vacant LocationSet) {
 
 	startAngle := math.Mod((r.Heading+s.AngleOffset-90)-s.ConeWidth/2, 360)
 	endAngle := math.Mod((r.Heading+s.AngleOffset-90)+s.ConeWidth/2, 360)
+	distance := r.Outout
+	if distance == 0 {
+		distance = s.MaxDistance
+		log.Println(distance)
+	}
 	for a := startAngle; a <= endAngle; a += 0.25 {
-		for d := float64(0); d < r.Outout; d++ {
+		for d := float64(s.MinDistance); d < distance; d++ {
 			loc := polarToCart(d, a)
 			loc.X += r.X
 			loc.Y += r.Y
@@ -47,8 +52,8 @@ func Process(s *Sensor, r *Reading) (occupied, vacant LocationSet) {
 			}
 		}
 		// Endpoint:
-		{
-			loc := polarToCart(r.Outout, a)
+		if distance != s.MaxDistance {
+			loc := polarToCart(distance, a)
 			loc.X += r.X
 			loc.Y += r.Y
 			occupied.Add(loc)

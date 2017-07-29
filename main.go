@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"github.com/andrewbackes/autonoma/engine"
+	"log"
 )
 
 func main() {
-	fmt.Println("Autonoma Started.")
+	log.Println("Autonoma Started.")
 	engine.NewEngine().Start()
 }

@@ -1,7 +1,7 @@
 package receiver
 
 import (
-	"fmt"
+	"bufio"
 	"github.com/andrewbackes/autonoma/engine/gridmap"
 	"github.com/andrewbackes/autonoma/engine/sensor"
 	"log"
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// Receiver takes sensor data over UDP.
+// Receiver processes sensor data.
 type Receiver struct {
 	mapWriter gridmap.Writer
 	sensors   map[string]*sensor.Sensor
@@ -24,48 +24,36 @@ func New(m gridmap.Writer) *Receiver {
 	}
 }
 
-// Start begins listening for data over UDP.
-func (r *Receiver) Start() {
-	fmt.Println("Starting Receiver.")
-
-	//go r.readQueue()
-
-	ServerAddr, err := net.ResolveUDPAddr("udp", ":9090")
-	check(err)
-
-	ServerConn, err := net.ListenUDP("udp", ServerAddr)
-	check(err)
-	defer ServerConn.Close()
-
-	buf := make([]byte, 1024)
-
+// Listen begins listening for data over UDP.
+func (r *Receiver) Listen(conn net.Conn) {
+	log.Println("Starting Receiver.")
 	for {
-		n, _, err := ServerConn.ReadFromUDP(buf)
-		//fmt.Println("Received ", string(buf[0:n]), " from ", addr)
-		msg := buf[0:n]
-		go r.process(msg)
+		msg, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
-			fmt.Println("Error: ", err)
+			log.Println(err)
+			return
 		}
+		go r.process(strings.TrimRight(msg, "\n"))
 	}
-
-	fmt.Println("Stopped Receiver.")
+	log.Println("Stopped Receiver.")
 }
 
-func (r *Receiver) process(msg []byte) {
+func (r *Receiver) process(msg string) {
 	// TODO: This method kind of sucks.
-	s := string(msg)
-	if strings.Contains(s, "sensorId") {
-		reading := sensor.DecodeReading(msg)
-		occupied, vacant := sensor.Process(r.sensors[reading.SensorID], reading)
-		for o := range occupied {
-			r.mapWriter.Occupied(o.X, o.Y)
+	if strings.Contains(msg, "sensorId") {
+		log.Println("Received Reading", msg)
+		reading := sensor.DecodeReading([]byte(msg))
+		if reading.SensorID != "compass" {
+			occupied, vacant := sensor.Process(r.sensors[reading.SensorID], reading)
+			for o := range occupied {
+				r.mapWriter.Occupied(o.X, o.Y)
+			}
+			for v := range vacant {
+				r.mapWriter.Vacant(v.X, v.Y)
+			}
 		}
-		for v := range vacant {
-			r.mapWriter.Vacant(v.X, v.Y)
-		}
-	} else if strings.Contains(s, "\"id\"") {
-		s := sensor.DecodeSensor(msg)
+	} else if strings.Contains(msg, "\"id\"") {
+		s := sensor.DecodeSensor([]byte(msg))
 		log.Println("Registering sensor:", s)
 		r.sensors[s.ID] = s
 	}
@@ -73,7 +61,7 @@ func (r *Receiver) process(msg []byte) {
 
 func check(err error) {
 	if err != nil {
-		fmt.Println("Error: ", err)
+		log.Println("Error: ", err)
 		os.Exit(0)
 	}
 }

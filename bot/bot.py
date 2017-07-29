@@ -24,7 +24,7 @@ class Bot(object):
 
     bind_ip = '0.0.0.0'
     bind_port = 9091
-    conn_buffer_size = 256
+    conn_buffer_size = 2048
 
     def __init__(self, sensor_constructors, motor_constructors):
         logger.info("Initializing Bot.")
@@ -107,9 +107,14 @@ class Bot(object):
 
     def _report(self, payload):
         if self.conn:
-            self.conn.sendto(payload)
+            logger.info("Sending " + payload)
+            self.conn.sendall((payload + '\n').encode())
         else:
             logging.error("Not connected. Can not send.")
+
+    def _report_sensors(self):
+        for senor_id, sensor in self.sensors.items():
+            self._report(json.dumps(sensor.metadata))
 
     def _handle(self, payload):
         cmd = json.loads(payload)
@@ -166,21 +171,27 @@ class Bot(object):
         while True:
             try:
                 self.conn, addr = s.accept()
-                print('Connection address:', addr)
+                logger.info('Connection address: ' + addr[0])
+                self._report_sensors()
                 while True:
                     msg = self.conn.recv(self.conn_buffer_size)
+                    logger.info("Received " + str(msg, "utf-8"))
                     if not msg:
                         break
-                    self._handle(str(msg, "utf-8"))
+                    cmds = str(msg, "utf-8").split('\n')
+                    for cmd in cmds:
+                        if cmd:
+                            self._handle(cmd)
             except KeyboardInterrupt:
                 print("User exit.")
                 exit = True
                 break
-            self.conn.close()
-            self.conn = None
-            print("Connection closed.")
             if exit:
                 break
+        if self.conn:
+            self.conn.close()
+            self.conn = None
+            logger.info("Connection closed.")
 
 if __name__ == "__main__":
     print("Run Bernie via './bernie.py' or the emulator via './emulator.py'")
