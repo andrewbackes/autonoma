@@ -38,7 +38,6 @@ func Process(s *Sensor, r *Reading) (occupied, vacant LocationSet) {
 	distance := r.Outout
 	if distance == 0 {
 		distance = s.MaxDistance
-		log.Println(distance)
 	}
 	for a := startAngle; a <= endAngle; a += 0.25 {
 		for d := float64(s.MinDistance); d < distance; d++ {
