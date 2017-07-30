@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/andrewbackes/autonoma/engine/gridmap"
 	"github.com/andrewbackes/autonoma/engine/sensor"
+
 	"log"
 	"net"
 	"os"
@@ -40,10 +41,9 @@ func (r *Receiver) Listen(conn net.Conn) {
 }
 
 func (r *Receiver) process(msg string) {
-	// TODO: This method kind of sucks.
 	if msg[:len("READING")] == "READING" {
 		msg = msg[len("READING"):]
-		log.Println("Received Reading", msg)
+		// log.Println("Received Reading", msg)
 		reading := sensor.DecodeReading([]byte(msg))
 		if reading.SensorID != "compass" {
 			occupied, vacant := sensor.Process(r.sensors[reading.SensorID], reading)
@@ -63,7 +63,7 @@ func (r *Receiver) process(msg string) {
 		msg = msg[len("LOCATION"):]
 		loc := &sensor.Location{}
 		if err := json.Unmarshal([]byte(msg), &loc); err == nil {
-			r.mapWriter.Path(loc.X, loc.Y)
+			r.mapWriter.SetPosition(loc.X, loc.Y)
 		} else {
 			log.Println("Could not decode", string(msg), err)
 		}

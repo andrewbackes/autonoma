@@ -5,4 +5,5 @@ type Writer interface {
 	Occupied(x, y int)
 	Vacant(x, y int)
 	Path(x, y int)
+	SetPosition(x, y int)
 }

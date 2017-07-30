@@ -67,7 +67,8 @@ class Bot(object):
             return
         self.motors['driver'].move(distance, destination)
         self._set_location(destination[0], destination[1])
-        self._report('LOCATION{"x":%d, "y":%d}')
+        self._report('LOCATION{"x":%d, "y":%d}' %
+                     (self.location_x, self.location_y))
 
     def _rotate(self, heading):
         if 'driver' not in self.motors:

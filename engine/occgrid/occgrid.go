@@ -5,8 +5,6 @@ import (
 	"github.com/andrewbackes/autonoma/engine/sensor"
 	"image"
 	"image/color"
-
-	"math"
 )
 
 // Grid represents a map. It represents the probability that an area is occupied vs open.
@@ -14,14 +12,14 @@ type Grid struct {
 
 	// Grid implements image.Image
 	probability []uint8
-	occupied    []bool
 	path        []bool
-
-	height int
-	width  int
+	position    sensor.Location
+	height      int
+	width       int
 
 	colorModel color.Model
 	pathColor  color.Color
+	botColor   color.Color
 
 	maxProbability uint8
 	cellSize       uint8
@@ -31,12 +29,13 @@ type Grid struct {
 func NewGrid(height, width, maxProbability, cellSize int) *Grid {
 	g := &Grid{
 		probability:    make([]uint8, height*width),
-		occupied:       make([]bool, height*width),
 		path:           make([]bool, height*width),
+		position:       sensor.Location{X: 0, Y: 0},
 		height:         height,
 		width:          width,
 		colorModel:     color.RGBAModel,
-		pathColor:      color.RGBA{R: 0, G: 255, B: 255, A: 255},
+		pathColor:      color.RGBA{R: 255, G: 0, B: 0, A: 255},
+		botColor:       color.RGBA{R: 0, G: 0, B: 255, A: 255},
 		maxProbability: uint8(maxProbability),
 		cellSize:       uint8(cellSize),
 	}
@@ -47,7 +46,7 @@ func NewGrid(height, width, maxProbability, cellSize int) *Grid {
 }
 
 func NewDefaultGrid(height, width int) *Grid {
-	return NewGrid(height, width, 10, 5)
+	return NewGrid(height, width, 10, 10)
 }
 
 // ColorModel returns the Image's color model.
@@ -64,16 +63,15 @@ func (g *Grid) Bounds() image.Rectangle {
 // At(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the grid.
 // At(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
 func (g *Grid) At(x, y int) color.Color {
-	if g.path[g.index(x, y)] {
-		return g.pathColor
+	//if g.path[g.index(x, y)] {
+	//	return g.pathColor
+	//}
+	// Draw the bot's location:
+	if (y == g.position.Y && x-5 < g.position.X && g.position.X < x+5) || (x == g.position.X && y-5 < g.position.Y && g.position.Y < y+5) {
+		return g.botColor
 	}
 	p := uint8((g.maxProbability - g.probability[g.index(x, y)]) * (250 / g.maxProbability))
-	o := uint8(0)
-	if g.occupied[g.index(x, y)] {
-		o = uint8(255 / 8)
-	}
-	b := uint8(math.Min(float64(256), float64(p+o)))
-	return color.RGBA{R: p, G: p, B: b, A: 255}
+	return color.RGBA{R: p, G: p, B: p, A: 255}
 }
 
 // Center returns the coordates of the center of the Grid.
@@ -81,10 +79,12 @@ func (g *Grid) Center() (x, y int) {
 	return g.width / 2, g.height / 2
 }
 
-// index converts coordinates to an array index.
+// index converts coordinates to an array index. Rounds down to the nearest cell.
 func (g *Grid) index(x, y int) int {
 	x2 := x + g.width/2
 	y2 := -y + g.height/2 // don't forget to flip y
+	x2 = (x2 / int(g.cellSize)) * int(g.cellSize)
+	y2 = (y2 / int(g.cellSize)) * int(g.cellSize)
 	return y2*g.width + x2
 }
 
@@ -96,19 +96,18 @@ func (g *Grid) Path(x, y int) {
 // Occupied marks a square as having an object in it.
 func (g *Grid) Occupied(x, y int) {
 	g.increaseProbability(x, y)
-	if g.probability[g.index(x, y)] == g.maxProbability {
-		// TODO(andrewbackes): fill in the occupancy cell.
-	}
 }
 
 func (g *Grid) IsOccupied(loc sensor.Location) bool {
-	return g.occupied[g.index(loc.X, loc.Y)]
+	return g.probability[g.index(loc.X, loc.Y)] == g.maxProbability
 }
 
 func (g *Grid) IsUnexplored(loc sensor.Location) bool {
-	occ := g.occupied[g.index(loc.X, loc.Y)] == true
-	unexplored := g.probability[g.index(loc.X, loc.Y)] < (g.maxProbability/2)-1
-	return !occ && unexplored
+	return g.probability[g.index(loc.X, loc.Y)] != 0 && g.probability[g.index(loc.X, loc.Y)] != g.maxProbability
+}
+
+func (g *Grid) SetPosition(x, y int) {
+	g.position = sensor.Location{X: x, Y: y}
 }
 
 // Vacant marks a square as *not* having an object in it.
@@ -120,9 +119,6 @@ func (g *Grid) increaseProbability(x, y int) {
 	if g.probability[g.index(x, y)] != g.maxProbability {
 		g.probability[g.index(x, y)] = g.probability[g.index(x, y)] + 1
 	}
-	if g.probability[g.index(x, y)] == g.maxProbability {
-		g.occupyCell(x, y)
-	}
 }
 
 func (g *Grid) decreaseProbability(x, y int) {
@@ -131,14 +127,20 @@ func (g *Grid) decreaseProbability(x, y int) {
 	}
 }
 
-func (g *Grid) occupyCell(x, y int) {
+/*
+func (g *Grid) cellOf(x, y int) sensor.LocationSet {
+
+	locs := sensor.NewLocationSet()
 	for xMin := x - int(g.cellSize/2); xMin <= x+int(g.cellSize/2); xMin++ {
 		for yMin := x - int(g.cellSize/2); yMin <= x+int(g.cellSize/2); yMin++ {
 			if xMin >= g.Bounds().Min.X && xMin <= g.Bounds().Max.X &&
 				yMin >= g.Bounds().Min.Y && yMin <= g.Bounds().Max.Y {
 				//log.Println(xMin, yMin, g.index(xMin, yMin), len(g.occupied))
-				g.occupied[g.index(xMin, yMin)] = true
+				//g.occupied[g.index(xMin, yMin)] = true
+				locs.Add(sensor.Location{X: xMin, Y: yMin})
 			}
 		}
 	}
+	return locs
 }
+*/

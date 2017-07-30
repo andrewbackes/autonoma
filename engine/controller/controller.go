@@ -6,6 +6,7 @@ import (
 	"github.com/andrewbackes/autonoma/engine/sensor"
 	"log"
 	"net"
+	"time"
 )
 
 // Controller is for operating a bot.
@@ -29,12 +30,13 @@ func (c *Controller) Start(conn net.Conn) {
 	log.Println("Starting Controller.")
 	c.conn = conn
 	log.Println(c.conn)
+	time.Sleep(1 * time.Second)
 	c.explore()
 	log.Println("Stopped Controller.")
 }
 
 func (c *Controller) send(payload string) {
-	log.Println("Sending", payload)
+	// log.Println("Sending", payload)
 	if c.conn == nil {
 		log.Println("Controller not connected.")
 	} else {
