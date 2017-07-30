@@ -29,29 +29,31 @@ func DecodeReading(payload []byte) *Reading {
 
 // Process outputs occupied and vacant location sets from sensor data.
 func Process(s *Sensor, r *Reading) (occupied, vacant LocationSet) {
-	// TODO(andrewbackes): offsets.
 	occupied = NewLocationSet()
 	vacant = NewLocationSet()
 
 	startAngle := math.Mod((r.Heading+s.AngleOffset-90)-s.ConeWidth/2, 360)
 	endAngle := math.Mod((r.Heading+s.AngleOffset-90)+s.ConeWidth/2, 360)
 	distance := r.Outout
+	obstacleDetected := false
 	if distance == 0 {
 		distance = s.MaxDistance
+	} else {
+		obstacleDetected = true
 	}
 	for a := startAngle; a <= endAngle; a += 0.25 {
 		for d := float64(s.MinDistance); d < distance; d++ {
 			loc := polarToCart(d, a)
 			loc.X += r.X
 			loc.Y += r.Y
-			if s.Inclusive {
+			if s.Inclusive && obstacleDetected {
 				occupied.Add(loc)
 			} else {
 				vacant.Add(loc)
 			}
 		}
 		// Endpoint:
-		if distance != s.MaxDistance {
+		if obstacleDetected {
 			loc := polarToCart(distance, a)
 			loc.X += r.X
 			loc.Y += r.Y

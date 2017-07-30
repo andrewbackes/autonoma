@@ -52,7 +52,7 @@ class Bot(object):
         for id, item in items:
             reference_map[id] = constructors[item['type']](
                 item['metadata'], item['config'])
-            logger.info("Registered", item)
+            logger.info("Registered" + str(item))
 
     def _set_location(self, x, y):
         self.location_x = x
@@ -87,7 +87,6 @@ class Bot(object):
     def _read(self, sensor_id):
         if sensor_id == "all":
             for sensor, sensor_obj in self.sensors.items():
-                print(sensor)
                 self._read(sensor)
         elif sensor_id is None:
             logger.error("sensor_id can not be None")
@@ -112,7 +111,7 @@ class Bot(object):
 
     def _report(self, payload):
         if self.conn:
-            logger.info("Sending " + payload)
+            logger.debug("Sending " + payload)
             self.conn.sendall((payload + '\n').encode())
         else:
             logging.error("Not connected. Can not send.")
@@ -122,7 +121,7 @@ class Bot(object):
             self._report("SENSOR" + json.dumps(sensor.metadata))
 
     def _handle(self, payload):
-        logger.info(payload)
+        logger.debug(payload)
         cmd = json.loads(payload)
         try:
             if cmd['action'] == "move":
@@ -133,6 +132,8 @@ class Bot(object):
                         "x": 3,
                         "y": 4 }}
                 """
+                logger.info("Moving to (%d, %d)" %
+                            (cmd['destination']['x'], cmd['destination']['y']))
                 self._move(cmd['distance'],
                            (cmd['destination']['x'], cmd['destination']['y']))
 
@@ -183,7 +184,7 @@ class Bot(object):
                 while True:
                     buffer = self.conn.recv(self.conn_buffer_size)
                     smsg += str(buffer, "utf-8")
-                    logger.info("Received " + str(buffer, "utf-8"))
+                    logger.debug("Received " + str(buffer, "utf-8"))
                     if not buffer:
                         break
                     cmds = smsg.split('\n')
@@ -194,7 +195,7 @@ class Bot(object):
                         if cmd:
                             self._handle(cmd)
             except KeyboardInterrupt:
-                print("User exit.")
+                logger.info("User exit.")
                 exit = True
                 break
             if exit:
