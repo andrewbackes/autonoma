@@ -24,7 +24,7 @@ class Bot(object):
 
     bind_ip = '0.0.0.0'
     bind_port = 9091
-    conn_buffer_size = 2048
+    conn_buffer_size = 4096
 
     def __init__(self, sensor_constructors, motor_constructors):
         logger.info("Initializing Bot.")
@@ -67,6 +67,7 @@ class Bot(object):
             return
         self.motors['driver'].move(distance, destination)
         self._set_location(destination[0], destination[1])
+        self._report('LOCATION{"x":%d, "y":%d}')
 
     def _rotate(self, heading):
         if 'driver' not in self.motors:
@@ -96,14 +97,17 @@ class Bot(object):
             self._report(self._create_payload(sensor_id, r))
 
     def _create_payload(self, sensor_id, reading):
+        heading = self.heading
+        if sensor_id == 'irdistance':
+            heading = (self.heading + self.servo_position) % 360
         reading = {
             'sensorId': sensor_id,
             'output': reading,
-            'heading': self.heading,
-            'x': self.location_x,
-            'y': self.location_y
+            'heading': heading,
+            'x': int(self.location_x),
+            'y': int(self.location_y)
         }
-        return json.dumps(reading)
+        return "READING" + json.dumps(reading)
 
     def _report(self, payload):
         if self.conn:
@@ -114,9 +118,10 @@ class Bot(object):
 
     def _report_sensors(self):
         for senor_id, sensor in self.sensors.items():
-            self._report(json.dumps(sensor.metadata))
+            self._report("SENSOR" + json.dumps(sensor.metadata))
 
     def _handle(self, payload):
+        logger.info(payload)
         cmd = json.loads(payload)
         try:
             if cmd['action'] == "move":
@@ -173,12 +178,17 @@ class Bot(object):
                 self.conn, addr = s.accept()
                 logger.info('Connection address: ' + addr[0])
                 self._report_sensors()
+                smsg = ""
                 while True:
-                    msg = self.conn.recv(self.conn_buffer_size)
-                    logger.info("Received " + str(msg, "utf-8"))
-                    if not msg:
+                    buffer = self.conn.recv(self.conn_buffer_size)
+                    smsg += str(buffer, "utf-8")
+                    logger.info("Received " + str(buffer, "utf-8"))
+                    if not buffer:
                         break
-                    cmds = str(msg, "utf-8").split('\n')
+                    cmds = smsg.split('\n')
+                    if not smsg.endswith('\n'):
+                        smsg = cmds[-1]
+                        cmds = cmds[:-1]
                     for cmd in cmds:
                         if cmd:
                             self._handle(cmd)

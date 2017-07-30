@@ -22,7 +22,7 @@ type Reading struct {
 func DecodeReading(payload []byte) *Reading {
 	m := &Reading{}
 	if err := json.Unmarshal(payload, &m); err != nil {
-		log.Println("Could not decode", string(payload))
+		log.Println("Could not decode", string(payload), err)
 	}
 	return m
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/andrewbackes/autonoma/engine/gridmap"
 	"github.com/gorilla/mux"
 	"image/jpeg"
+	"image/png"
 	"log"
 	"net/http"
 )
@@ -26,7 +27,8 @@ func (h *Hud) Serve() {
 	log.Println("Starting HUD.")
 	m := mux.NewRouter()
 	m.HandleFunc("/health", healthCheck).Methods("GET")
-	m.HandleFunc("/map.jpeg", h.mapHandler).Methods("GET")
+	m.HandleFunc("/map.jpeg", h.mapJpegHandler).Methods("GET")
+	m.HandleFunc("/map.png", h.mapPngHandler).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8080", m))
 	log.Println("Stopped HUD.")
 }
@@ -35,8 +37,15 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("{\"status\":\"ok\"}"))
 }
 
-func (h *Hud) mapHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Hud) mapJpegHandler(w http.ResponseWriter, r *http.Request) {
 	err := jpeg.Encode(w, h.mapReader, nil)
+	if err != nil {
+		panic("Could encode jpeg")
+	}
+}
+
+func (h *Hud) mapPngHandler(w http.ResponseWriter, r *http.Request) {
+	err := png.Encode(w, h.mapReader)
 	if err != nil {
 		panic("Could encode jpeg")
 	}

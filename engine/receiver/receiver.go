@@ -2,6 +2,7 @@ package receiver
 
 import (
 	"bufio"
+	"encoding/json"
 	"github.com/andrewbackes/autonoma/engine/gridmap"
 	"github.com/andrewbackes/autonoma/engine/sensor"
 	"log"
@@ -40,7 +41,8 @@ func (r *Receiver) Listen(conn net.Conn) {
 
 func (r *Receiver) process(msg string) {
 	// TODO: This method kind of sucks.
-	if strings.Contains(msg, "sensorId") {
+	if msg[:len("READING")] == "READING" {
+		msg = msg[len("READING"):]
 		log.Println("Received Reading", msg)
 		reading := sensor.DecodeReading([]byte(msg))
 		if reading.SensorID != "compass" {
@@ -52,10 +54,21 @@ func (r *Receiver) process(msg string) {
 				r.mapWriter.Vacant(v.X, v.Y)
 			}
 		}
-	} else if strings.Contains(msg, "\"id\"") {
+	} else if msg[:len("SENSOR")] == "SENSOR" {
+		msg = msg[len("SENSOR"):]
 		s := sensor.DecodeSensor([]byte(msg))
 		log.Println("Registering sensor:", s)
 		r.sensors[s.ID] = s
+	} else if msg[:len("LOCATION")] == "LOCATION" {
+		msg = msg[len("LOCATION"):]
+		loc := &sensor.Location{}
+		if err := json.Unmarshal([]byte(msg), &loc); err == nil {
+			r.mapWriter.Path(loc.X, loc.Y)
+		} else {
+			log.Println("Could not decode", string(msg), err)
+		}
+	} else {
+		log.Println("Could not categorize:", msg)
 	}
 }
 

@@ -2,8 +2,11 @@
 package occgrid
 
 import (
+	"github.com/andrewbackes/autonoma/engine/sensor"
 	"image"
 	"image/color"
+
+	"math"
 )
 
 // Grid represents a map. It represents the probability that an area is occupied vs open.
@@ -19,7 +22,6 @@ type Grid struct {
 
 	colorModel color.Model
 	pathColor  color.Color
-	colors     map[uint8]color.Color
 
 	maxProbability uint8
 	cellSize       uint8
@@ -29,21 +31,17 @@ type Grid struct {
 func NewGrid(height, width, maxProbability, cellSize int) *Grid {
 	g := &Grid{
 		probability:    make([]uint8, height*width),
+		occupied:       make([]bool, height*width),
 		path:           make([]bool, height*width),
 		height:         height,
 		width:          width,
 		colorModel:     color.RGBAModel,
-		colors:         make(map[uint8]color.Color),
-		pathColor:      color.RGBA{R: 255, G: 0, B: 0, A: 255},
+		pathColor:      color.RGBA{R: 0, G: 255, B: 255, A: 255},
 		maxProbability: uint8(maxProbability),
 		cellSize:       uint8(cellSize),
 	}
 	for i := 0; i < len(g.probability); i++ {
 		g.probability[i] = g.maxProbability / 2
-	}
-	for i := uint8(0); i <= g.maxProbability; i++ {
-		c := uint8((g.maxProbability - i) * (250 / g.maxProbability))
-		g.colors[i] = color.RGBA{R: c, G: c, B: c, A: 255}
 	}
 	return g
 }
@@ -66,11 +64,16 @@ func (g *Grid) Bounds() image.Rectangle {
 // At(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the grid.
 // At(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
 func (g *Grid) At(x, y int) color.Color {
-	//log.Println(x, y, g.index(x, y))
 	if g.path[g.index(x, y)] {
 		return g.pathColor
 	}
-	return g.colors[g.probability[g.index(x, y)]]
+	p := uint8((g.maxProbability - g.probability[g.index(x, y)]) * (250 / g.maxProbability))
+	o := uint8(0)
+	if g.occupied[g.index(x, y)] {
+		o = uint8(255 / 8)
+	}
+	b := uint8(math.Min(float64(256), float64(p+o)))
+	return color.RGBA{R: p, G: p, B: b, A: 255}
 }
 
 // Center returns the coordates of the center of the Grid.
@@ -98,7 +101,17 @@ func (g *Grid) Occupied(x, y int) {
 	}
 }
 
-// Vacant marks a square as having an object in it.
+func (g *Grid) IsOccupied(loc sensor.Location) bool {
+	return g.occupied[g.index(loc.X, loc.Y)]
+}
+
+func (g *Grid) IsUnexplored(loc sensor.Location) bool {
+	occ := g.occupied[g.index(loc.X, loc.Y)] == true
+	unexplored := g.probability[g.index(loc.X, loc.Y)] < (g.maxProbability/2)-1
+	return !occ && unexplored
+}
+
+// Vacant marks a square as *not* having an object in it.
 func (g *Grid) Vacant(x, y int) {
 	g.decreaseProbability(x, y)
 }
@@ -107,10 +120,25 @@ func (g *Grid) increaseProbability(x, y int) {
 	if g.probability[g.index(x, y)] != g.maxProbability {
 		g.probability[g.index(x, y)] = g.probability[g.index(x, y)] + 1
 	}
+	if g.probability[g.index(x, y)] == g.maxProbability {
+		g.occupyCell(x, y)
+	}
 }
 
 func (g *Grid) decreaseProbability(x, y int) {
 	if g.probability[g.index(x, y)] != 0 {
 		g.probability[g.index(x, y)] = g.probability[g.index(x, y)] - 1
+	}
+}
+
+func (g *Grid) occupyCell(x, y int) {
+	for xMin := x - int(g.cellSize/2); xMin <= x+int(g.cellSize/2); xMin++ {
+		for yMin := x - int(g.cellSize/2); yMin <= x+int(g.cellSize/2); yMin++ {
+			if xMin >= g.Bounds().Min.X && xMin <= g.Bounds().Max.X &&
+				yMin >= g.Bounds().Min.Y && yMin <= g.Bounds().Max.Y {
+				//log.Println(xMin, yMin, g.index(xMin, yMin), len(g.occupied))
+				g.occupied[g.index(xMin, yMin)] = true
+			}
+		}
 	}
 }

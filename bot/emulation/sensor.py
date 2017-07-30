@@ -41,7 +41,12 @@ class SensorEmulator(Sensor):
         logger.debug("%s: (%d, %d) @ %d degrees" %
                      (id, self.location[0], self.location[1], self.heading))
         logger.debug("%s: reading distance" % id)
+        servo_adjustment = 0
+        if self.metadata["id"] == "irdistance":
+            servo_adjustment = self.servo_position
+
         start_angle = (SensorEmulator.heading +
+                       servo_adjustment +
                        self.metadata['angleOffset'] -
                        (self.metadata['coneWidth'] / 2)) % 360
         # can't mod 360 or the loop will end
