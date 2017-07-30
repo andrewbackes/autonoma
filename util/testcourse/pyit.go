@@ -8,9 +8,9 @@ import (
 )
 
 func main() {
-	in, err := os.Open("courses/box_obstacles.png")
+	in, err := os.Open("courses/small_box_obstacles.png")
 	check(err)
-	out, err := os.Create("courses/box_obstacles.py")
+	out, err := os.Create("courses/small_box_obstacles.py")
 	check(err)
 
 	img, err := png.Decode(in)
@@ -20,11 +20,13 @@ func main() {
 	out.WriteString("occupied = set({\n")
 
 	check(err)
+	centerX := img.Bounds().Max.X / 2
+	centerY := img.Bounds().Max.Y / 2
 	for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
 		for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
 			if img.At(x, y) != img.ColorModel().Convert(color.White) {
-				out.WriteString(fmt.Sprintf("  (%d,%d),\n", x, y))
-				fmt.Println(x, y, img.At(x, y))
+				out.WriteString(fmt.Sprintf("  (%d,%d),\n", x-centerX, y-centerY))
+				fmt.Println(x-centerX, y-centerY, img.At(x, y))
 			}
 		}
 	}
