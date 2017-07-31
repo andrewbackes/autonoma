@@ -70,15 +70,15 @@ var hudTmpl = `<html>
     <body>
 		<script>
 			let mapPath = "/map.png?" + new Date().getTime();
-            let init = '<img style="visibility: visible;" src="' + mapPath + '">';
+            let init = '<img src="' + mapPath + '">';
             $("body").append(init);
             function refreshImg() {
 				let mapPath = "/map.png?" + new Date().getTime();
-                let tmpl = '<img style="visibility: hidden;" src="' + mapPath + '">';
+                let tmpl = '<img style="display: none;" src="' + mapPath + '">';
                 $("body").append(tmpl)
                 window.setTimeout(function() {
                     $("body").find('img').first().remove();
-                    $("body").find('img').first().css('visibility', 'visible');
+					$("body").find('img').first().css('display', 'block');
                 }, 1000);
             }
             window.setInterval("refreshImg();", 1000);
