@@ -40,6 +40,7 @@ func (c *Controller) send(payload string) {
 	if c.conn == nil {
 		log.Println("Controller not connected.")
 	} else {
+		//log.Println("Sending", payload)
 		c.conn.Write([]byte(payload + "\n"))
 	}
 }

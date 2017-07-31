@@ -9,23 +9,7 @@ import (
 	"time"
 )
 
-func (c *Controller) ScanArea() {
-	for i := float64(0); i <= 360; i += 15 {
-		for p := -15.0; p <= 15.0; p += 15 {
-			c.send(actions.Look(p))
-			time.Sleep(5 * time.Millisecond)
-			c.send(actions.Read("irdistance"))
-			time.Sleep(5 * time.Millisecond)
-		}
-		c.send(actions.Rotate(i))
-		time.Sleep(5 * time.Millisecond)
-		c.send(actions.Read("all"))
-		time.Sleep(5 * time.Millisecond)
-	}
-	c.send(actions.Look(0))
-}
-
-var defaultDist = 10.0
+var defaultDist = 5.0
 
 type node struct {
 	parent   *node
@@ -36,23 +20,41 @@ type node struct {
 
 type nodeSet map[*node]struct{}
 
+func (c *Controller) ScanArea() {
+	log.Println("Scanning area.")
+	for i := float64(0); i <= 360; i += 15 {
+		for p := -30.0; p <= 30.0; p += 30 {
+			c.send(actions.Look(p))
+			time.Sleep(25 * time.Millisecond)
+			c.send(actions.Read("irdistance"))
+			time.Sleep(25 * time.Millisecond)
+		}
+		c.send(actions.Rotate(i))
+		time.Sleep(25 * time.Millisecond)
+		c.send(actions.Read("all"))
+		time.Sleep(25 * time.Millisecond)
+	}
+	c.send(actions.Look(0))
+
+}
+
 func (c *Controller) explore() {
 	log.Println("Exploring area.")
-	time.Sleep(1000 * time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 	c.ScanArea()
-	time.Sleep(1000 * time.Millisecond)
-	log.Println("Finding path.")
+	time.Sleep(500 * time.Millisecond)
+	//log.Println("Finding path.")
 	nextPath := c.pathToUnexploredArea()
-	log.Println("First path:", nextPath)
+	//log.Println("First path:", nextPath)
 	for len(nextPath) > 0 {
 		for _, action := range nextPath {
 			c.send(action)
-			time.Sleep(10 * time.Millisecond)
+			time.Sleep(250 * time.Millisecond)
 		}
 		c.ScanArea()
-		time.Sleep(1000 * time.Millisecond)
+		time.Sleep(500 * time.Millisecond)
 		nextPath = c.pathToUnexploredArea()
-		log.Println("Next path:", nextPath)
+		//log.Println("Next path:", nextPath)
 	}
 	log.Println("Area is completely explored.")
 }
@@ -63,20 +65,21 @@ func (c *Controller) pathToUnexploredArea() []string {
 	queue <- &node{location: c.location}
 	checked := sensor.NewLocationSet()
 	for len(queue) != 0 {
-		log.Println("Queue size:", len(queue))
+		//log.Println("Queue size:", len(queue))
 		currentNode := <-queue
-		if c.mapReader.IsUnexplored(currentNode.location) {
-			log.Println("New destination", currentNode.location)
+		unexplored := c.mapReader.IsUnexplored(currentNode.location)
+		if unexplored {
+			log.Println("Found unexplored area:", currentNode.location)
 			return generateManeuver(currentNode)
 		}
 		//checked.Add(currentNode.location)
 		neighbors := c.neighbors(currentNode)
-		log.Println("Visited:", currentNode.location, "Neighbors:", neighbors)
+		//log.Println("Visited:", currentNode.location, "Neighbors:", neighbors)
 		for neighbor := range neighbors {
 			//log.Println("Checking:", neighbor)
 			//log.Println(!checked.Contains(neighbor.location) && !c.mapReader.IsOccupied(neighbor.location))
 			if !checked.Contains(neighbor.location) && !c.mapReader.IsOccupied(neighbor.location) {
-				log.Println("From", currentNode.location, "Queueing", neighbor.location, "path:", generatePath(neighbor))
+				//log.Println("From", currentNode.location, "Queueing", neighbor.location, "path:", generatePath(neighbor))
 				queue <- neighbor
 				checked.Add(neighbor.location)
 			}
@@ -97,6 +100,9 @@ func generateManeuver(endpoint *node) []string {
 		maneuver = append([]string{rotate, move}, maneuver...)
 		node = node.parent
 	}
+	if len(maneuver) > 2 {
+		maneuver = maneuver[:len(maneuver)-2]
+	}
 	log.Println("Maneuver", maneuver)
 	return maneuver
 }
@@ -113,7 +119,7 @@ func generatePath(endpoint *node) []*node {
 
 func (c *Controller) neighbors(pos *node) nodeSet {
 	nodes := nodeSet{}
-	for i := float64(0); i <= 360; i += 90 {
+	for i := float64(0); i <= 360; i += 45 {
 		loc := util.LocationOf(pos.location, i, defaultDist)
 		node := &node{parent: pos, heading: i, location: loc, distance: defaultDist}
 		nodes[node] = struct{}{}

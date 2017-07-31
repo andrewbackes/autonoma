@@ -47,10 +47,10 @@ func (r *Receiver) process(msg string) {
 		reading := sensor.DecodeReading([]byte(msg))
 		if reading.SensorID != "compass" {
 			occupied, vacant := sensor.Process(r.sensors[reading.SensorID], reading)
-			if len(occupied) > 0 {
+			/*if len(occupied) > 0 {
 				log.Println("Occupied:", occupied)
 				log.Println(reading)
-			}
+			}*/
 			for o := range occupied {
 
 				r.mapWriter.Occupied(o.X, o.Y)

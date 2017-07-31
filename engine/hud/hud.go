@@ -27,10 +27,16 @@ func (h *Hud) Serve() {
 	log.Println("Starting HUD.")
 	m := mux.NewRouter()
 	m.HandleFunc("/health", healthCheck).Methods("GET")
+	m.HandleFunc("/hud.html", showHud).Methods("GET")
 	m.HandleFunc("/map.jpeg", h.mapJpegHandler).Methods("GET")
 	m.HandleFunc("/map.png", h.mapPngHandler).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8080", m))
 	log.Println("Stopped HUD.")
+}
+
+func showHud(w http.ResponseWriter, r *http.Request) {
+	log.Println("Showing hud.")
+	w.Write([]byte(hudTmpl))
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
@@ -50,3 +56,33 @@ func (h *Hud) mapPngHandler(w http.ResponseWriter, r *http.Request) {
 		panic("Could encode jpeg")
 	}
 }
+
+var hudTmpl = `<html>
+    <head>
+        <style>
+            html, body {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    </head>
+    <body>
+		<script>
+			let mapPath = "/map.png?" + new Date().getTime();
+            let init = '<img style="visibility: visible;" src="' + mapPath + '">';
+            $("body").append(init);
+            function refreshImg() {
+				let mapPath = "/map.png?" + new Date().getTime();
+                let tmpl = '<img style="visibility: hidden;" src="' + mapPath + '">';
+                $("body").append(tmpl)
+                window.setTimeout(function() {
+                    $("body").find('img').first().remove();
+                    $("body").find('img').first().css('visibility', 'visible');
+                }, 1000);
+            }
+            window.setInterval("refreshImg();", 1000);
+            
+        </script>
+    </body>
+</html>`

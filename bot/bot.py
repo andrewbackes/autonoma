@@ -3,6 +3,7 @@
 import logging
 import json
 import socket
+import time
 
 from sensors.ultrasonic import Ultrasonic
 from sensors.compass import Compass
@@ -62,6 +63,7 @@ class Bot(object):
         self.heading = heading
 
     def _move(self, distance, destination):
+        logger.info("Moving to (%d, %d)" % (destination[0], destination[1]))
         if 'driver' not in self.motors:
             logger.error("No driver loaded, can not move.")
             return
@@ -119,6 +121,7 @@ class Bot(object):
     def _report_sensors(self):
         for senor_id, sensor in self.sensors.items():
             self._report("SENSOR" + json.dumps(sensor.metadata))
+            time.sleep(0.01)
 
     def _handle(self, payload):
         logger.debug(payload)
@@ -132,8 +135,6 @@ class Bot(object):
                         "x": 3,
                         "y": 4 }}
                 """
-                logger.info("Moving to (%d, %d)" %
-                            (cmd['destination']['x'], cmd['destination']['y']))
                 self._move(cmd['distance'],
                            (cmd['destination']['x'], cmd['destination']['y']))
 
@@ -188,7 +189,9 @@ class Bot(object):
                     if not buffer:
                         break
                     cmds = smsg.split('\n')
-                    if not smsg.endswith('\n'):
+                    if smsg.endswith('\n'):
+                        smsg = ''
+                    else:
                         smsg = cmds[-1]
                         cmds = cmds[:-1]
                     for cmd in cmds:

@@ -7,28 +7,34 @@ import (
 	"image/color"
 )
 
+const occThreshold = 0.55
+const vacantThreshold = 0.15
+const initProbability = 0.5
+
 // Grid represents a map. It represents the probability that an area is occupied vs open.
 type Grid struct {
 
 	// Grid implements image.Image
-	probability []uint8
-	path        []bool
-	position    sensor.Location
-	height      int
-	width       int
+	probability    []uint8
+	scannedCounter []int
+	blockedCounter []int
+	path           []bool
+	position       sensor.Location
+	height         int
+	width          int
 
 	colorModel color.Model
 	pathColor  color.Color
 	botColor   color.Color
 
-	maxProbability uint8
-	cellSize       uint8
+	cellSize uint8
 }
 
 // NewGrid returns a new Grid of the given size.
-func NewGrid(height, width, maxProbability, cellSize int) *Grid {
+func NewGrid(height, width, cellSize int) *Grid {
 	g := &Grid{
-		probability:    make([]uint8, height*width),
+		scannedCounter: make([]int, height*width),
+		blockedCounter: make([]int, height*width),
 		path:           make([]bool, height*width),
 		position:       sensor.Location{X: 0, Y: 0},
 		height:         height,
@@ -36,17 +42,13 @@ func NewGrid(height, width, maxProbability, cellSize int) *Grid {
 		colorModel:     color.RGBAModel,
 		pathColor:      color.RGBA{R: 255, G: 0, B: 0, A: 255},
 		botColor:       color.RGBA{R: 0, G: 0, B: 255, A: 255},
-		maxProbability: uint8(maxProbability),
 		cellSize:       uint8(cellSize),
-	}
-	for i := 0; i < len(g.probability); i++ {
-		g.probability[i] = g.maxProbability / 2
 	}
 	return g
 }
 
 func NewDefaultGrid(height, width int) *Grid {
-	return NewGrid(height, width, 10, 10)
+	return NewGrid(height, width, 10)
 }
 
 // ColorModel returns the Image's color model.
@@ -70,7 +72,7 @@ func (g *Grid) At(x, y int) color.Color {
 	if (y == g.position.Y && x-5 < g.position.X && g.position.X < x+5) || (x == g.position.X && y-5 < g.position.Y && g.position.Y < y+5) {
 		return g.botColor
 	}
-	p := uint8((g.maxProbability - g.probability[g.index(x, y)]) * (250 / g.maxProbability))
+	p := uint8((1 - g.cellProbability(x, y)) * 250)
 	return color.RGBA{R: p, G: p, B: p, A: 255}
 }
 
@@ -81,6 +83,13 @@ func (g *Grid) Center() (x, y int) {
 
 // index converts coordinates to an array index. Rounds down to the nearest cell.
 func (g *Grid) index(x, y int) int {
+	x2 := x + g.width/2
+	y2 := -y + g.height/2 // don't forget to flip y
+
+	return y2*g.width + x2
+}
+
+func (g *Grid) cellIndex(x, y int) int {
 	x2 := x + g.width/2
 	y2 := -y + g.height/2 // don't forget to flip y
 	x2 = (x2 / int(g.cellSize)) * int(g.cellSize)
@@ -95,52 +104,48 @@ func (g *Grid) Path(x, y int) {
 
 // Occupied marks a square as having an object in it.
 func (g *Grid) Occupied(x, y int) {
-	g.increaseProbability(x, y)
+	g.blockedCounter[g.cellIndex(x, y)]++
+	g.scannedCounter[g.cellIndex(x, y)]++
+}
+
+// Vacant marks a square as *not* having an object in it.
+func (g *Grid) Vacant(x, y int) {
+	g.scannedCounter[g.cellIndex(x, y)]++
+}
+
+func (g *Grid) cellProbability(x, y int) float64 {
+	if g.scannedCounter[g.cellIndex(x, y)] == 0 {
+		return initProbability
+	}
+	return float64(g.blockedCounter[g.cellIndex(x, y)]) / float64(g.scannedCounter[g.cellIndex(x, y)])
+	/*
+		xp := (x / int(g.cellSize)) * int(g.cellSize)
+		yp := (y / int(g.cellSize)) * int(g.cellSize)
+		var max float64
+		for col := xp; col < xp+int(g.cellSize) && col < g.Bounds().Max.X; col++ {
+			for row := yp; row < yp+int(g.cellSize) && row < g.Bounds().Max.Y; row++ {
+				prob := 0.5
+				if g.scannedCounter[g.index(col, row)] != 0 {
+					prob = float64(g.blockedCounter[g.index(col, row)]) / float64(g.scannedCounter[g.index(col, row)])
+				}
+				if prob > max {
+					max = prob
+				}
+			}
+		}
+		return max
+	*/
 }
 
 func (g *Grid) IsOccupied(loc sensor.Location) bool {
-	return g.probability[g.index(loc.X, loc.Y)] == g.maxProbability
+	return g.cellProbability(loc.X, loc.Y) >= occThreshold
 }
 
 func (g *Grid) IsUnexplored(loc sensor.Location) bool {
-	return g.probability[g.index(loc.X, loc.Y)] != 0 && g.probability[g.index(loc.X, loc.Y)] != g.maxProbability
+	prob := g.cellProbability(loc.X, loc.Y)
+	return prob < occThreshold && prob > vacantThreshold
 }
 
 func (g *Grid) SetPosition(x, y int) {
 	g.position = sensor.Location{X: x, Y: y}
 }
-
-// Vacant marks a square as *not* having an object in it.
-func (g *Grid) Vacant(x, y int) {
-	g.decreaseProbability(x, y)
-}
-
-func (g *Grid) increaseProbability(x, y int) {
-	if g.probability[g.index(x, y)] != g.maxProbability {
-		g.probability[g.index(x, y)] = g.probability[g.index(x, y)] + 1
-	}
-}
-
-func (g *Grid) decreaseProbability(x, y int) {
-	if g.probability[g.index(x, y)] != 0 {
-		g.probability[g.index(x, y)] = g.probability[g.index(x, y)] - 1
-	}
-}
-
-/*
-func (g *Grid) cellOf(x, y int) sensor.LocationSet {
-
-	locs := sensor.NewLocationSet()
-	for xMin := x - int(g.cellSize/2); xMin <= x+int(g.cellSize/2); xMin++ {
-		for yMin := x - int(g.cellSize/2); yMin <= x+int(g.cellSize/2); yMin++ {
-			if xMin >= g.Bounds().Min.X && xMin <= g.Bounds().Max.X &&
-				yMin >= g.Bounds().Min.Y && yMin <= g.Bounds().Max.Y {
-				//log.Println(xMin, yMin, g.index(xMin, yMin), len(g.occupied))
-				//g.occupied[g.index(xMin, yMin)] = true
-				locs.Add(sensor.Location{X: xMin, Y: yMin})
-			}
-		}
-	}
-	return locs
-}
-*/
