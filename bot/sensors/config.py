@@ -32,26 +32,27 @@ settings = {
     },
 
     # IR Proximity:
-    "left_irproximity": {
-        "metadata": {
-            "id": "left_irproximity",
-            "xOffset": -10.0,  # cm
-            "inclusive": True,
-            "maxDistance": 10.0,  # cm
-        },
-        "config": {"pin": 36},
-        "type": "irproximity",
-    },
-    "right_irproximity": {
-        "metadata": {
-            "id": "right_irproximity",
-            "xOffset": 10.0,  # cm
-            "inclusive": True,
-            "maxDistance": 10.0,  # cm
-        },
-        "config": {"pin": 32},
-        "type": "irproximity",
-    },
+
+    # "left_irproximity": {
+    #    "metadata": {
+    #        "id": "left_irproximity",
+    #        "xOffset": -10.0,  # cm
+    #        "inclusive": True,
+    #        "maxDistance": 10.0,  # cm
+    #    },
+    #    "config": {"pin": 36},
+    #    "type": "irproximity",
+    # },
+    # "right_irproximity": {
+    #    "metadata": {
+    #        "id": "right_irproximity",
+    #        "xOffset": 10.0,  # cm
+    #        "inclusive": True,
+    #        "maxDistance": 10.0,  # cm
+    #    },
+    #    "config": {"pin": 32},
+    #    "type": "irproximity",
+    # },
 
     # IR Distance:
     "irdistance": {

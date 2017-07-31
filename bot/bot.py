@@ -102,14 +102,16 @@ class Bot(object):
         heading = self.heading
         if sensor_id == 'irdistance':
             heading = (self.heading + self.servo_position) % 360
-        reading = {
+        payload = {
             'sensorId': sensor_id,
             'output': reading,
             'heading': heading,
             'x': int(self.location_x),
             'y': int(self.location_y)
         }
-        return "READING" + json.dumps(reading)
+        if sensor_id != 'compass' and reading != 0 and reading != self.sensors[sensor_id].metadata['maxDistance']:
+            logger.info("Occupied dist" + str(payload))
+        return "READING" + json.dumps(payload)
 
     def _report(self, payload):
         if self.conn:

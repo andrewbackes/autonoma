@@ -5,11 +5,13 @@ import (
 	"github.com/andrewbackes/autonoma/engine/sensor"
 	"image"
 	"image/color"
+	"log"
 )
 
 const occThreshold = 0.55
 const vacantThreshold = 0.15
 const initProbability = 0.5
+const occWeight = 5
 
 // Grid represents a map. It represents the probability that an area is occupied vs open.
 type Grid struct {
@@ -69,7 +71,7 @@ func (g *Grid) At(x, y int) color.Color {
 	//	return g.pathColor
 	//}
 	// Draw the bot's location:
-	if (y == g.position.Y && x-5 < g.position.X && g.position.X < x+5) || (x == g.position.X && y-5 < g.position.Y && g.position.Y < y+5) {
+	if (x-5 < g.position.X && g.position.X < x+5) && (y-5 < g.position.Y && g.position.Y < y+5) {
 		return g.botColor
 	}
 	p := uint8((1 - g.cellProbability(x, y)) * 250)
@@ -104,8 +106,9 @@ func (g *Grid) Path(x, y int) {
 
 // Occupied marks a square as having an object in it.
 func (g *Grid) Occupied(x, y int) {
-	g.blockedCounter[g.cellIndex(x, y)]++
-	g.scannedCounter[g.cellIndex(x, y)]++
+	log.Println("Occupied: (", x, y, ")")
+	g.blockedCounter[g.cellIndex(x, y)] += occWeight
+	g.scannedCounter[g.cellIndex(x, y)] += occWeight
 }
 
 // Vacant marks a square as *not* having an object in it.
