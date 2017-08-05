@@ -1,7 +1,8 @@
 package sensor
 
 type Location struct {
-	X, Y int
+	X, Y     int
+	Distance float64
 }
 
 type LocationSet map[Location]struct{}

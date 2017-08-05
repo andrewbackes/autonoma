@@ -25,7 +25,7 @@ type Engine struct {
 
 // NewEngine returns an engine with default parameters.
 func NewEngine() *Engine {
-	grid := occgrid.NewGrid(1000, 1000, 10)
+	grid := occgrid.NewGrid(1000, 1000, 5)
 	return &Engine{
 		hud:        hud.New(grid),
 		controller: controller.New(grid),

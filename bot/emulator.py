@@ -7,7 +7,7 @@ from sensors.sensor import Sensor
 from motors.driver import Driver
 from motors.servo import Servo
 
-from emulation.courses import small_box
+from emulation.courses import box_obstacles
 from emulation.sensor import SensorEmulator
 
 logging.basicConfig(
@@ -35,5 +35,5 @@ class Emulator(Bot):
 
 if __name__ == "__main__":
     logger.info("Running Emulator.")
-    emu = Emulator(small_box.occupied)
+    emu = Emulator(box_obstacles.occupied)
     emu.start()

@@ -3,7 +3,7 @@ package receiver
 import (
 	"bufio"
 	"encoding/json"
-	"github.com/andrewbackes/autonoma/engine/gridmap"
+	"github.com/andrewbackes/autonoma/engine/occgrid"
 	"github.com/andrewbackes/autonoma/engine/sensor"
 
 	"log"
@@ -14,12 +14,12 @@ import (
 
 // Receiver processes sensor data.
 type Receiver struct {
-	mapWriter gridmap.Writer
+	mapWriter *occgrid.Grid
 	sensors   map[string]*sensor.Sensor
 }
 
 // New creates a Receiver.
-func New(m gridmap.Writer) *Receiver {
+func New(m *occgrid.Grid) *Receiver {
 	return &Receiver{
 		mapWriter: m,
 		sensors:   make(map[string]*sensor.Sensor),
@@ -52,8 +52,7 @@ func (r *Receiver) process(msg string) {
 				log.Println(reading)
 			}*/
 			for o := range occupied {
-
-				r.mapWriter.Occupied(o.X, o.Y)
+				r.mapWriter.Occupied(o.X, o.Y, o.Distance)
 			}
 			for v := range vacant {
 				r.mapWriter.Vacant(v.X, v.Y)

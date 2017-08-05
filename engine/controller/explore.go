@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/andrewbackes/autonoma/engine/controller/actions"
 	"github.com/andrewbackes/autonoma/engine/sensor"
-	"github.com/andrewbackes/autonoma/engine/util"
 	"log"
 	"time"
 )
@@ -13,9 +12,7 @@ var defaultDist = 5.0
 
 type node struct {
 	parent   *node
-	heading  float64
 	location sensor.Location
-	distance float64
 }
 
 type nodeSet map[*node]struct{}
@@ -23,12 +20,18 @@ type nodeSet map[*node]struct{}
 func (c *Controller) ScanArea() {
 	log.Println("Scanning area.")
 	for i := float64(0); i <= 360; i += 15 {
-		for p := -30.0; p <= 30.0; p += 30 {
-			c.send(actions.Look(p))
-			time.Sleep(25 * time.Millisecond)
-			c.send(actions.Read("irdistance"))
-			time.Sleep(25 * time.Millisecond)
-		}
+		/*
+			for p := -30.0; p <= 30.0; p += 30 {
+				c.send(actions.Look(p))
+				time.Sleep(25 * time.Millisecond)
+				c.send(actions.Read("irdistance"))
+				time.Sleep(25 * time.Millisecond)
+			}
+		*/
+		c.send(actions.Look(0))
+		time.Sleep(25 * time.Millisecond)
+		c.send(actions.Read("irdistance"))
+		time.Sleep(25 * time.Millisecond)
 		c.send(actions.Rotate(i))
 		time.Sleep(25 * time.Millisecond)
 		c.send(actions.Read("all"))
@@ -44,7 +47,7 @@ func (c *Controller) explore() {
 	c.ScanArea()
 	time.Sleep(500 * time.Millisecond)
 	nextPath := c.pathToUnexploredArea()
-	maneuver := generateManeuver(nextPath)
+	maneuver := c.generateManeuver(nextPath)
 	log.Println("Maneuver", maneuver)
 	for len(nextPath) > 0 {
 		for _, action := range maneuver {
@@ -56,7 +59,7 @@ func (c *Controller) explore() {
 		c.ScanArea()
 		time.Sleep(500 * time.Millisecond)
 		nextPath = c.pathToUnexploredArea()
-		maneuver = generateManeuver(nextPath)
+		maneuver = c.generateManeuver(nextPath)
 		log.Println("Maneuver", maneuver)
 	}
 	log.Println("Area is completely explored.")
@@ -69,51 +72,43 @@ func (c *Controller) pathToUnexploredArea() []*node {
 	checked := sensor.NewLocationSet()
 	for len(queue) != 0 {
 		currentNode := <-queue
-		unexplored := c.mapReader.IsUnexplored(currentNode.location)
-		if unexplored {
-			log.Println("Found unexplored area:", currentNode.location)
-			path := generatePath(currentNode)
-			return path
-		}
-		neighbors := c.neighbors(currentNode)
+		neighbors := c.mapReader.NeighboringCells(currentNode.location.X, currentNode.location.Y)
 		for neighbor := range neighbors {
-			if !checked.Contains(neighbor.location) && !c.mapReader.IsOccupied(neighbor.location) {
-				queue <- neighbor
-				checked.Add(neighbor.location)
+			if c.mapReader.IsUnexplored(neighbor) {
+				log.Println("At", c.location, "Found unexplored area:", neighbor, "Going to ", currentNode.location)
+				path := generatePath(currentNode)
+				return path
+			}
+			if !checked.Contains(neighbor) && !c.mapReader.IsOccupied(neighbor) {
+				queue <- &node{location: neighbor, parent: currentNode}
+				checked.Add(neighbor)
 			}
 		}
 	}
 	return nil
 }
 
-func generateManeuver(path []*node) []string {
+func (c *Controller) generateManeuver(path []*node) []string {
 	var maneuver []string
+	lastPos := &c.location
 	for _, pos := range path {
-		rotate := actions.Rotate(pos.heading)
+		var heading float64
+		if lastPos.X < pos.location.X {
+			heading = 270.0
+		} else if lastPos.X > pos.location.X {
+			heading = 90.0
+		} else if lastPos.Y < pos.location.Y {
+			heading = 180.0
+		} else if lastPos.Y > pos.location.Y {
+			heading = 0
+		}
+		rotate := actions.Rotate(heading)
 		maneuver = append(maneuver, rotate)
 		move := actions.Move(defaultDist, float64(pos.location.X), float64(pos.location.Y))
 		maneuver = append(maneuver, move)
 	}
 	return maneuver
 }
-
-/*
-func generateManeuver(endpoint *node) []string {
-	var maneuver []string
-	node := endpoint
-	for node != nil && node.parent != nil {
-		rotate := actions.Rotate(node.heading)
-		move := actions.Move(defaultDist, float64(node.location.X), float64(node.location.Y))
-		maneuver = append([]string{rotate, move}, maneuver...)
-		node = node.parent
-	}
-	if len(maneuver) > 2 {
-		maneuver = maneuver[:len(maneuver)-2]
-	}
-	log.Println("Maneuver", maneuver)
-	return maneuver
-}
-*/
 
 func generatePath(endpoint *node) []*node {
 	var path []*node
@@ -122,21 +117,8 @@ func generatePath(endpoint *node) []*node {
 		path = append([]*node{currentNode}, path...)
 		currentNode = currentNode.parent
 	}
-	// we want to go right in front of the unexplored area
-	if len(path) > 1 {
-		path = path[:len(path)-1]
-	}
+	log.Println(path)
 	return path
-}
-
-func (c *Controller) neighbors(pos *node) nodeSet {
-	nodes := nodeSet{}
-	for i := float64(0); i <= 360; i += 45 {
-		loc := util.LocationOf(pos.location, i, defaultDist)
-		node := &node{parent: pos, heading: i, location: loc, distance: defaultDist}
-		nodes[node] = struct{}{}
-	}
-	return nodes
 }
 
 func (n *node) String() string {

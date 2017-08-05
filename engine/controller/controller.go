@@ -2,7 +2,7 @@
 package controller
 
 import (
-	"github.com/andrewbackes/autonoma/engine/gridmap"
+	"github.com/andrewbackes/autonoma/engine/occgrid"
 	"github.com/andrewbackes/autonoma/engine/sensor"
 	"log"
 	"net"
@@ -11,7 +11,7 @@ import (
 
 // Controller is for operating a bot.
 type Controller struct {
-	mapReader gridmap.Reader
+	mapReader *occgrid.Grid
 	conn      net.Conn
 
 	location sensor.Location
@@ -19,7 +19,7 @@ type Controller struct {
 }
 
 // New creates a Controller.
-func New(r gridmap.Reader) *Controller {
+func New(r *occgrid.Grid) *Controller {
 	return &Controller{
 		mapReader: r,
 	}

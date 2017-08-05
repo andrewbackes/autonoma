@@ -46,6 +46,7 @@ func Process(s *Sensor, r *Reading) (occupied, vacant LocationSet) {
 			loc := polarToCart(d, a)
 			loc.X += r.X
 			loc.Y += r.Y
+			loc.Distance = d
 			if s.Inclusive && obstacleDetected {
 				occupied.Add(loc)
 			} else {
@@ -57,6 +58,7 @@ func Process(s *Sensor, r *Reading) (occupied, vacant LocationSet) {
 			loc := polarToCart(distance, a)
 			loc.X += r.X
 			loc.Y += r.Y
+			loc.Distance = r.Outout
 			occupied.Add(loc)
 			if vacant.Contains(loc) {
 				vacant.Remove(loc)
