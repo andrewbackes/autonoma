@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-var defaultDist = 5.0
-
 type node struct {
 	parent   *node
 	location sensor.Location
@@ -28,10 +26,10 @@ func (c *Controller) ScanArea() {
 				time.Sleep(25 * time.Millisecond)
 			}
 		*/
-		c.send(actions.Look(0))
-		time.Sleep(25 * time.Millisecond)
-		c.send(actions.Read("irdistance"))
-		time.Sleep(25 * time.Millisecond)
+		//c.send(actions.Look(0))
+		//time.Sleep(25 * time.Millisecond)
+		//c.send(actions.Read("irdistance"))
+		//time.Sleep(25 * time.Millisecond)
 		c.send(actions.Rotate(i))
 		time.Sleep(25 * time.Millisecond)
 		c.send(actions.Read("all"))
@@ -74,12 +72,19 @@ func (c *Controller) pathToUnexploredArea() []*node {
 		currentNode := <-queue
 		neighbors := c.mapReader.NeighboringCells(currentNode.location.X, currentNode.location.Y)
 		for neighbor := range neighbors {
-			if c.mapReader.IsUnexplored(neighbor) {
-				log.Println("At", c.location, "Found unexplored area:", neighbor, "Going to ", currentNode.location)
-				path := generatePath(currentNode)
-				return path
+			neighborsNeightbors := c.mapReader.NeighboringCells(neighbor.X, neighbor.Y)
+			clearPath := true
+			for n := range neighborsNeightbors {
+				if c.mapReader.IsUnexplored(n) && n != c.location && currentNode.location != c.location {
+					log.Println("At", c.location, "Found unexplored area:", n, "Going to ", currentNode.location)
+					path := generatePath(currentNode)
+					return path
+				}
+				if !c.mapReader.IsVacant(n) {
+					clearPath = false
+				}
 			}
-			if !checked.Contains(neighbor) && !c.mapReader.IsOccupied(neighbor) {
+			if !checked.Contains(neighbor) && c.mapReader.IsVacant(neighbor) && clearPath {
 				queue <- &node{location: neighbor, parent: currentNode}
 				checked.Add(neighbor)
 			}
@@ -104,7 +109,7 @@ func (c *Controller) generateManeuver(path []*node) []string {
 		}
 		rotate := actions.Rotate(heading)
 		maneuver = append(maneuver, rotate)
-		move := actions.Move(defaultDist, float64(pos.location.X), float64(pos.location.Y))
+		move := actions.Move(float64(c.mapReader.GetCellSize()), float64(pos.location.X), float64(pos.location.Y))
 		maneuver = append(maneuver, move)
 	}
 	return maneuver

@@ -9,9 +9,9 @@ import (
 	"math"
 )
 
-const occThreshold = 0.05
+const occThreshold = 0.5
 const vacantThreshold = 0.01
-const initProbability = 0.025
+const initProbability = 0.25
 
 const scaleFactor = 1.0
 
@@ -70,17 +70,13 @@ func (g *Grid) Bounds() image.Rectangle {
 // At(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the grid.
 // At(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
 func (g *Grid) At(x, y int) color.Color {
-	//if g.path[g.index(x, y)] {
-	//	return g.pathColor
-	//}
+
 	// Draw the bot's location:
 	if (x-5 < g.position.X && g.position.X < x+5) && (y-5 < g.position.Y && g.position.Y < y+5) {
 		return g.botColor
 	}
-	//p := uint8((1.0 / (1.0 + math.Exp(g.cellProbability(x, y)))) * 255)
-	//p := uint8((1 - g.cellProbability(x, y)) * 250)
+
 	p := uint8((1 - math.Min(1, g.cellProbability(x, y)/occThreshold)) * 255)
-	//p := uint8(math.Max(1-g.cellProbability(x, y), 0) * 255)
 	return color.RGBA{R: p, G: p, B: p, A: 255}
 }
 
@@ -132,28 +128,14 @@ func (g *Grid) adjustProb(x, y int, value float64) {
 }
 
 func (g *Grid) cellProbability(x, y int) float64 {
-	//return g.probability[g.cellIndex(x, y)]
 	if g.scannedCounter[g.cellIndex(x, y)] == 0 {
 		return initProbability
 	}
 	return float64(g.blockedCounter[g.cellIndex(x, y)]) / float64(g.scannedCounter[g.cellIndex(x, y)])
-	/*
-		xp := (x / int(g.cellSize)) * int(g.cellSize)
-		yp := (y / int(g.cellSize)) * int(g.cellSize)
-		var max float64
-		for col := xp; col < xp+int(g.cellSize) && col < g.Bounds().Max.X; col++ {
-			for row := yp; row < yp+int(g.cellSize) && row < g.Bounds().Max.Y; row++ {
-				prob := 0.5
-				if g.scannedCounter[g.index(col, row)] != 0 {
-					prob = float64(g.blockedCounter[g.index(col, row)]) / float64(g.scannedCounter[g.index(col, row)])
-				}
-				if prob > max {
-					max = prob
-				}
-			}
-		}
-		return max
-	*/
+}
+
+func (g *Grid) IsVacant(loc sensor.Location) bool {
+	return g.cellProbability(loc.X, loc.Y) <= vacantThreshold
 }
 
 func (g *Grid) IsOccupied(loc sensor.Location) bool {
@@ -161,8 +143,9 @@ func (g *Grid) IsOccupied(loc sensor.Location) bool {
 }
 
 func (g *Grid) IsUnexplored(loc sensor.Location) bool {
-	prob := g.cellProbability(loc.X, loc.Y)
-	return vacantThreshold < prob && prob < occThreshold
+	return g.scannedCounter[g.cellIndex(loc.X, loc.Y)] == 0
+	//prob := g.cellProbability(loc.X, loc.Y)
+	//return vacantThreshold < prob && prob < occThreshold
 }
 
 func (g *Grid) SetPosition(x, y int) {
@@ -184,4 +167,8 @@ func (g *Grid) CellCenter(x, y int) (int, int) {
 	mX := (x/int(g.cellSize))*int(g.cellSize) + int(g.cellSize)/2
 	mY := (y/int(g.cellSize))*int(g.cellSize) + int(g.cellSize)/2
 	return mX, mY
+}
+
+func (g *Grid) GetCellSize() int {
+	return int(g.cellSize)
 }
