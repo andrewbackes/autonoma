@@ -20,20 +20,16 @@ type LogOdds float64
 
 var (
 	initProbability = 0.2 // 0.2 to 0.5 depending on expected obstacle density
-	initLogOdds     = LogOdds(math.Log(initProbability) - math.Log(1-initProbability))
+	initLogOdds     = LogOdds(math.Log2(initProbability) - math.Log2(1-initProbability))
 )
 
 func NewLogOdds() Odds {
 	return initLogOdds
 }
+
+// Probability has range [0,1].
 func (l LogOdds) Probability() float64 {
-	p := 1 - (1 / math.Exp(float64(l)))
-	if p > 1 {
-		return 1
-	}
-	if p < 0 {
-		return 0
-	}
+	p := 1 - (1 / (1 + math.Exp2(float64(l))))
 	return p
 }
 
@@ -41,6 +37,6 @@ func (l LogOdds) Probability() float64 {
 func (l LogOdds) Adjust(pmz float64) {
 	// l = l + log p(m|z) - log (1 - p(m|z)) - log p(m) + log(1 - p(m))
 	pm := l.Probability()
-	lp := float64(l) + math.Log(pmz) - math.Log(1-pmz) - math.Log(pm) + math.Log(1-pm)
+	lp := float64(l) + math.Log2(pmz) - math.Log2(1-pmz) - math.Log2(pm) + math.Log2(1-pm)
 	l = LogOdds(lp)
 }

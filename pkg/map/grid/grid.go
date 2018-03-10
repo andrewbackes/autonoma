@@ -36,13 +36,13 @@ func (g Grid) Get(c coordinates.Cartesian) Odds {
 	return o
 }
 
-func (g Grid) Adjust(c coordinates.Cartesian, prob float64) {
+func (g Grid) update(c coordinates.Cartesian, prob float64) {
 	odds := g.Get(c)
 	odds.Adjust(prob)
 	g.set(c, odds)
 }
 
-func (g Grid) Add(rs ...sensor.Reading) {
+func (g Grid) Apply(rs ...sensor.Reading) {
 	for _, r := range rs {
 		g.add(r)
 	}
@@ -50,15 +50,17 @@ func (g Grid) Add(rs ...sensor.Reading) {
 
 func (g Grid) add(r sensor.Reading) {
 	g.path.Add(coordinates.Cartesian{X: r.Pose.X, Y: r.Pose.Y})
+
 	v, o := r.Analysis()
 	for coord := range v {
 		prob := 1 - (1 * r.Sensor.Reliability) // close to 0
-		g.Adjust(coord, prob)
+		g.update(coord, prob)
 	}
 	for coord := range o {
 		prob := (1 * r.Sensor.Reliability) // close to 1
-		g.Adjust(coord, prob)
+		g.update(coord, prob)
 	}
+
 }
 
 func (g Grid) bounds() (minX, minY, maxX, maxY int) {
@@ -77,6 +79,18 @@ func (g Grid) bounds() (minX, minY, maxX, maxY int) {
 		if k.Y > maxY {
 			maxY = k.Y
 		}
+	}
+	if minX == math.MaxInt64 {
+		minX = 0
+	}
+	if maxX == -math.MaxInt64 {
+		maxX = 0
+	}
+	if minY == math.MaxInt64 {
+		minY = 0
+	}
+	if maxY == -math.MaxInt64 {
+		maxY = 0
 	}
 	log.Debugf("Grid boundaries: %d %d %d %d", minX, minY, maxX, maxY)
 	return minX, minY, maxX, maxY

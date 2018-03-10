@@ -38,7 +38,7 @@ func main() {
 	// Create occupancy grid based on sensor readings
 	log.Info("Creating occupancy grid from sensor readings.")
 	g := grid.New()
-	g.Add(readings...)
+	g.Apply(readings...)
 
 	// Output text file of results
 	log.Info("Saving text file.")
