@@ -11,6 +11,8 @@ type Sensor struct {
 	// A binary sensor is on when an object is within range and
 	// off otherwise.
 	Binary bool
+	// Reliability of the sensor from 0 to 1.
+	Reliability float64
 }
 
 var (
@@ -19,5 +21,6 @@ var (
 		ViewAngle:   15.0,
 		MaxDistance: 18.0,
 		Binary:      false,
+		Reliability: 1,
 	}
 )

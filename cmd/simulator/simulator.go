@@ -2,9 +2,13 @@ package main
 
 import (
 	log "github.com/sirupsen/logrus"
+	"image/png"
+	"os"
 
+	"github.com/andrewbackes/autonoma/pkg/map/grid"
 	"github.com/andrewbackes/autonoma/pkg/map/image"
 	"github.com/andrewbackes/autonoma/pkg/sensor"
+	"github.com/andrewbackes/autonoma/pkg/sensor/simulate"
 )
 
 func main() {
@@ -17,24 +21,40 @@ func main() {
 	check(err)
 	log.Debugf("There are %d occupied cells.", len(occ))
 
-	// generate poses
+	// Generate poses
 	log.Info("Generating poses around map.")
-	poses := sensor.SimulatePoses(250, 250, 10, 30.0)
+	poses := simulate.Poses(125, 125, 18, 30.0)
 	log.Debugf("Generated %d poses.", len(poses))
 
-	// simulate sensor readings
+	// Simulate sensor readings
 	log.Info("Simulating sensor readings.")
-	readings := make([]sensor.Reading, len(poses))
+	readings := make([]sensor.Reading, 0, len(poses))
 	for _, pose := range poses {
-		r := sensor.SimulateReading(sensor.UltraSonic, pose, occ)
+		r := simulate.Reading(sensor.UltraSonic, pose, occ)
 		readings = append(readings, r)
 	}
 	log.Debugf("Simulated %d readings.", len(readings))
 
-	// create occupancy grid based on sensor readings
+	// Create occupancy grid based on sensor readings
 	log.Info("Creating occupancy grid from sensor readings.")
+	g := grid.New()
+	g.Add(readings...)
 
-	// output image of results
+	// Output text file of results
+	log.Info("Saving text file.")
+	txt, err := os.Create("box-output.txt")
+	check(err)
+	defer txt.Close()
+	_, err = txt.WriteString(g.String())
+	check(err)
+
+	// Output image of results
+	log.Info("Saving image.")
+	img, err := os.Create("box-output.png")
+	check(err)
+	defer img.Close()
+	err = png.Encode(img, grid.Image(g))
+	check(err)
 	log.Info("Simulator Ended.")
 }
 

@@ -17,8 +17,8 @@ func (c CompassRose) Cartesian() Cartesian {
 	//		polardir = -compassdir + 90
 	angle := math.Mod(-c.Heading+90, 360)
 	return Cartesian{
-		X: int64(c.Distance * math.Cos(toRadians(angle))),
-		Y: int64(c.Distance * math.Sin(toRadians(angle))),
+		X: int(c.Distance * math.Cos(toRadians(angle))),
+		Y: int(c.Distance * math.Sin(toRadians(angle))),
 	}
 }
 
