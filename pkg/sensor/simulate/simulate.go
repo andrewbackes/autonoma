@@ -1,7 +1,9 @@
 package simulate
 
 import (
+	log "github.com/sirupsen/logrus"
 	"math"
+	"time"
 
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
 	"github.com/andrewbackes/autonoma/pkg/sensor"
@@ -14,9 +16,10 @@ const (
 // Reading creates a sensor reading based on
 func Reading(s sensor.Sensor, p sensor.Pose, occupied coordinates.CartesianSet) sensor.Reading {
 	r := sensor.Reading{
-		Value:  s.MaxDistance,
-		Sensor: s,
-		Pose:   p,
+		TimeStamp: time.Now(),
+		Value:     s.MaxDistance,
+		Sensor:    s,
+		Pose:      p,
 	}
 	startAngle := p.Heading - (s.ViewAngle / 2)
 	endAngle := startAngle + s.ViewAngle
@@ -30,6 +33,7 @@ func Reading(s sensor.Sensor, p sensor.Pose, occupied coordinates.CartesianSet) 
 			coord.X += p.X
 			coord.Y += p.Y
 			if occupied.Contains(coord) {
+				log.Debug("Reading found occupied square ", coord)
 				r.Value = d
 				return r
 			}

@@ -22,10 +22,6 @@ func New() Grid {
 	}
 }
 
-func (g Grid) set(c coordinates.Cartesian, odds Odds) {
-	g.grid[c] = odds
-}
-
 func (g Grid) Get(c coordinates.Cartesian) Odds {
 	odds, exists := g.grid[c]
 	if exists {
@@ -36,16 +32,20 @@ func (g Grid) Get(c coordinates.Cartesian) Odds {
 	return o
 }
 
-func (g Grid) update(c coordinates.Cartesian, prob float64) {
-	odds := g.Get(c)
-	odds.Adjust(prob)
-	g.set(c, odds)
-}
-
 func (g Grid) Apply(rs ...sensor.Reading) {
 	for _, r := range rs {
 		g.apply(r)
 	}
+}
+
+func (g Grid) set(c coordinates.Cartesian, odds Odds) {
+	g.grid[c] = odds
+}
+
+func (g Grid) update(c coordinates.Cartesian, prob float64) {
+	odds := g.Get(c)
+	odds.Adjust(prob)
+	g.set(c, odds)
 }
 
 func (g Grid) apply(r sensor.Reading) {
@@ -60,6 +60,7 @@ func (g Grid) apply(r sensor.Reading) {
 		prob := 0.9
 		g.update(coord, prob)
 	}
+	log.Info(v, o)
 
 }
 

@@ -27,12 +27,12 @@ func (i Image) At(x, y int) color.Color {
 			return g.botColor
 		}
 	*/
-	if Grid(i).path.Contains(coordinates.Cartesian{X: x, Y: y}) {
+	if Grid(i).path.Contains(coordinates.Cartesian{X: x, Y: -y}) {
 		return pathColor
 	}
 
 	// p := uint8((1 - math.Min(1, g.cellProbability(x, y)/occThreshold)) * 255)
-	p := math.Min(Grid(i).Get(coordinates.Cartesian{X: x, Y: y}).Probability(), 1)
+	p := math.Min(Grid(i).Get(coordinates.Cartesian{X: x, Y: -y}).Probability(), 1)
 	shade := uint8((1.0 - p) * 255.0)
 	return color.RGBA{R: shade, G: shade, B: shade, A: 255}
 }
