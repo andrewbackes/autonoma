@@ -17,13 +17,13 @@ func Occupied(filepath string) (coordinates.CartesianSet, error) {
 
 	in, err := os.Open(filepath)
 	if err != nil {
-		return nil, err
+		return coordinates.CartesianSet{}, err
 	}
 	defer in.Close()
 
 	img, err := png.Decode(in)
 	if err != nil {
-		return nil, err
+		return coordinates.CartesianSet{}, err
 	}
 
 	centerX := img.Bounds().Max.X / 2

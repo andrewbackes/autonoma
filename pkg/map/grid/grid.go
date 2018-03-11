@@ -3,97 +3,93 @@ package grid
 import (
 	log "github.com/sirupsen/logrus"
 	"math"
+	"sync"
 
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
 	"github.com/andrewbackes/autonoma/pkg/sensor"
 )
 
 type Grid struct {
-	grid    map[coordinates.Cartesian]Odds
-	path    coordinates.CartesianSet
-	newOdds func() Odds
+	grid                   sync.Map
+	minX, minY, maxX, maxY int
+	path                   coordinates.CartesianSet
+	newOdds                func() Odds
 }
 
-func New() Grid {
-	return Grid{
-		grid:    make(map[coordinates.Cartesian]Odds),
+func New() *Grid {
+	return &Grid{
+		grid:    sync.Map{},
+		minX:    math.MaxInt64,
+		maxX:    -math.MaxInt64,
+		minY:    math.MaxInt64,
+		maxY:    -math.MaxInt64,
 		path:    coordinates.NewCartesianSet(),
 		newOdds: NewLogOdds,
 	}
 }
 
-func (g Grid) Get(c coordinates.Cartesian) Odds {
-	odds, exists := g.grid[c]
+func (g *Grid) Get(c coordinates.Cartesian) Odds {
+	val, exists := g.grid.Load(c)
 	if exists {
+		odds, ok := val.(Odds)
+		if !ok {
+			panic("could not cast Odds")
+		}
 		return odds
 	}
 	o := g.newOdds()
-	g.grid[c] = o
+	g.grid.Store(c, o)
 	return o
 }
 
-func (g Grid) Apply(rs ...sensor.Reading) {
+func (g *Grid) Apply(rs ...sensor.Reading) {
 	for _, r := range rs {
 		g.apply(r)
 	}
 }
 
-func (g Grid) set(c coordinates.Cartesian, odds Odds) {
-	g.grid[c] = odds
+func (g *Grid) set(c coordinates.Cartesian, odds Odds) {
+	if c.X < g.minX {
+		g.minX = c.X
+	}
+	if c.X > g.maxX {
+		g.maxX = c.X
+	}
+	if c.Y < g.minY {
+		g.minY = c.Y
+	}
+	if c.Y > g.maxY {
+		g.maxY = c.Y
+	}
+	g.grid.Store(c, odds)
 }
 
-func (g Grid) update(c coordinates.Cartesian, prob float64) {
+func (g *Grid) update(c coordinates.Cartesian, prob float64) {
 	odds := g.Get(c)
 	odds.Adjust(prob)
 	g.set(c, odds)
 }
 
-func (g Grid) apply(r sensor.Reading) {
+func (g *Grid) apply(r sensor.Reading) {
 	log.Debug("Applying reading ", r)
-	g.path.Add(coordinates.Cartesian{X: r.Pose.X, Y: r.Pose.Y})
+	g.path.Add(r.Pose.Location)
 	v, o := r.Analysis()
-	for coord := range v {
+	v.Range(func(coord coordinates.Cartesian) bool {
 		prob := 0.1
 		g.update(coord, prob)
-	}
-	for coord := range o {
+		return false
+	})
+	o.Range(func(coord coordinates.Cartesian) bool {
 		prob := 0.9
 		g.update(coord, prob)
-	}
-	log.Info(v, o)
+		return false
+	})
+	log.Debug("Reading vacant/occupied: ", v, o)
 
 }
 
-func (g Grid) bounds() (minX, minY, maxX, maxY int) {
-	minX, maxX = math.MaxInt64, -math.MaxInt64
-	minY, maxY = math.MaxInt64, -math.MaxInt64
-	for k := range g.grid {
-		if k.X < minX {
-			minX = k.X
-		}
-		if k.X > maxX {
-			maxX = k.X
-		}
-		if k.Y < minY {
-			minY = k.Y
-		}
-		if k.Y > maxY {
-			maxY = k.Y
-		}
-	}
-	if minX == math.MaxInt64 {
-		minX = 0
-	}
-	if maxX == -math.MaxInt64 {
-		maxX = 0
-	}
-	if minY == math.MaxInt64 {
-		minY = 0
-	}
-	if maxY == -math.MaxInt64 {
-		maxY = 0
-	}
-	log.Debugf("Grid boundaries: %d %d %d %d", minX, minY, maxX, maxY)
+func (g *Grid) bounds() (minX, minY, maxX, maxY int) {
+	log.Debugf("Grid boundaries: %d %d %d %d", g.minX, g.minY, g.maxX, g.maxY)
 	// flip minY and maxY because of how the golang image library works.
-	return minX, -maxY, maxX, -minY
+	return g.minX, -g.maxY, g.maxX, -g.minY
 }

@@ -23,7 +23,7 @@ type Reading struct {
 	// Sensor that generated the reading.
 	Sensor Sensor
 	// Pose is the orientation of the sensor.
-	Pose Pose
+	Pose coordinates.Pose
 }
 
 func (r Reading) String() string {
@@ -66,8 +66,8 @@ func (r Reading) Analysis() (vacant, occupied coordinates.CartesianSet) {
 			}.Cartesian()
 			// adjust for position
 			coord = coordinates.Cartesian{
-				X: coord.X + r.Pose.X,
-				Y: coord.Y + r.Pose.Y,
+				X: coord.X + r.Pose.Location.X,
+				Y: coord.Y + r.Pose.Location.Y,
 			}
 			if d == math.Floor(r.Value) {
 				// occupied

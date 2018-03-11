@@ -5,11 +5,10 @@ import (
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
 )
 
-func (g Grid) String() string {
-	minX, minY, maxX, maxY := g.bounds()
+func (g *Grid) String() string {
 	s := ""
-	for x := minX; x <= maxX; x++ {
-		for y := minY; y <= maxY; y++ {
+	for x := g.minX; x <= g.maxX; x++ {
+		for y := g.minY; y <= g.maxY; y++ {
 			odds := g.Get(coordinates.Cartesian{X: x, Y: y})
 			p := fmt.Sprintf("%.2f ", odds.Probability())
 			s += p

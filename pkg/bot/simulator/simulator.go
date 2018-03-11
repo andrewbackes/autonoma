@@ -13,14 +13,14 @@ const (
 
 type Simulator struct {
 	occupied coordinates.CartesianSet
-	pose     sensor.Pose
+	pose     coordinates.Pose
 	sensors  []sensor.Sensor
 }
 
 func New(occ coordinates.CartesianSet, sensors ...sensor.Sensor) *Simulator {
 	return &Simulator{
 		occupied: occ,
-		pose:     sensor.Pose{Heading: 0, X: 0, Y: 0},
+		pose:     coordinates.NewPose(0, 0, 0),
 		sensors:  sensors,
 	}
 }
@@ -34,8 +34,8 @@ func (s *Simulator) Move(distance float64) {
 		Heading:  s.pose.Heading,
 		Distance: distance,
 	}.Cartesian()
-	s.pose.X += destVector.X
-	s.pose.Y += destVector.Y
+	s.pose.Location.X += destVector.X
+	s.pose.Location.Y += destVector.Y
 }
 
 func (s *Simulator) Readings() []sensor.Reading {
@@ -45,6 +45,10 @@ func (s *Simulator) Readings() []sensor.Reading {
 		rs = append(rs, r)
 	}
 	return rs
+}
+
+func (s *Simulator) Pose() coordinates.Pose {
+	return s.pose
 }
 
 func (s *Simulator) Scan(degrees float64) []sensor.Reading {

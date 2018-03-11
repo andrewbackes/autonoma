@@ -12,7 +12,8 @@ import (
 func ListenAndServe(g *grid.Grid) {
 	log.Info("Serving hud.")
 	http.HandleFunc("/map.png", func(w http.ResponseWriter, r *http.Request) {
-		err := png.Encode(w, grid.Image(*g))
+		img := (*grid.Image)(g)
+		err := png.Encode(w, img)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(fmt.Sprint(err)))
