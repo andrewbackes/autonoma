@@ -1,40 +1,52 @@
 package coordinates
 
-type CartesianSet map[Cartesian]struct{}
+import (
+	"sync"
+)
+
+type CartesianSet struct {
+	set   map[Cartesian]struct{}
+	mutex *sync.RWMutex
+}
 
 func NewCartesianSet() CartesianSet {
-	return make(map[Cartesian]struct{})
+	return CartesianSet{
+		set:   make(map[Cartesian]struct{}),
+		mutex: &sync.RWMutex{},
+	}
 }
 
 // Add a key to a set.
 func (s CartesianSet) Add(key Cartesian) {
-	s[key] = struct{}{}
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.set[key] = struct{}{}
+
 }
 
 // Remove a key from a set.
 func (s CartesianSet) Remove(key Cartesian) {
-	delete(s, key)
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	delete(s.set, key)
 }
 
 // Contains looks for keys in a set.
 func (s CartesianSet) Contains(keys ...Cartesian) bool {
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
 	for _, key := range keys {
-		if _, contains := s[key]; contains {
+		if _, contains := s.set[key]; contains {
 			return true
 		}
 	}
 	return false
 }
 
-// Update combines two sets.
-func (s CartesianSet) Update(b CartesianSet) {
-	for key := range b {
-		s[key] = struct{}{}
-	}
-}
-
 func (s CartesianSet) Range(f func(coor Cartesian) bool) {
-	for k := range s {
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
+	for k := range s.set {
 		ret := f(k)
 		if ret {
 			return
@@ -43,5 +55,7 @@ func (s CartesianSet) Range(f func(coor Cartesian) bool) {
 }
 
 func (s CartesianSet) Len() int {
-	return len(s)
+	s.mutex.RLock()
+	defer s.mutex.RUnlock()
+	return len(s.set)
 }

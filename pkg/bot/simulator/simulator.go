@@ -1,10 +1,12 @@
 package simulator
 
 import (
+	log "github.com/sirupsen/logrus"
+	"math"
+
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
 	"github.com/andrewbackes/autonoma/pkg/sensor"
 	"github.com/andrewbackes/autonoma/pkg/sensor/simulate"
-	"math"
 )
 
 const (
@@ -36,6 +38,8 @@ func (s *Simulator) Move(distance float64) {
 	}.Cartesian()
 	s.pose.Location.X += destVector.X
 	s.pose.Location.Y += destVector.Y
+	log.Debugf("Simulator moved to %s", s.pose.Location.String())
+	log.Debug("Simulator Pose ", s.pose)
 }
 
 func (s *Simulator) Readings() []sensor.Reading {

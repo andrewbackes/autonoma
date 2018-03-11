@@ -24,14 +24,15 @@ const (
 )
 
 func main() {
-	// mappingSimulator()
-	fixedReadingsSimulator()
+	log.SetLevel(log.InfoLevel)
+	mappingSimulator()
+	// fixedReadingsSimulator()
 }
 
 func mappingSimulator() {
 	// mapName := filepath.Base(mapPath)
 	occ := getOccupied(mapPath)
-	bot := simulator.New(occ, sensor.UltraSonic)
+	bot := simulator.New(occ, sensor.IRDistance)
 	grid := grid.New()
 	go mapper.RandomlyMap(grid, bot)
 	hud.ListenAndServe(grid)
@@ -72,7 +73,6 @@ func getOccupied(mapFilePath string) coordinates.CartesianSet {
 	mapName := filepath.Base(mapFilePath)
 	log.Infof("Using map %s", mapName)
 
-	log.SetLevel(log.DebugLevel)
 	log.Info("Simulator Started.")
 
 	// Load image of map
