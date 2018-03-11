@@ -33,8 +33,8 @@ func mappingSimulator() {
 	occ := getOccupied(mapPath)
 	bot := simulator.New(occ, sensor.UltraSonic)
 	grid := grid.New()
-	go mapper.Map(&grid, bot)
-	hud.ListenAndServe(&grid)
+	go mapper.RandomlyMap(grid, bot)
+	hud.ListenAndServe(grid)
 }
 
 func fixedReadingsSimulator() {
@@ -62,7 +62,8 @@ func fixedReadingsSimulator() {
 	img, err := os.Create(fmt.Sprintf("output/%s-map.png", mapName))
 	check(err)
 	defer img.Close()
-	err = png.Encode(img, grid.Image(g))
+
+	err = png.Encode(img, (*grid.Image)(g))
 	check(err)
 	log.Info("Simulator Ended.")
 }
@@ -78,11 +79,11 @@ func getOccupied(mapFilePath string) coordinates.CartesianSet {
 	log.Info("Loading map from image.")
 	occ, err := image.Occupied(mapFilePath)
 	check(err)
-	log.Debugf("There are %d occupied cells.", len(occ))
+	log.Debugf("There are %d occupied cells.", occ.Len())
 	return occ
 }
 
-func makePoses(mapFilePath string) []sensor.Pose {
+func makePoses(mapFilePath string) []coordinates.Pose {
 	log.Info("Generating poses around map.")
 	mapMaxX, mapMaxY := image.Bounds(mapFilePath)
 	poses := simulate.Poses(mapMaxX/2, mapMaxY/2, poseSpacing, poseAngleSpacing)
@@ -90,7 +91,7 @@ func makePoses(mapFilePath string) []sensor.Pose {
 	return poses
 }
 
-func simulateSensorReadings(poses []sensor.Pose, occ coordinates.CartesianSet) []sensor.Reading {
+func simulateSensorReadings(poses []coordinates.Pose, occ coordinates.CartesianSet) []sensor.Reading {
 	log.Info("Simulating sensor readings.")
 	readings := make([]sensor.Reading, 0, len(poses))
 	for _, pose := range poses {
