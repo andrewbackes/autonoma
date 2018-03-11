@@ -31,6 +31,7 @@ func Occupied(filepath string) (coordinates.CartesianSet, error) {
 	for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
 		for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
 			if img.At(x, y) != img.ColorModel().Convert(color.White) {
+				// -y because image.At has the y axis flipped.
 				coord := coordinates.Cartesian{X: x - centerX, Y: -y + centerY}
 				s.Add(coord)
 				log.Debug(fmt.Sprintf(`Added %s as occupied`, coord))

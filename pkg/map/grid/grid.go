@@ -94,5 +94,6 @@ func (g Grid) bounds() (minX, minY, maxX, maxY int) {
 		maxY = 0
 	}
 	log.Debugf("Grid boundaries: %d %d %d %d", minX, minY, maxX, maxY)
-	return minX, minY, maxX, maxY
+	// flip minY and maxY because of how the golang image library works.
+	return minX, -maxY, maxX, -minY
 }
