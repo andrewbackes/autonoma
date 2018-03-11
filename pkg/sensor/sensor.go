@@ -18,6 +18,7 @@ var (
 	UltraSonic = Sensor{
 		ViewAngle:   15.0,
 		MaxDistance: 18.0,
+		MinDistance: 1.0,
 		Binary:      false,
 	}
 
