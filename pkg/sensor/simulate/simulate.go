@@ -5,7 +5,6 @@ import (
 
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
 	"github.com/andrewbackes/autonoma/pkg/sensor"
-	"github.com/andrewbackes/autonoma/pkg/set"
 )
 
 const (
@@ -13,7 +12,7 @@ const (
 )
 
 // Reading creates a sensor reading based on
-func Reading(s sensor.Sensor, p sensor.Pose, occupied set.Set) sensor.Reading {
+func Reading(s sensor.Sensor, p sensor.Pose, occupied coordinates.CartesianSet) sensor.Reading {
 	r := sensor.Reading{
 		Value:  s.MaxDistance,
 		Sensor: s,
@@ -24,11 +23,13 @@ func Reading(s sensor.Sensor, p sensor.Pose, occupied set.Set) sensor.Reading {
 	for d := s.MinDistance; d < s.MaxDistance; d++ {
 		for a := startAngle; a <= endAngle; a += simulatorSensorStepAngle {
 			angle := math.Mod(a, 360)
-			key := coordinates.CompassRose{
+			coord := coordinates.CompassRose{
 				Distance: d,
 				Heading:  angle,
-			}.Cartesian().String()
-			if occupied.Contains(key) {
+			}.Cartesian()
+			coord.X += p.X
+			coord.Y += p.Y
+			if occupied.Contains(coord) {
 				r.Value = d
 				return r
 			}

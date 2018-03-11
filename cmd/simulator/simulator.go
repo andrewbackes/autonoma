@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"image/png"
 	"os"
+	"path/filepath"
 
 	"github.com/andrewbackes/autonoma/pkg/map/grid"
 	"github.com/andrewbackes/autonoma/pkg/map/image"
@@ -11,19 +13,31 @@ import (
 	"github.com/andrewbackes/autonoma/pkg/sensor/simulate"
 )
 
+const (
+	mapPath          = "pkg/map/image/assets/box.png"
+	mapMaxX          = 125
+	mapMaxY          = 125
+	poseSpacing      = 10
+	poseAngleSpacing = 10
+)
+
 func main() {
+
+	mapName := filepath.Base(mapPath)
+	log.Infof("Using map %s", mapName)
+
 	log.SetLevel(log.DebugLevel)
 	log.Info("Simulator Started.")
 
 	// Load image of map
 	log.Info("Loading map from image.")
-	occ, err := image.Occupied("pkg/map/image/assets/box.png")
+	occ, err := image.Occupied(mapPath)
 	check(err)
 	log.Debugf("There are %d occupied cells.", len(occ))
 
 	// Generate poses
 	log.Info("Generating poses around map.")
-	poses := simulate.Poses(125, 125, 18, 30.0)
+	poses := simulate.Poses(mapMaxX, mapMaxY, poseSpacing, poseAngleSpacing)
 	log.Debugf("Generated %d poses.", len(poses))
 
 	// Simulate sensor readings
@@ -42,7 +56,7 @@ func main() {
 
 	// Output text file of results
 	log.Info("Saving text file.")
-	txt, err := os.Create("box-output.txt")
+	txt, err := os.Create(fmt.Sprintf("%s-probabilities.txt", mapName))
 	check(err)
 	defer txt.Close()
 	_, err = txt.WriteString(g.String())
@@ -50,7 +64,7 @@ func main() {
 
 	// Output image of results
 	log.Info("Saving image.")
-	img, err := os.Create("box-output.png")
+	img, err := os.Create(fmt.Sprintf("%s-map.png", mapName))
 	check(err)
 	defer img.Close()
 	err = png.Encode(img, grid.Image(g))

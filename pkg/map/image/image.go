@@ -7,7 +7,7 @@ import (
 	"image/png"
 	"os"
 
-	"github.com/andrewbackes/autonoma/pkg/set"
+	"github.com/andrewbackes/autonoma/pkg/coordinates"
 )
 
 // Occupied generates a set of all occupied squares in a black and white image.
@@ -19,8 +19,8 @@ import (
 //		1,1
 //		1337,1
 //		0,999
-func Occupied(filepath string) (set.Set, error) {
-	s := set.New()
+func Occupied(filepath string) (coordinates.CartesianSet, error) {
+	s := coordinates.NewCartesianSet()
 
 	in, err := os.Open(filepath)
 	if err != nil {
@@ -38,9 +38,9 @@ func Occupied(filepath string) (set.Set, error) {
 	for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
 		for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
 			if img.At(x, y) != img.ColorModel().Convert(color.White) {
-				key := fmt.Sprintf(`(%d,%d)`, x-centerX, y-centerY)
-				s.Add(key)
-				log.Debug(fmt.Sprintf(`Added %s as occupied`, key))
+				coord := coordinates.Cartesian{X: x - centerX, Y: y - centerY}
+				s.Add(coord)
+				log.Debug(fmt.Sprintf(`Added %s as occupied`, coord))
 			}
 		}
 	}

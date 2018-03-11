@@ -44,20 +44,20 @@ func (g Grid) update(c coordinates.Cartesian, prob float64) {
 
 func (g Grid) Apply(rs ...sensor.Reading) {
 	for _, r := range rs {
-		g.add(r)
+		g.apply(r)
 	}
 }
 
-func (g Grid) add(r sensor.Reading) {
+func (g Grid) apply(r sensor.Reading) {
+	log.Debug("Applying reading ", r)
 	g.path.Add(coordinates.Cartesian{X: r.Pose.X, Y: r.Pose.Y})
-
 	v, o := r.Analysis()
 	for coord := range v {
-		prob := 1 - (1 * r.Sensor.Reliability) // close to 0
+		prob := 0.1
 		g.update(coord, prob)
 	}
 	for coord := range o {
-		prob := (1 * r.Sensor.Reliability) // close to 1
+		prob := 0.9
 		g.update(coord, prob)
 	}
 

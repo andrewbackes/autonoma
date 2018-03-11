@@ -9,7 +9,7 @@ type Cartesian struct {
 }
 
 func (c Cartesian) String() string {
-	return fmt.Sprintf(`%d,%d`, c.X, c.Y)
+	return fmt.Sprintf("(%d,%d)", c.X, c.Y)
 }
 
 type CartesianSet map[Cartesian]struct{}

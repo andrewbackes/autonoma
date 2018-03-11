@@ -1,9 +1,13 @@
 package sensor
 
 import (
-	"github.com/andrewbackes/autonoma/pkg/coordinates"
+	"encoding/json"
+	"fmt"
+	log "github.com/sirupsen/logrus"
 	"math"
 	"time"
+
+	"github.com/andrewbackes/autonoma/pkg/coordinates"
 )
 
 const (
@@ -22,6 +26,14 @@ type Reading struct {
 	Pose Pose
 }
 
+func (r Reading) String() string {
+	b, err := json.Marshal(r)
+	if err != nil {
+		return fmt.Sprintf("Distance %f", r.Value)
+	}
+	return string(b)
+}
+
 func (r Reading) Distance() *float64 {
 	if r.Value >= r.Sensor.MaxDistance {
 		return nil
@@ -30,6 +42,9 @@ func (r Reading) Distance() *float64 {
 }
 
 func (r Reading) Analysis() (vacant, occupied coordinates.CartesianSet) {
+	if r.Value < r.Sensor.MaxDistance {
+		log.Debug(r)
+	}
 	vacant = coordinates.NewCartesianSet()
 	occupied = coordinates.NewCartesianSet()
 	startAngle := r.Pose.Heading - (r.Sensor.ViewAngle / 2)

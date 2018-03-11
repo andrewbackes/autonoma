@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestSimulateReadingUltraSonicNorth(t *testing.T) {
+func TestReadingUltraSonicNorth(t *testing.T) {
 	occ := set.New()
 	occ.Add("0,10")
 	n := sensor.Pose{X: 0, Y: 0, Heading: 0}
@@ -15,7 +15,7 @@ func TestSimulateReadingUltraSonicNorth(t *testing.T) {
 	assert.InDelta(t, 10, r.Value, 1)
 }
 
-func TestSimulateReadingUltraSonicEast(t *testing.T) {
+func TestReadingUltraSonicEast(t *testing.T) {
 	occ := set.New()
 	occ.Add("10,0")
 	e := sensor.Pose{X: 0, Y: 0, Heading: 90}
@@ -23,7 +23,7 @@ func TestSimulateReadingUltraSonicEast(t *testing.T) {
 	assert.InDelta(t, 10, r.Value, 0)
 }
 
-func TestSimulateReadingUltraSonicSouth(t *testing.T) {
+func TestReadingUltraSonicSouth(t *testing.T) {
 	occ := set.New()
 	occ.Add("0,-10")
 	s := sensor.Pose{X: 0, Y: 0, Heading: 180}
@@ -31,11 +31,19 @@ func TestSimulateReadingUltraSonicSouth(t *testing.T) {
 	assert.InDelta(t, 10, r.Value, 0)
 }
 
-func TestSimulateReadingUltraSonicWest(t *testing.T) {
+func TestReadingUltraSonicWest(t *testing.T) {
 	occ := set.New()
 	occ.Add("-10,0")
 	w := sensor.Pose{X: 0, Y: 0, Heading: 270}
 	r := Reading(sensor.UltraSonic, w, occ)
+	assert.InDelta(t, 10, r.Value, 0)
+}
+
+func TestReadingOffset(t *testing.T) {
+	occ := set.New()
+	occ.Add("10,10")
+	p := sensor.Pose{X: 10, Y: 0, Heading: 0}
+	r := Reading(sensor.UltraSonic, p, occ)
 	assert.InDelta(t, 10, r.Value, 0)
 }
 

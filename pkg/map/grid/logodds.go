@@ -1,6 +1,8 @@
 package grid
 
 import (
+	// log "github.com/sirupsen/logrus"
+
 	"math"
 )
 
@@ -16,27 +18,32 @@ import (
 
 */
 
-type LogOdds float64
+type LogOdds struct {
+	odds float64
+}
 
 var (
 	initProbability = 0.2 // 0.2 to 0.5 depending on expected obstacle density
-	initLogOdds     = LogOdds(math.Log2(initProbability) - math.Log2(1-initProbability))
+	initLogOdds     = math.Log(initProbability) - math.Log(1-initProbability)
 )
 
 func NewLogOdds() Odds {
-	return initLogOdds
+	return &LogOdds{
+		odds: initLogOdds,
+	}
 }
 
 // Probability has range [0,1].
-func (l LogOdds) Probability() float64 {
-	p := 1 - (1 / (1 + math.Exp2(float64(l))))
+func (l *LogOdds) Probability() float64 {
+	p := 1 - (1 / (1 + math.Exp(l.odds)))
 	return p
 }
 
 // Adjust by probability of M given Z [ Or p(m|z) ].
-func (l LogOdds) Adjust(pmz float64) {
+func (l *LogOdds) Adjust(pmz float64) {
 	// l = l + log p(m|z) - log (1 - p(m|z)) - log p(m) + log(1 - p(m))
 	pm := l.Probability()
-	lp := float64(l) + math.Log2(pmz) - math.Log2(1-pmz) - math.Log2(pm) + math.Log2(1-pm)
-	l = LogOdds(lp)
+	lp := l.odds + math.Log(pmz) - math.Log(1-pmz) - math.Log(pm) + math.Log(1-pm)
+	l.odds = lp
+	// log.Debugf("Updating logodds %f to %f probability %f to %f", l.odds, lp, pm, l.Probability())
 }
