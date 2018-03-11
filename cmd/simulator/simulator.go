@@ -14,15 +14,16 @@ import (
 )
 
 const (
-	mapPath          = "pkg/map/image/assets/box.png"
-	mapMaxX          = 125
-	mapMaxY          = 125
+	mapPath          = "pkg/map/image/assets/maze1.png"
 	poseSpacing      = 10
-	poseAngleSpacing = 10
+	poseAngleSpacing = 5
 )
 
 func main() {
+	occGridSim()
+}
 
+func occGridSim() {
 	mapName := filepath.Base(mapPath)
 	log.Infof("Using map %s", mapName)
 
@@ -37,7 +38,8 @@ func main() {
 
 	// Generate poses
 	log.Info("Generating poses around map.")
-	poses := simulate.Poses(mapMaxX, mapMaxY, poseSpacing, poseAngleSpacing)
+	mapMaxX, mapMaxY := image.Bounds(mapPath)
+	poses := simulate.Poses(mapMaxX/2, mapMaxY/2, poseSpacing, poseAngleSpacing)
 	log.Debugf("Generated %d poses.", len(poses))
 
 	// Simulate sensor readings
@@ -56,7 +58,8 @@ func main() {
 
 	// Output text file of results
 	log.Info("Saving text file.")
-	txt, err := os.Create(fmt.Sprintf("%s-probabilities.txt", mapName))
+	os.MkdirAll("output", os.ModePerm)
+	txt, err := os.Create(fmt.Sprintf("output/%s-probabilities.txt", mapName))
 	check(err)
 	defer txt.Close()
 	_, err = txt.WriteString(g.String())
@@ -64,7 +67,7 @@ func main() {
 
 	// Output image of results
 	log.Info("Saving image.")
-	img, err := os.Create(fmt.Sprintf("%s-map.png", mapName))
+	img, err := os.Create(fmt.Sprintf("output/%s-map.png", mapName))
 	check(err)
 	defer img.Close()
 	err = png.Encode(img, grid.Image(g))
