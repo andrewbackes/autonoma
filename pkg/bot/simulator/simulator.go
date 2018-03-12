@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
+	"github.com/andrewbackes/autonoma/pkg/distance"
 	"github.com/andrewbackes/autonoma/pkg/sensor"
 	"github.com/andrewbackes/autonoma/pkg/sensor/simulate"
 )
@@ -31,10 +32,10 @@ func (s *Simulator) Heading(heading float64) {
 	s.pose.Heading = heading
 }
 
-func (s *Simulator) Move(distance float64) {
+func (s *Simulator) Move(d distance.Distance) {
 	destVector := coordinates.CompassRose{
 		Heading:  s.pose.Heading,
-		Distance: distance,
+		Distance: d,
 	}.Cartesian()
 	s.pose.Location.X += destVector.X
 	s.pose.Location.Y += destVector.Y

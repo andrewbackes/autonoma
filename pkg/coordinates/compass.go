@@ -2,10 +2,12 @@ package coordinates
 
 import (
 	"math"
+
+	"github.com/andrewbackes/autonoma/pkg/distance"
 )
 
 type CompassRose struct {
-	Distance float64
+	Distance distance.Distance
 	Heading  float64
 }
 
@@ -17,8 +19,8 @@ func (c CompassRose) Cartesian() Cartesian {
 	//		polardir = -compassdir + 90
 	angle := math.Mod(-c.Heading+90, 360)
 	return Cartesian{
-		X: int(c.Distance * math.Cos(toRadians(angle))),
-		Y: int(c.Distance * math.Sin(toRadians(angle))),
+		X: int(float64(c.Distance) * math.Cos(toRadians(angle))),
+		Y: int(float64(c.Distance) * math.Sin(toRadians(angle))),
 	}
 }
 

@@ -6,30 +6,42 @@ import (
 	"sync"
 
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
+	"github.com/andrewbackes/autonoma/pkg/distance"
 	"github.com/andrewbackes/autonoma/pkg/sensor"
 )
 
 type Grid struct {
 	grid                   sync.Map
 	minX, minY, maxX, maxY int
+	cellSize               distance.Distance
 	path                   coordinates.CartesianSet
 	newOdds                func() Odds
 }
 
-func New() *Grid {
+func New(cellSize distance.Distance) *Grid {
 	return &Grid{
-		grid:    sync.Map{},
-		minX:    math.MaxInt64,
-		maxX:    -math.MaxInt64,
-		minY:    math.MaxInt64,
-		maxY:    -math.MaxInt64,
-		path:    coordinates.NewCartesianSet(),
-		newOdds: NewLogOdds,
+		grid:     sync.Map{},
+		minX:     math.MaxInt64,
+		maxX:     -math.MaxInt64,
+		minY:     math.MaxInt64,
+		maxY:     -math.MaxInt64,
+		cellSize: cellSize,
+		path:     coordinates.NewCartesianSet(),
+		newOdds:  NewLogOdds,
+	}
+}
+
+func (g *Grid) cell(c coordinates.Cartesian) coordinates.Cartesian {
+	size := int(g.cellSize)
+	return coordinates.Cartesian{
+		X: (c.X / size) * size,
+		Y: (c.Y / size) * size,
 	}
 }
 
 func (g *Grid) Get(c coordinates.Cartesian) Odds {
-	val, exists := g.grid.Load(c)
+	cell := g.cell(c)
+	val, exists := g.grid.Load(cell)
 	if exists {
 		odds, ok := val.(Odds)
 		if !ok {
@@ -38,7 +50,7 @@ func (g *Grid) Get(c coordinates.Cartesian) Odds {
 		return odds
 	}
 	o := g.newOdds()
-	g.grid.Store(c, o)
+	g.grid.Store(cell, o)
 	return o
 }
 
@@ -49,19 +61,20 @@ func (g *Grid) Apply(rs ...sensor.Reading) {
 }
 
 func (g *Grid) set(c coordinates.Cartesian, odds Odds) {
-	if c.X < g.minX {
-		g.minX = c.X
+	cell := g.cell(c)
+	if cell.X < g.minX {
+		g.minX = cell.X
 	}
-	if c.X > g.maxX {
-		g.maxX = c.X
+	if cell.X > g.maxX {
+		g.maxX = cell.X
 	}
-	if c.Y < g.minY {
-		g.minY = c.Y
+	if cell.Y < g.minY {
+		g.minY = cell.Y
 	}
-	if c.Y > g.maxY {
-		g.maxY = c.Y
+	if cell.Y > g.maxY {
+		g.maxY = cell.Y
 	}
-	g.grid.Store(c, odds)
+	g.grid.Store(cell, odds)
 }
 
 func (g *Grid) update(c coordinates.Cartesian, prob float64) {
@@ -91,5 +104,6 @@ func (g *Grid) apply(r sensor.Reading) {
 func (g *Grid) bounds() (minX, minY, maxX, maxY int) {
 	log.Debugf("Grid boundaries: %d %d %d %d", g.minX, g.minY, g.maxX, g.maxY)
 	// flip minY and maxY because of how the golang image library works.
-	return g.minX, -g.maxY, g.maxX, -g.minY
+	cellSize := int(g.cellSize)
+	return g.minX - cellSize, -g.maxY - cellSize, g.maxX + cellSize, -g.minY - cellSize
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/andrewbackes/autonoma/pkg/distance"
 	log "github.com/sirupsen/logrus"
 	"image/png"
 	"os"
@@ -21,19 +22,20 @@ const (
 	mapPath          = "pkg/map/image/assets/maze1.png"
 	poseSpacing      = 10
 	poseAngleSpacing = 15
+	gridCellSize     = 1 * distance.Centimeter
 )
 
 func main() {
 	log.SetLevel(log.InfoLevel)
-	mappingSimulator()
-	// fixedReadingsSimulator()
+	// mappingSimulator()
+	fixedReadingsSimulator()
 }
 
 func mappingSimulator() {
 	// mapName := filepath.Base(mapPath)
 	occ := getOccupied(mapPath)
 	bot := simulator.New(occ, sensor.IRDistance)
-	grid := grid.New()
+	grid := grid.New(gridCellSize)
 	go mapper.RandomlyMap(grid, bot)
 	hud.ListenAndServe(grid)
 }
@@ -46,7 +48,7 @@ func fixedReadingsSimulator() {
 
 	// Create occupancy grid based on sensor readings
 	log.Info("Creating occupancy grid from sensor readings.")
-	g := grid.New()
+	g := grid.New(gridCellSize)
 	g.Apply(readings...)
 
 	// Output text file of results

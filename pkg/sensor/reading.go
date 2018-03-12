@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
+	"github.com/andrewbackes/autonoma/pkg/distance"
 )
 
 const (
@@ -19,7 +20,7 @@ type Reading struct {
 	// TimeStamp when reading was taken.
 	TimeStamp time.Time
 	// Value returned by sensor.
-	Value float64
+	Value distance.Distance
 	// Sensor that generated the reading.
 	Sensor Sensor
 	// Pose is the orientation of the sensor.
@@ -32,13 +33,6 @@ func (r Reading) String() string {
 		return fmt.Sprintf("Distance %f", r.Value)
 	}
 	return string(b)
-}
-
-func (r Reading) Distance() *float64 {
-	if r.Value >= r.Sensor.MaxDistance {
-		return nil
-	}
-	return &r.Value
 }
 
 func (r Reading) Analysis() (vacant, occupied coordinates.CartesianSet) {
@@ -55,7 +49,7 @@ func (r Reading) Analysis() (vacant, occupied coordinates.CartesianSet) {
 			break
 		}
 		// Don't xray through the obsticle.
-		if d > math.Floor(r.Value) {
+		if d > r.Value.Floor(distance.Centimeter) {
 			break
 		}
 		for a := startAngle; a <= endAngle; a += sensorAngleStepDegrees {
@@ -69,7 +63,7 @@ func (r Reading) Analysis() (vacant, occupied coordinates.CartesianSet) {
 				X: coord.X + r.Pose.Location.X,
 				Y: coord.Y + r.Pose.Location.Y,
 			}
-			if d == math.Floor(r.Value) {
+			if d == r.Value.Floor(distance.Centimeter) {
 				// occupied
 				occupied.Add(coord)
 			} else {

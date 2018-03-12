@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"github.com/andrewbackes/autonoma/pkg/distance"
 	log "github.com/sirupsen/logrus"
 	"math"
 	"math/rand"
@@ -21,6 +22,8 @@ func Map(g *grid.Grid, bot bot.Controller) {
 }
 
 func RandomlyMap(g *grid.Grid, bot bot.Controller) {
+	lookAhead := 10 * distance.Centimeter
+	moveAhead := 5 * distance.Centimeter
 	done := false
 	for !done {
 		startHeading := bot.Pose().Heading
@@ -28,11 +31,11 @@ func RandomlyMap(g *grid.Grid, bot bot.Controller) {
 		bot.Heading(startHeading)
 
 		// First try to move forward
-		dest := coordinates.Add(bot.Pose().Location, coordinates.CompassRose{Heading: startHeading, Distance: 15})
+		dest := coordinates.Add(bot.Pose().Location, coordinates.CompassRose{Heading: startHeading, Distance: lookAhead})
 		log.Debug("Destination ", dest)
 		if g.Get(dest).Probability() < vacantThreshold {
 			log.Debug("Moving Forward")
-			bot.Move(5)
+			bot.Move(moveAhead)
 			continue
 		}
 
@@ -41,11 +44,11 @@ func RandomlyMap(g *grid.Grid, bot bot.Controller) {
 		startBearing := float64(rand.Intn(360))
 		for b := startBearing; ; b += 15 {
 			bearing = math.Mod(b, 360)
-			dest = coordinates.Add(bot.Pose().Location, coordinates.CompassRose{Heading: bearing, Distance: 15})
+			dest = coordinates.Add(bot.Pose().Location, coordinates.CompassRose{Heading: bearing, Distance: lookAhead})
 			if g.Get(dest).Probability() < vacantThreshold {
 				log.Debug("Moving Randomly")
 				bot.Heading(bearing)
-				bot.Move(5)
+				bot.Move(moveAhead)
 				break
 			}
 			if b >= startBearing+360 {
