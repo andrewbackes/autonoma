@@ -86,24 +86,52 @@ func (g *Grid) update(c coordinates.Cartesian, prob float64) {
 func (g *Grid) apply(r sensor.Reading) {
 	log.Debug("Applying reading ", r)
 	g.path.Add(r.Pose.Location)
-	v, o := r.Analysis()
-	v.Range(func(coord coordinates.Cartesian) bool {
-		prob := 0.1
+	vac, occ := r.Analysis()
+	// convert to cells:
+	occCells := coordinates.NewCartesianSet()
+	occ.Range(func(coord coordinates.Cartesian) bool {
+		cell := g.cell(coord)
+		occCells.Add(cell)
+		return false
+	})
+	vacCells := coordinates.NewCartesianSet()
+	vac.Range(func(coord coordinates.Cartesian) bool {
+		cell := g.cell(coord)
+		if !occCells.Contains(cell) {
+			vacCells.Add(cell)
+		}
+		return false
+	})
+	// mark the probabilities:
+	occCells.Range(func(coord coordinates.Cartesian) bool {
+		prob := 0.99
 		g.update(coord, prob)
 		return false
 	})
-	o.Range(func(coord coordinates.Cartesian) bool {
-		prob := 0.9
+	vacCells.Range(func(coord coordinates.Cartesian) bool {
+		prob := 0.01
 		g.update(coord, prob)
 		return false
 	})
-	log.Debug("Reading vacant/occupied: ", v, o)
-
+	log.Debug("Reading vacant/occupied: ", vac, occ)
 }
 
 func (g *Grid) bounds() (minX, minY, maxX, maxY int) {
 	log.Debugf("Grid boundaries: %d %d %d %d", g.minX, g.minY, g.maxX, g.maxY)
 	// flip minY and maxY because of how the golang image library works.
 	cellSize := int(g.cellSize)
-	return g.minX - cellSize, -g.maxY - cellSize, g.maxX + cellSize, -g.minY - cellSize
+	return g.minX - cellSize, -(g.maxY + cellSize), g.maxX + cellSize, -(g.minY - cellSize)
+}
+
+func (g *Grid) Line(origin coordinates.Cartesian, bearing coordinates.CompassRose) coordinates.CartesianSet {
+	coors := coordinates.NewCartesianSet()
+	for d := distance.Distance(0); d <= bearing.Distance; d += 0.5 {
+		interim := coordinates.CompassRose{
+			Distance: d,
+			Heading:  bearing.Heading,
+		}
+		dest := coordinates.Add(origin, interim)
+		coors.Add(dest)
+	}
+	return coors
 }

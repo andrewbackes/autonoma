@@ -3,6 +3,7 @@ package simulator
 import (
 	log "github.com/sirupsen/logrus"
 	"math"
+	"math/rand"
 
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
 	"github.com/andrewbackes/autonoma/pkg/distance"
@@ -12,6 +13,8 @@ import (
 
 const (
 	scanAngleIncrement = 15.0
+	rotationError      = 0.0 // degrees
+	movementError      = 0.0 // percent
 )
 
 type Simulator struct {
@@ -29,13 +32,16 @@ func New(occ coordinates.CartesianSet, sensors ...sensor.Sensor) *Simulator {
 }
 
 func (s *Simulator) Heading(heading float64) {
-	s.pose.Heading = heading
+	errMargin := (float64(-1 * rand.Intn(2))) * (rotationError * rand.Float64())
+	s.pose.Heading = heading + errMargin
 }
 
 func (s *Simulator) Move(d distance.Distance) {
+	percentError := 1 - (rand.Float64()*movementError)/100
+	withError := distance.Distance(percentError * float64(d))
 	destVector := coordinates.CompassRose{
 		Heading:  s.pose.Heading,
-		Distance: d,
+		Distance: withError,
 	}.Cartesian()
 	s.pose.Location.X += destVector.X
 	s.pose.Location.Y += destVector.Y

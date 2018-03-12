@@ -43,7 +43,8 @@ func (r Reading) Analysis() (vacant, occupied coordinates.CartesianSet) {
 	occupied = coordinates.NewCartesianSet()
 	startAngle := r.Pose.Heading - (r.Sensor.ViewAngle / 2)
 	endAngle := startAngle + r.Sensor.ViewAngle
-	for d := r.Sensor.MinDistance; ; d++ {
+
+	for d := r.Sensor.MinDistance; ; d += 0.5 {
 		// reached max range
 		if d >= r.Sensor.MaxDistance {
 			break
