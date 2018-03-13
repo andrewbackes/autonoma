@@ -10,6 +10,11 @@ import (
 	"github.com/andrewbackes/autonoma/pkg/sensor"
 )
 
+const (
+	vacantThreshold   = 0.1
+	occupiedThreshold = 0.85
+)
+
 type Grid struct {
 	grid                   sync.Map
 	minX, minY, maxX, maxY int
@@ -31,17 +36,8 @@ func New(cellSize distance.Distance) *Grid {
 	}
 }
 
-func (g *Grid) cell(c coordinates.Cartesian) coordinates.Cartesian {
-	size := int(g.cellSize)
-	return coordinates.Cartesian{
-		X: (c.X / size) * size,
-		Y: (c.Y / size) * size,
-	}
-}
-
 func (g *Grid) Get(c coordinates.Cartesian) Odds {
-	cell := g.cell(c)
-	val, exists := g.grid.Load(cell)
+	val, exists := g.grid.Load(c)
 	if exists {
 		odds, ok := val.(Odds)
 		if !ok {
@@ -50,7 +46,7 @@ func (g *Grid) Get(c coordinates.Cartesian) Odds {
 		return odds
 	}
 	o := g.newOdds()
-	g.grid.Store(cell, o)
+	g.grid.Store(c, o)
 	return o
 }
 
@@ -61,20 +57,19 @@ func (g *Grid) Apply(rs ...sensor.Reading) {
 }
 
 func (g *Grid) set(c coordinates.Cartesian, odds Odds) {
-	cell := g.cell(c)
-	if cell.X < g.minX {
-		g.minX = cell.X
+	if c.X < g.minX {
+		g.minX = c.X
 	}
-	if cell.X > g.maxX {
-		g.maxX = cell.X
+	if c.X > g.maxX {
+		g.maxX = c.X
 	}
-	if cell.Y < g.minY {
-		g.minY = cell.Y
+	if c.Y < g.minY {
+		g.minY = c.Y
 	}
-	if cell.Y > g.maxY {
-		g.maxY = cell.Y
+	if c.Y > g.maxY {
+		g.maxY = c.Y
 	}
-	g.grid.Store(cell, odds)
+	g.grid.Store(c, odds)
 }
 
 func (g *Grid) update(c coordinates.Cartesian, prob float64) {
@@ -90,15 +85,13 @@ func (g *Grid) apply(r sensor.Reading) {
 	// convert to cells:
 	occCells := coordinates.NewCartesianSet()
 	occ.Range(func(coord coordinates.Cartesian) bool {
-		cell := g.cell(coord)
-		occCells.Add(cell)
+		occCells.Add(coord)
 		return false
 	})
 	vacCells := coordinates.NewCartesianSet()
 	vac.Range(func(coord coordinates.Cartesian) bool {
-		cell := g.cell(coord)
-		if !occCells.Contains(cell) {
-			vacCells.Add(cell)
+		if !occCells.Contains(coord) {
+			vacCells.Add(coord)
 		}
 		return false
 	})
@@ -135,3 +128,41 @@ func (g *Grid) Line(origin coordinates.Cartesian, bearing coordinates.CompassRos
 	}
 	return coors
 }
+
+func (g *Grid) Vacant(coords coordinates.CartesianSet) bool {
+	vacant := true
+	coords.Range(func(coor coordinates.Cartesian) bool {
+		occupied := g.Get(coor).Probability() > vacantThreshold
+		if occupied {
+			vacant = false
+			return false
+		}
+		return true
+	})
+	return vacant
+}
+
+/*
+func (g *Grid) CellIsVacant(c coordinates.Cartesian) bool {
+	max := g.cellMax(c)
+	return max <= vacantThreshold
+}
+
+func (g *Grid) CellIsOccupied(c coordinates.Cartesian) bool {
+	max := g.cellMax(c)
+	return max >= occupiedThreshold
+}
+
+func (g *Grid) cellMax(c coordinates.Cartesian) float64 {
+	coords := coordinates.Square(c, g.cellSize)
+	max := float64(0)
+	coords.Range(func(coor coordinates.Cartesian) bool {
+		prob := g.Get(coor).Probability()
+		if prob > max {
+			max = prob
+		}
+		return false
+	})
+	return max
+}
+*/

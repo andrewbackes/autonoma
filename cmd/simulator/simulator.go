@@ -22,15 +22,15 @@ var (
 	mapPath          = "pkg/map/image/assets/maze1.png"
 	poseSpacing      = 10
 	poseAngleSpacing = 15.0
-	gridCellSize     = 1 * distance.Centimeter
+	gridCellSize     = 5 * distance.Centimeter
 	sensors          = []sensor.Sensor{sensor.UltraSonic}
-	logLevel         = log.DebugLevel
+	logLevel         = log.InfoLevel
 )
 
 func main() {
 	log.SetLevel(logLevel)
-	mappingSimulator()
-	//fixedReadingsSimulator()
+	// mappingSimulator()
+	fixedReadingsSimulator()
 }
 
 func mappingSimulator() {
@@ -53,23 +53,23 @@ func fixedReadingsSimulator() {
 	g := grid.New(gridCellSize)
 	g.Apply(readings...)
 
-	// Output text file of results
-	log.Info("Saving text file.")
 	os.MkdirAll("output", os.ModePerm)
-	txt, err := os.Create(fmt.Sprintf("output/%s-probabilities.txt", mapName))
-	check(err)
-	defer txt.Close()
-	_, err = txt.WriteString(g.String())
-	check(err)
-
 	// Output image of results
 	log.Info("Saving image.")
 	img, err := os.Create(fmt.Sprintf("output/%s-map.png", mapName))
 	check(err)
-	defer img.Close()
-
 	err = png.Encode(img, (*grid.Image)(g))
+	img.Close()
 	check(err)
+
+	// Output text file of results
+	log.Info("Saving text file.")
+	txt, err := os.Create(fmt.Sprintf("output/%s-probabilities.txt", mapName))
+	check(err)
+	_, err = txt.WriteString(g.String())
+	txt.Close()
+	check(err)
+
 	log.Info("Simulator Ended.")
 }
 

@@ -20,11 +20,20 @@ type Image Grid
 // At(Bounds().Min.X, Bounds().Min.Y) returns the upper-left pixel of the grid.
 // At(Bounds().Max.X-1, Bounds().Max.Y-1) returns the lower-right one.
 func (i *Image) At(x, y int) color.Color {
-	asGrid := (*Grid)(i)
-	if asGrid.path.Contains(coordinates.Cartesian{X: x, Y: -y}) {
+	g := (*Grid)(i)
+	pt := coordinates.Cartesian{X: x, Y: -y}
+	if g.path.Contains(pt) {
 		return pathColor
 	}
-	p := math.Min(asGrid.Get(coordinates.Cartesian{X: x, Y: -y}).Probability(), 1)
+	/*
+		shade := uint8(0)
+		if g.CellIsVacant(pt) {
+			shade = 255
+		} else if g.CellIsOccupied(pt) {
+			shade = 0
+		}
+	*/
+	p := math.Min(g.Get(pt).Probability(), 1)
 	shade := uint8((1.0 - p) * 255.0)
 	return color.RGBA{R: shade, G: shade, B: shade, A: 255}
 }
