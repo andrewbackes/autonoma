@@ -1,8 +1,8 @@
 package mapper
 
 import (
-	"github.com/andrewbackes/autonoma/pkg/distance"
 	log "github.com/sirupsen/logrus"
+	"math/rand"
 
 	"github.com/andrewbackes/autonoma/pkg/bot"
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
@@ -15,24 +15,20 @@ func Map(g *grid.Grid, bot bot.Controller) {
 }
 
 func RandomlyMap(g *grid.Grid, bot bot.Controller) {
-	lookAhead := 10 * distance.Centimeter
-	moveAhead := 5 * distance.Centimeter
-
-	startHeading := bot.Pose().Heading
-	g.Apply(bot.Scan(360)...)
-	bot.Heading(startHeading)
 
 	done := false
 	for !done {
+
+		startHeading := bot.Pose().Heading
+		g.Apply(bot.Scan(360)...)
+		bot.Heading(startHeading)
+
 		// First try to move forward
-		line := g.Line(bot.Pose().Location, coordinates.CompassRose{Heading: startHeading, Distance: lookAhead})
-		if g.Vacant(line) {
-			log.Debug("Moving Forward")
-			bot.Move(moveAhead)
+		pt := coordinates.Add(bot.Pose().Location, coordinates.CompassRose{Heading: startHeading, Distance: g.CellSize()})
+		if g.CellIsVacant(pt) {
+			bot.Move(g.CellSize())
 		} else {
-			heading := bot.Pose().Heading + 15 // float64(rand.Intn(360)/45) * 15.0
-			bot.Heading(heading)
-			g.Apply(bot.Scan(360)...)
+			heading := bot.Pose().Heading + float64(rand.Intn(360)/45)*45.0
 			bot.Heading(heading)
 		}
 	}

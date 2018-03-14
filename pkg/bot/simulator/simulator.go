@@ -32,8 +32,8 @@ func New(occ coordinates.CartesianSet, sensors ...sensor.Sensor) *Simulator {
 }
 
 func (s *Simulator) Heading(heading float64) {
-	errMargin := (float64(-1 * rand.Intn(2))) * (rotationError * rand.Float64())
-	s.pose.Heading = errMargin
+	//errMargin := (float64(-1 * rand.Intn(2))) * (rotationError * rand.Float64())
+	s.pose.Heading = heading //errMargin
 }
 
 func (s *Simulator) Move(d distance.Distance) {

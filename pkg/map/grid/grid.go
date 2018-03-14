@@ -36,6 +36,10 @@ func New(cellSize distance.Distance) *Grid {
 	}
 }
 
+func (g *Grid) CellSize() distance.Distance {
+	return g.cellSize
+}
+
 func (g *Grid) Get(c coordinates.Cartesian) Odds {
 	val, exists := g.grid.Load(c)
 	if exists {

@@ -32,8 +32,8 @@ func (i *Image) At(x, y int) color.Color {
 		shade = 0
 	}
 
-	//p := math.Min(g.Get(pt).Probability(), 1)
-	//shade := uint8((1.0 - p) * 255.0)
+	//	p := math.Min(g.Get(pt).Probability(), 1)
+	//	shade := uint8((1.0 - p) * 255.0)
 	return color.RGBA{R: shade, G: shade, B: shade, A: 255}
 }
 
