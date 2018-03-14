@@ -25,6 +25,8 @@ type LogOdds struct {
 var (
 	initProbability = 0.2 // 0.2 to 0.5 depending on expected obstacle density
 	initLogOdds     = math.Log(initProbability) - math.Log(1-initProbability)
+	maxLogOdds      = math.Log(0.99) - math.Log(1-0.99)
+	minLogOdds      = math.Log(0.01) - math.Log(1-0.01)
 )
 
 func NewLogOdds() Odds {
