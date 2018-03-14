@@ -3,7 +3,7 @@ package sensor
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
+	// log "github.com/sirupsen/logrus"
 	"math"
 	"time"
 
@@ -36,22 +36,15 @@ func (r Reading) String() string {
 }
 
 func (r Reading) Analysis() (vacant, occupied coordinates.CartesianSet) {
-	if r.Value < r.Sensor.MaxDistance {
-		log.Debug(r)
-	}
 	vacant = coordinates.NewCartesianSet()
 	occupied = coordinates.NewCartesianSet()
 	startAngle := r.Pose.Heading - (r.Sensor.ViewAngle / 2)
 	endAngle := startAngle + r.Sensor.ViewAngle
-
-	for d := r.Sensor.MinDistance; ; d += 0.5 {
+	val := r.Value.Floor(distance.Centimeter)
+	for d := r.Sensor.MinDistance.Floor(distance.Centimeter); d <= val; d++ {
 		// reached max range
 		if d >= r.Sensor.MaxDistance {
-			break
-		}
-		// Don't xray through the obsticle.
-		if d > r.Value.Floor(distance.Centimeter) {
-			break
+			return
 		}
 		for a := startAngle; a <= endAngle; a += sensorAngleStepDegrees {
 			angle := math.Mod(a, 360)
@@ -64,10 +57,10 @@ func (r Reading) Analysis() (vacant, occupied coordinates.CartesianSet) {
 				X: coord.X + r.Pose.Location.X,
 				Y: coord.Y + r.Pose.Location.Y,
 			}
-			if d == r.Value.Floor(distance.Centimeter) {
+			if d == val {
 				// occupied
 				occupied.Add(coord)
-			} else {
+			} else if !occupied.Contains(coord) {
 				// vacant
 				vacant.Add(coord)
 			}

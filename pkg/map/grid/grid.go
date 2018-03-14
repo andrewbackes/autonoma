@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	vacantThreshold   = 0.1
+	vacantThreshold   = 0.15
 	occupiedThreshold = 0.85
 )
 
@@ -82,27 +82,14 @@ func (g *Grid) apply(r sensor.Reading) {
 	log.Debug("Applying reading ", r)
 	g.path.Add(r.Pose.Location)
 	vac, occ := r.Analysis()
-	// convert to cells:
-	occCells := coordinates.NewCartesianSet()
-	occ.Range(func(coord coordinates.Cartesian) bool {
-		occCells.Add(coord)
-		return false
-	})
-	vacCells := coordinates.NewCartesianSet()
-	vac.Range(func(coord coordinates.Cartesian) bool {
-		if !occCells.Contains(coord) {
-			vacCells.Add(coord)
-		}
-		return false
-	})
 	// mark the probabilities:
-	occCells.Range(func(coord coordinates.Cartesian) bool {
+	occ.Range(func(coord coordinates.Cartesian) bool {
 		prob := 0.99
 		g.update(coord, prob)
 		return false
 	})
-	vacCells.Range(func(coord coordinates.Cartesian) bool {
-		prob := 0.01
+	vac.Range(func(coord coordinates.Cartesian) bool {
+		prob := 0.1
 		g.update(coord, prob)
 		return false
 	})

@@ -1,7 +1,6 @@
 package simulate
 
 import (
-	"github.com/andrewbackes/autonoma/pkg/distance"
 	log "github.com/sirupsen/logrus"
 	"math"
 	"time"
@@ -24,8 +23,9 @@ func Reading(s sensor.Sensor, p coordinates.Pose, occupied coordinates.Cartesian
 	}
 	startAngle := p.Heading - (s.ViewAngle / 2)
 	endAngle := startAngle + s.ViewAngle
-	for d := distance.Distance(0); d < s.MaxDistance; d++ {
-		for a := startAngle; a <= endAngle; a += simulatorSensorStepAngle {
+
+	for a := startAngle; a <= endAngle; a += simulatorSensorStepAngle {
+		for d := s.MinDistance; d < s.MaxDistance; d++ {
 			angle := math.Mod(a, 360)
 			coord := coordinates.CompassRose{
 				Distance: d,
@@ -33,14 +33,10 @@ func Reading(s sensor.Sensor, p coordinates.Pose, occupied coordinates.Cartesian
 			}.Cartesian()
 			coord.X += p.Location.X
 			coord.Y += p.Location.Y
-
-			if occupied.Contains(coord) && d < s.MinDistance {
-				return r
-			}
-
-			if occupied.Contains(coord) && d >= s.MinDistance {
-				log.Debug("Reading found occupied square ", coord)
+			occ := occupied.Contains(coord)
+			if occ {
 				r.Value = d
+				log.Debug("Reading found occupied square ", coord)
 				return r
 			}
 		}

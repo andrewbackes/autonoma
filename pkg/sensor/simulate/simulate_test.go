@@ -10,39 +10,39 @@ import (
 func TestReadingUltraSonicNorth(t *testing.T) {
 	occ := coordinates.NewCartesianSet()
 	occ.Add(coordinates.Cartesian{X: 0, Y: 10})
-	n := coordinates.Pose{X: 0, Y: 0, Heading: 0}
+	n := coordinates.NewPose(0, 0, 0)
 	r := Reading(sensor.UltraSonic, n, occ)
-	assert.InDelta(t, 10, r.Value, 1)
+	assert.InDelta(t, 10, float64(r.Value), 1)
 }
 
 func TestReadingUltraSonicEast(t *testing.T) {
 	occ := coordinates.NewCartesianSet()
 	occ.Add(coordinates.Cartesian{X: 10, Y: 0})
-	e := coordinates.Pose{X: 0, Y: 0, Heading: 90}
+	e := coordinates.NewPose(0, 0, 90)
 	r := Reading(sensor.UltraSonic, e, occ)
-	assert.InDelta(t, 10, r.Value, 0)
+	assert.InDelta(t, 10, float64(r.Value), 0)
 }
 
 func TestReadingUltraSonicSouth(t *testing.T) {
 	occ := coordinates.NewCartesianSet()
 	occ.Add(coordinates.Cartesian{X: 0, Y: -10})
-	s := coordinates.Pose{X: 0, Y: 0, Heading: 180}
+	s := coordinates.NewPose(0, 0, 180)
 	r := Reading(sensor.UltraSonic, s, occ)
-	assert.InDelta(t, 10, r.Value, 0)
+	assert.InDelta(t, 10, float64(r.Value), 0)
 }
 
 func TestReadingUltraSonicWest(t *testing.T) {
 	occ := coordinates.NewCartesianSet()
 	occ.Add(coordinates.Cartesian{X: -10, Y: 0})
-	w := coordinates.Pose{X: 0, Y: 0, Heading: 270}
+	w := coordinates.NewPose(0, 0, 270)
 	r := Reading(sensor.UltraSonic, w, occ)
-	assert.InDelta(t, 10, r.Value, 0)
+	assert.InDelta(t, 10, float64(r.Value), 0)
 }
 
 func TestReadingOffset(t *testing.T) {
 	occ := coordinates.NewCartesianSet()
 	occ.Add(coordinates.Cartesian{X: 10, Y: 10})
-	p := coordinates.Pose{X: 10, Y: 0, Heading: 0}
+	p := coordinates.NewPose(10, 0, 0)
 	r := Reading(sensor.UltraSonic, p, occ)
-	assert.InDelta(t, 10, r.Value, 0)
+	assert.InDelta(t, 10, float64(r.Value), 0)
 }

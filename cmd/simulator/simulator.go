@@ -62,14 +62,15 @@ func fixedReadingsSimulator() {
 	img.Close()
 	check(err)
 
-	// Output text file of results
-	log.Info("Saving text file.")
-	txt, err := os.Create(fmt.Sprintf("output/%s-probabilities.txt", mapName))
-	check(err)
-	_, err = txt.WriteString(g.String())
-	txt.Close()
-	check(err)
-
+	/*
+		// Output text file of results
+		log.Info("Saving text file.")
+		txt, err := os.Create(fmt.Sprintf("output/%s-probabilities.txt", mapName))
+		check(err)
+		_, err = txt.WriteString(g.String())
+		txt.Close()
+		check(err)
+	*/
 	log.Info("Simulator Ended.")
 }
 
