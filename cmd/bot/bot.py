@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import RPi.GPIO as gpio
-from lib import move, orientation
+from lib import move, orientation, servo
 
 from util.getch import *
 
