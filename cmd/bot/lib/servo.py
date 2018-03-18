@@ -24,8 +24,9 @@ class Servo:
         self.pwm = gpio.PWM(config['servo_pin'], config['frequency'])
 
     def pos(self, deg):
-        pos = ((leftpos - rightpos) / 180)
-        return pos * deg + leftpos
+        pos = ((config['calibration']['left'] -
+                config['calibration']['right']) / 180)
+        return pos * deg + config['calibration']['left']
 
     def move(self, deg):
         interval = self.pos((deg + 90) * -1)
