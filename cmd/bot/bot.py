@@ -5,6 +5,8 @@ import RPi.GPIO as gpio
 from lib import orientation
 from lib.servo import Servo
 from lib.move import Move
+from lib.ir import IR
+
 from util.getch import *
 
 
@@ -12,6 +14,7 @@ def repl():
     gpio.setmode(gpio.BOARD)
     move = Move()
     servo = Servo()
+    ir = IR()
 
     print("Use w,a,s,d to move the vehicle. to exit")
     t = 0.2
@@ -20,8 +23,8 @@ def repl():
     servo_pos = 0
     servo.move(servo_pos)
     while True:
-        print('Heading={0:0.2f}° Speed={1}%'.format(
-            orientation.heading(), speed))
+        print('Heading={0:0.2f}° Speed={1}% IR={2}'.format(
+            orientation.heading(), speed, ir.distance()))
 
         k = getch()
         if k == "w":
