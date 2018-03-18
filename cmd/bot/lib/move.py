@@ -25,9 +25,9 @@ class Move:
         if gpio.getmode() != gpio.BOARD:
             gpio.setmode(gpio.BOARD)
         for pin in self.config['pwm'].values():
-            gpio.setup(value, gpio.OUT)
+            gpio.setup(pin, gpio.OUT)
         for pin in self.config['driver'].values():
-            gpio.setup(value, gpio.OUT)
+            gpio.setup(pin, gpio.OUT)
 
     def __run_at_power(self, t, power=80):
         p = {}
