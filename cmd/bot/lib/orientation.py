@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from Adafruit_BNO055 import BNO055
+import time
 
 # use i2c
 bno055 = BNO055.BNO055()
@@ -20,6 +21,7 @@ if __name__ == "__main__":
         print('Heading={0:0.2F} Roll={1:0.2F} Pitch={2:0.2F}\tSys_cal={3} ' +
               'Gyro_cal={4} Accel_cal={5} Mag_cal={6}'.format(
                   heading, roll, pitch, sys, gyro, accel, mag))
+        time.sleep(1)
 
     # Other values you can optionally read:
     # Orientation as a quaternion:
