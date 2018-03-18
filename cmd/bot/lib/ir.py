@@ -21,6 +21,7 @@ class IR:
         return cm
 
 if __name__ == "__main__":
+    ir = IR()
     while True:
-        print(str(distance()) + "cm")
+        print(str(ir.distance()) + "cm")
         time.sleep(0.5)
