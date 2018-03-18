@@ -10,6 +10,7 @@ from util.getch import *
 def repl():
     gpio.setmode(gpio.BOARD)
     move.init()
+    servo.init()
 
     print("Use w,a,s,d to move the vehicle. to exit")
     t = 0.2
