@@ -28,11 +28,8 @@ class Servo:
         return pos * deg + leftpos
 
     def move(self, deg):
-        interval = pos((deg + 90) * -1)
-        dutyPerc = interval * 100 / msPerCylce
-        if not pwm:
-            print("must initialize servo.init()")
-            return
+        interval = self.pos((deg + 90) * -1)
+        dutyPerc = interval * 100 / self.msPerCylce
         self.pwm.start(dutyPerc)
         time.sleep(0.5)
         self.pwm.stop()
