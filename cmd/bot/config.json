@@ -1,0 +1,50 @@
+{
+    "hbridge": {
+        "pwm": {
+            "left": 38,
+            "right": 40
+        },
+        "driver": {
+            "in1": 15,
+            "in2": 13,
+            "in3": 11,
+            "in4": 7
+        }
+    },
+    "servo": 37,
+    "compass": {
+        "calibration": {
+            "accelerometer": {
+                "min": [
+                    -250,
+                    -993,
+                    -1007
+                ],
+                "max": [
+                    1026,
+                    1017,
+                    1031
+                ]
+            },
+            "magnetometer": {
+                "min": [
+                    -461,
+                    -716,
+                    -610
+                ],
+                "max": [
+                    544,
+                    747,
+                    893
+                ]
+            }
+        }
+    },
+    "ultrasonic": {
+        "front": {}
+    },
+    "sharp": {
+        "spi_port": 0,
+        "spi_device": 0
+    }
+}
