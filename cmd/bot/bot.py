@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import RPi.GPIO as gpio
-from lib import move, orientation, servo
+from lib import move, orientation
+from lib.servo import Servo
 
 from util.getch import *
 
@@ -10,7 +11,7 @@ from util.getch import *
 def repl():
     gpio.setmode(gpio.BOARD)
     move.init()
-    servo.init()
+    servo = Servo()
 
     print("Use w,a,s,d to move the vehicle. to exit")
     t = 0.2
