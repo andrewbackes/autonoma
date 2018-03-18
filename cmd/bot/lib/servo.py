@@ -19,6 +19,7 @@ class Servo:
     def __init__(self, config=default_config):
         if gpio.getmode() != gpio.BOARD:
             gpio.setmode(gpio.BOARD)
+        self.config = config
         self.msPerCylce = 1000 / config['frequency']
         gpio.setup(config['servo_pin'], gpio.OUT)
         self.pwm = gpio.PWM(config['servo_pin'], config['frequency'])
