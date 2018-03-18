@@ -20,14 +20,14 @@ class Servo:
         if gpio.getmode() != gpio.BOARD:
             gpio.setmode(gpio.BOARD)
         self.config = config
-        self.msPerCylce = 1000 / config['frequency']
-        gpio.setup(config['servo_pin'], gpio.OUT)
-        self.pwm = gpio.PWM(config['servo_pin'], config['frequency'])
+        self.msPerCylce = 1000 / self.config['frequency']
+        gpio.setup(self.config['servo_pin'], gpio.OUT)
+        self.pwm = gpio.PWM(self.config['servo_pin'], self.config['frequency'])
 
     def pos(self, deg):
-        pos = ((config['calibration']['left'] -
-                config['calibration']['right']) / 180)
-        return pos * deg + config['calibration']['left']
+        pos = ((self.config['calibration']['left'] -
+                self.config['calibration']['right']) / 180)
+        return pos * deg + self.config['calibration']['left']
 
     def move(self, deg):
         interval = self.pos((deg + 90) * -1)
