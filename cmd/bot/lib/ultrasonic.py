@@ -29,7 +29,7 @@ class UltraSonic:
         gpio.setup(self.config['trigger'], gpio.OUT)
         gpio.setup(self.config['echo'], gpio.IN)
 
-    def distance(sensor, measure='cm'):
+    def distance(self, measure='cm'):
         gpio.output(self.config['trigger'], True)
         time.sleep(0.00001)  # specified wait time for this hardware
         gpio.output(self.config['trigger'], False)
