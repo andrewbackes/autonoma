@@ -6,6 +6,8 @@ from lib import orientation
 from lib.servo import Servo
 from lib.move import Move
 from lib.ir import IR
+from lib.ultrasonic import UltraSonic
+
 
 from util.getch import *
 
@@ -15,6 +17,7 @@ def repl():
     move = Move()
     servo = Servo()
     ir = IR()
+    ultrasonic = UltraSonic()
 
     print("Use w,a,s,d to move the vehicle. to exit")
     t = 0.2
@@ -23,8 +26,8 @@ def repl():
     servo_pos = 0
     servo.move(servo_pos)
     while True:
-        print('Heading={0:0.2f}° Speed={1}% IR={2}'.format(
-            orientation.heading(), speed, ir.distance()))
+        print('Heading={0:0.2f}°\tSpeed={1}%\tIR={2:0.2f}cm\tUltraSonic={3:0.2f}cm'.format(
+            orientation.heading(), speed, ir.distance(), ultrasonic.distance()))
 
         k = getch()
         if k == "w":
