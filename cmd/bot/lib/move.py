@@ -48,28 +48,28 @@ class Move:
 
     def forward(self, t, power=80):
         print("forward @ " + str(power) + " for t=" + str(t))
-        self.toggle(False, True, True, False, t, power)
+        self.__toggle(False, True, True, False, t, power)
         print("movement done")
 
     def backward(self, t, power=80):
         print("backward @ " + str(power) + " for t=" + str(t))
-        self.toggle(True, False, False, True, t, power)
+        self.__toggle(True, False, False, True, t, power)
         print("movement done")
 
     def turn_left(self, t, power=80):
-        self.toggle(False, True, False, False, t, power)
+        self.__toggle(False, True, False, False, t, power)
 
     def turn_right(self, t, power=80):
-        self.toggle(True, True, True, False, t, power)
+        self.__toggle(True, True, True, False, t, power)
 
     def counter_clockwise(self, t, power=80):
         print("counter_clockwise @ " + str(power) + " for t=" + str(t))
-        self.toggle(False, True, False, True, t, power)
+        self.__toggle(False, True, False, True, t, power)
         print("movement done")
 
     def clockwise(self, t, power=80):
         print("clockwise @ " + str(power) + " for t=" + str(t))
-        self.toggle(True, False, True, False, t, power)
+        self.__toggle(True, False, True, False, t, power)
         print("movement done")
 
 
