@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	colorModel = color.RGBAModel
-	pathColor  = color.RGBA{R: 255, G: 0, B: 0, A: 255}
+	colorModel             = color.RGBAModel
+	odometryPositionColor  = color.RGBA{R: 255, G: 0, B: 0, A: 255}
+	correctedPositionColor = color.RGBA{R: 0, G: 0, B: 255, A: 255}
 )
 
 // Image implements image.Image on a Grid.
@@ -21,8 +22,13 @@ type Image Grid
 func (i *Image) At(x, y int) color.Color {
 	g := (*Grid)(i)
 	pt := coordinates.Cartesian{X: x, Y: -y}
-	if g.path.Contains(pt) {
-		return pathColor
+
+	if g.correctedPositions.Contains(pt) {
+		return correctedPositionColor
+	}
+
+	if g.odometryPositions.Contains(pt) {
+		return odometryPositionColor
 	}
 
 	shade := uint8(255 / 2)

@@ -11,6 +11,7 @@ type Controller interface {
 	Move(d distance.Distance)
 
 	Pose() coordinates.Pose
+	SetPose(coordinates.Pose)
 
 	Readings() []sensor.Reading
 	Scan(degrees float64) []sensor.Reading

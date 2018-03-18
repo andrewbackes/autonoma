@@ -29,8 +29,8 @@ var (
 
 func main() {
 	log.SetLevel(logLevel)
-	mappingSimulator()
 	fixedReadingsSimulator()
+	mappingSimulator()
 }
 
 func mappingSimulator() {

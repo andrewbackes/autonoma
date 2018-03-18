@@ -27,6 +27,8 @@ func RandomlyMap(g *grid.Grid, bot bot.Controller) {
 		pt := coordinates.Add(bot.Pose().Location, coordinates.CompassRose{Heading: startHeading, Distance: g.CellSize()})
 		if g.CellIsVacant(pt) {
 			bot.Move(g.CellSize())
+			p := g.LocalizePose(bot.Pose())
+			bot.SetPose(p)
 		} else {
 			heading := bot.Pose().Heading + float64(rand.Intn(360)/45)*45.0
 			bot.Heading(heading)

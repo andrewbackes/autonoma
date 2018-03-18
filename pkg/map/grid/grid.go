@@ -19,20 +19,22 @@ type Grid struct {
 	grid                   sync.Map
 	minX, minY, maxX, maxY int
 	cellSize               distance.Distance
-	path                   coordinates.CartesianSet
+	odometryPositions      coordinates.CartesianSet
+	correctedPositions     coordinates.CartesianSet
 	newOdds                func() Odds
 }
 
 func New(cellSize distance.Distance) *Grid {
 	return &Grid{
-		grid:     sync.Map{},
-		minX:     math.MaxInt64,
-		maxX:     -math.MaxInt64,
-		minY:     math.MaxInt64,
-		maxY:     -math.MaxInt64,
-		cellSize: cellSize,
-		path:     coordinates.NewCartesianSet(),
-		newOdds:  NewLogOdds,
+		grid:               sync.Map{},
+		minX:               math.MaxInt64,
+		maxX:               -math.MaxInt64,
+		minY:               math.MaxInt64,
+		maxY:               -math.MaxInt64,
+		cellSize:           cellSize,
+		odometryPositions:  coordinates.NewCartesianSet(),
+		correctedPositions: coordinates.NewCartesianSet(),
+		newOdds:            NewLogOdds,
 	}
 }
 
@@ -84,7 +86,7 @@ func (g *Grid) update(c coordinates.Cartesian, prob float64) {
 
 func (g *Grid) apply(r sensor.Reading) {
 	log.Debug("Applying reading ", r)
-	g.path.Add(r.Pose.Location)
+	g.odometryPositions.Add(r.Pose.Location)
 	vac, occ := r.Analysis()
 	// mark the probabilities:
 	occ.Range(func(coord coordinates.Cartesian) bool {

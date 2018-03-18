@@ -47,5 +47,5 @@ func (l *LogOdds) Adjust(pmz float64) {
 	pm := l.Probability()
 	lp := l.odds + math.Log(pmz) - math.Log(1-pmz) - math.Log(pm) + math.Log(1-pm)
 	l.odds = lp
-	// log.Debugf("Updating logodds %f to %f probability %f to %f", l.odds, lp, pm, l.Probability())
+	// log.Infof("Updating logodds %f to %f probability %f to %f", l.odds, lp, pm, l.Probability())
 }
