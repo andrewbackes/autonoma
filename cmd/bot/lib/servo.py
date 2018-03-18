@@ -39,7 +39,7 @@ class Servo:
 
 if __name__ == "__main__":
     servo = Servo()
-    positions = [-90, -45, 0, 45, 90]
+    positions = [-90, -45, 0, 45, 90, 0]
     for p in positions:
         print("Position ", p)
         servo.move(p)
