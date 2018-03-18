@@ -26,8 +26,8 @@ def repl():
     servo_pos = 0
     servo.move(servo_pos)
     while True:
-        print('Heading={0:0.2f}°\tSpeed={1}%\tIR={2:0.2f}cm\tUltraSonic={3:0.2f}cm'.format(
-            orientation.heading(), speed, ir.distance(), ultrasonic.distance()))
+        print('Heading={0:0.2f}°\tServo={4}°\tSpeed={1}%\tIR={2:0.2f}cm\tUltraSonic={3:0.2f}cm'.format(
+            orientation.heading(), speed, ir.distance(), ultrasonic.distance(), servo_pos))
 
         k = getch()
         if k == "w":
@@ -48,9 +48,10 @@ def repl():
         elif k == "e":
             servo_pos = min(90, servo_pos + 45)
             servo.move(servo_pos)
+        elif k == 'p':
+            continue
         elif k == "x":
             break
-        print("servo pos: " + str(servo_pos) + "°")
     print("done")
     gpio.cleanup()
 
