@@ -3,13 +3,13 @@
 import time
 import RPi.GPIO as gpio
 
-# middlepos = (leftpos - rightpos) / 2 + leftpos
+
 default_config = {
     'servo_pin': 37,
     'frequency': 50,
     'calibration': {
-        'left': 2.5,
-        'right': 0.5
+        'right': 0.5,
+        'left': 2.5
     }
 }
 
@@ -17,12 +17,12 @@ default_config = {
 class Servo:
 
     def __init__(self, config=default_config):
+        self.config = config
+        print("Servo config:", config)
         if gpio.getmode() != gpio.BOARD:
             gpio.setmode(gpio.BOARD)
-        self.config = config
         self.msPerCylce = 1000 / self.config['frequency']
         gpio.setup(self.config['servo_pin'], gpio.OUT)
-        self.pwm = gpio.PWM(self.config['servo_pin'], self.config['frequency'])
 
     def pos(self, deg):
         pos = ((self.config['calibration']['left'] -
@@ -32,9 +32,10 @@ class Servo:
     def move(self, deg):
         interval = self.pos((deg + 90) * -1)
         dutyPerc = interval * 100 / self.msPerCylce
-        self.pwm.start(dutyPerc)
+        pwm = gpio.PWM(self.config['servo_pin'], self.config['frequency'])
+        pwm.start(dutyPerc)
         time.sleep(0.5)
-        self.pwm.stop()
+        pwm.stop()
 
 
 if __name__ == "__main__":
