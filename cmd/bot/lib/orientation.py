@@ -7,7 +7,7 @@ bno055 = BNO055.BNO055()
 
 
 def heading():
-    heading, roll, pitch = bno.read_euler()
+    heading, roll, pitch = bno055.read_euler()
     return heading
 
 
