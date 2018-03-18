@@ -8,8 +8,8 @@ default_config = {
     'servo_pin': 37,
     'frequency': 50,
     'calibration': {
-        'left': 0.5,
-        'right': 2.5
+        'left': 2.5,
+        'right': 0.5
     }
 }
 
@@ -41,6 +41,7 @@ if __name__ == "__main__":
     servo = Servo()
     positions = [-90, -45, 0, 45, 90]
     for p in positions:
+        print("Position ", p)
         servo.move(p)
         time.sleep(0.5)
     gpio.cleanup()
