@@ -26,21 +26,17 @@ class Bot:
         self.ir = IR()
         self.ultrasonic = UltraSonic()
 
-    def show_hud(self, speed):
+    def get_readings(self):
         usd = self.ultrasonic.distance()
         if not usd:
             usd = 0
-        p = 'Heading={0:0.2f}°\t' + \
-            'Speed={1}%\t' + \
-            'Servo={2}°\t' + \
-            'IR={3:0.2f}cm\t' + \
-            'UltraSonic={4:0.2f}cm'
-        print(p.format(
-            self.orientation.heading(),
-            speed,
-            self.servo.position(),
-            self.ir.distance(),
-            usd))
+        r = {
+            'heading': self.orientation.heading(),
+            'servo': self.servo.position(),
+            'ir': self.ir.distance(),
+            'ultrasonic': usd
+        }
+        return json.dumps(r)
 
     def manual_control(self):
         print("Use w,a,s,d to move the vehicle. to exit")
@@ -48,7 +44,8 @@ class Bot:
         speed = 50
         step = 10
         while True:
-            self.show_hud(speed)
+            print(self.get_readings)
+            print('Speed ', speed)
             k = getch()
             if k == "w":
                 self.move.forward(t, speed)
@@ -74,8 +71,20 @@ class Bot:
         gpio.cleanup()
 
     def __handler(self, payload):
-        print(payload)
-        pass
+        print('Handling ' + payload)
+        p = json.loads(payload)
+        if p['command'] == 'move' and p['direction'] == 'forward':
+            self.move.forward(p['time'], p['speed'])
+        elif p['command'] == 'move' and p['direction'] == 'backward':
+            self.move.backward(p['time'], p['speed'])
+        elif p['command'] == 'move' and p['direction'] == 'counter_clockwise':
+            self.move.counter_clockwise(p['time'], p['speed'])
+        elif p['command'] == 'move' and p['direction'] == 'clockwise':
+            self.move.clockwise(p['time'], p['speed'])
+        elif p['command'] == 'servo':
+            self.servo.move(p['position'])
+        elif p['command'] == 'get_readings':
+            self.tcp.send(json.dumps(self.get_readings()))
 
     def network_control(self):
         self.tcp = TCP()
