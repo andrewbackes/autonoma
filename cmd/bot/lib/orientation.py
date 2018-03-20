@@ -10,7 +10,7 @@ class Orientation:
         # use i2c
         self.bno055 = BNO055.BNO055()
 
-    def heading():
+    def heading(self):
         heading, roll, pitch = self.bno055.read_euler()
         return heading
 
