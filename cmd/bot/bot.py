@@ -37,8 +37,7 @@ class Bot:
             ir.distance(),
             usd))
 
-    def repl(self):
-
+    def manual_control(self):
         print("Use w,a,s,d to move the vehicle. to exit")
         t = 0.2
         speed = 50
@@ -70,4 +69,5 @@ class Bot:
     gpio.cleanup()
 
 if __name__ == "__main__":
-    repl()
+    bot = Bot()
+    bot.manual_control()
