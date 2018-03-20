@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import RPi.GPIO as gpio
-from lib import orientation
+from lib.orientation import Orientation
 from lib.servo import Servo
 from lib.move import Move
 from lib.ir import IR
@@ -17,6 +17,7 @@ class Bot:
     def __init__(self):
         gpio.setmode(gpio.BOARD)
         self.move = Move()
+        self.orientation = Orientation()
         self.servo = Servo()
         self.ir = IR()
         self.ultrasonic = UltraSonic()
