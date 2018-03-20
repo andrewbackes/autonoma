@@ -10,6 +10,9 @@ from lib.ultrasonic import UltraSonic
 
 
 from util.getch import *
+from util.tcp import TCP
+
+import json
 
 
 class Bot:
@@ -67,7 +70,15 @@ class Bot:
             elif k == "x":
                 break
         print("done")
-    gpio.cleanup()
+        gpio.cleanup()
+
+    def __handler(self, payload):
+        print(payload)
+        pass
+
+    def network_control(self):
+        self.tcp = TCP()
+        self.tcp.listen(self.__handler)
 
 if __name__ == "__main__":
     bot = Bot()
