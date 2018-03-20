@@ -12,50 +12,61 @@ from lib.ultrasonic import UltraSonic
 from util.getch import *
 
 
-def repl():
-    gpio.setmode(gpio.BOARD)
-    move = Move()
-    servo = Servo()
-    ir = IR()
-    ultrasonic = UltraSonic()
+class Bot:
 
-    print("Use w,a,s,d to move the vehicle. to exit")
-    t = 0.2
-    speed = 50
-    step = 10
-    servo_pos = 0
-    servo.move(servo_pos)
-    while True:
+    def __init__(self):
+        gpio.setmode(gpio.BOARD)
+        self.move = Move()
+        self.servo = Servo()
+        self.ir = IR()
+        self.ultrasonic = UltraSonic()
+
+    def show_hud(self):
         usd = ultrasonic.distance()
         if not usd:
             usd = 0
-        print('Heading={0:0.2f}°\tSpeed={1}%\tIR={2:0.2f}cm\tUltraSonic={3:0.2f}cm'.format(
-            orientation.heading(), speed, ir.distance(), usd))
+        p = 'Heading={0:0.2f}°\t' + \
+            'Speed={1}%\t' + \
+            'Servo={2}°\t' + \
+            'IR={3:0.2f}cm\t' + \
+            'UltraSonic={4:0.2f}cm'
+        print(p.format(
+            orientation.heading(),
+            speed,
+            servo.position(),
+            ir.distance(),
+            usd))
 
-        k = getch()
-        if k == "w":
-            move.forward(t, speed)
-        elif k == "s":
-            move.backward(t, speed)
-        elif k == "a":
-            move.counter_clockwise(t, speed)
-        elif k == "d":
-            move.clockwise(t, speed)
-        elif k == 'r':
-            speed = min(100, speed + step)
-        elif k == 'f':
-            speed = max(0, speed - step)
-        elif k == "q":
-            servo_pos = max(-90, servo_pos - 45)
-            servo.move(servo_pos)
-        elif k == "e":
-            servo_pos = min(90, servo_pos + 45)
-            servo.move(servo_pos)
-        elif k == 'p':
-            continue
-        elif k == "x":
-            break
-    print("done")
+    def repl(self):
+
+        print("Use w,a,s,d to move the vehicle. to exit")
+        t = 0.2
+        speed = 50
+        step = 10
+        while True:
+            self.show_hud()
+            k = getch()
+            if k == "w":
+                self.move.forward(t, speed)
+            elif k == "s":
+                self.move.backward(t, speed)
+            elif k == "a":
+                self.move.counter_clockwise(t, speed)
+            elif k == "d":
+                self.move.clockwise(t, speed)
+            elif k == 'r':
+                speed = min(100, speed + step)
+            elif k == 'f':
+                speed = max(0, speed - step)
+            elif k == "q":
+                servo.move(max(-90, servo.position() - 45))
+            elif k == "e":
+                servo.move(min(90, servo.position() + 45))
+            elif k == 'p':
+                continue
+            elif k == "x":
+                break
+        print("done")
     gpio.cleanup()
 
 if __name__ == "__main__":
