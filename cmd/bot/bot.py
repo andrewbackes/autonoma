@@ -48,7 +48,7 @@ class Bot:
         speed = 50
         step = 10
         while True:
-            print(self.get_readings)
+            print(self.get_readings())
             print('Speed ', speed)
             k = getch()
             if k == "w":
