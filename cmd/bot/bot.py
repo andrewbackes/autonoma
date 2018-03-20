@@ -86,9 +86,9 @@ if __name__ == "__main__":
         print("Please specify --network or --manual")
         sys.exit(1)
     bot = Bot()
-    if sys.argv == '--network':
+    if sys.argv[1] == '--network':
         bot.network_control()
-    elif sys.argv == '--manual':
+    elif sys.argv[1] == '--manual':
         bot.manual_control()
     else:
         print("unknown arguement")
