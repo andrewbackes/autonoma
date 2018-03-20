@@ -31,10 +31,10 @@ class Bot:
             'IR={3:0.2f}cm\t' + \
             'UltraSonic={4:0.2f}cm'
         print(p.format(
-            orientation.heading(),
+            self.orientation.heading(),
             speed,
-            servo.position(),
-            ir.distance(),
+            self.servo.position(),
+            self.ir.distance(),
             usd))
 
     def manual_control(self):
@@ -58,9 +58,9 @@ class Bot:
             elif k == 'f':
                 speed = max(0, speed - step)
             elif k == "q":
-                servo.move(max(-90, servo.position() - 45))
+                self.servo.move(max(-90, self.servo.position() - 45))
             elif k == "e":
-                servo.move(min(90, servo.position() + 45))
+                self.servo.move(min(90, self.servo.position() + 45))
             elif k == 'p':
                 continue
             elif k == "x":
