@@ -22,7 +22,7 @@ class Bot:
         self.ultrasonic = UltraSonic()
 
     def show_hud(self):
-        usd = ultrasonic.distance()
+        usd = self.ultrasonic.distance()
         if not usd:
             usd = 0
         p = 'Heading={0:0.2f}°\t' + \
