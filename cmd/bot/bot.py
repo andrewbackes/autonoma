@@ -13,6 +13,7 @@ from util.getch import *
 from util.tcp import TCP
 
 import json
+import sys
 
 
 class Bot:
@@ -81,5 +82,11 @@ class Bot:
         self.tcp.listen(self.__handler)
 
 if __name__ == "__main__":
+    if len(sys.argv) <= 1:
+        print("Please specify --network or --manual")
+        sys.exit(1)
     bot = Bot()
-    bot.manual_control()
+    if sys.argv == '--network':
+        bot.network_control()
+    elif sys.argv == '--manual':
+        bot.manual_control()
