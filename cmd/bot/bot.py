@@ -22,7 +22,7 @@ class Bot:
         self.ir = IR()
         self.ultrasonic = UltraSonic()
 
-    def show_hud(self):
+    def show_hud(self, speed):
         usd = self.ultrasonic.distance()
         if not usd:
             usd = 0
@@ -44,7 +44,7 @@ class Bot:
         speed = 50
         step = 10
         while True:
-            self.show_hud()
+            self.show_hud(speed)
             k = getch()
             if k == "w":
                 self.move.forward(t, speed)
