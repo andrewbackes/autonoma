@@ -75,7 +75,7 @@ class Bot:
         try:
             p = json.loads(payload)
         except:
-            print("Could not json decode '" + payload + "'")
+            print('Could not json decode: "' + payload + '"')
             return
         if p['command'] == 'move' and p['direction'] == 'forward':
             self.move.forward(p['time'], p['speed'])
