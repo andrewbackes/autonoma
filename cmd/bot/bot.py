@@ -72,7 +72,11 @@ class Bot:
 
     def __handler(self, payload):
         print('Handling ' + payload)
-        p = json.loads(payload)
+        try:
+            p = json.loads(payload)
+        except:
+            print("Could not json decode '" + payload + "'")
+            return
         if p['command'] == 'move' and p['direction'] == 'forward':
             self.move.forward(p['time'], p['speed'])
         elif p['command'] == 'move' and p['direction'] == 'backward':
