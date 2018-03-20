@@ -90,3 +90,5 @@ if __name__ == "__main__":
         bot.network_control()
     elif sys.argv == '--manual':
         bot.manual_control()
+    else:
+        print("unknown arguement")
