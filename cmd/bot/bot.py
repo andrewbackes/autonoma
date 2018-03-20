@@ -26,8 +26,11 @@ def repl():
     servo_pos = 0
     servo.move(servo_pos)
     while True:
+        usd = ultrasonic.distance()
+        if not usd:
+            usd = 0
         print('Heading={0:0.2f}°\tSpeed={1}%\tIR={2:0.2f}cm\tUltraSonic={3:0.2f}cm'.format(
-            orientation.heading(), speed, ir.distance(), ultrasonic.distance()))
+            orientation.heading(), speed, ir.distance(), usd))
 
         k = getch()
         if k == "w":
