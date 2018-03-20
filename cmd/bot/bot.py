@@ -26,6 +26,10 @@ class Bot:
         self.ir = IR()
         self.ultrasonic = UltraSonic()
 
+    def __del__(self):
+        print("done")
+        gpio.cleanup()
+
     def get_readings(self):
         usd = self.ultrasonic.distance()
         if not usd:
@@ -67,15 +71,13 @@ class Bot:
                 continue
             elif k == "x":
                 break
-        print("done")
-        gpio.cleanup()
 
     def __handler(self, payload):
         print('Handling ' + payload)
         try:
             p = json.loads(payload)
         except:
-            print('Could not json decode: "' + payload + '"')
+            print("Could not decode json")
             return
         if p['command'] == 'move' and p['direction'] == 'forward':
             self.move.forward(p['time'], p['speed'])
@@ -94,6 +96,7 @@ class Bot:
         self.tcp = TCP()
         self.tcp.listen(self.__handler)
 
+
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
         print("Please specify --network or --manual")
@@ -105,3 +108,4 @@ if __name__ == "__main__":
         bot.manual_control()
     else:
         print("unknown arguement")
+    del(bot)
