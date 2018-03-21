@@ -136,24 +136,28 @@ func (g *Grid) Vacant(coords coordinates.CartesianSet) bool {
 }
 
 func (g *Grid) CellIsVacant(c coordinates.Cartesian) bool {
-	max := g.cellMax(c)
-	return max <= vacantThreshold
+	min, max := g.cellMinMax(c)
+	return max <= occupiedThreshold && min <= vacantThreshold
 }
 
 func (g *Grid) CellIsOccupied(c coordinates.Cartesian) bool {
-	max := g.cellMax(c)
+	_, max := g.cellMinMax(c)
 	return max >= occupiedThreshold
 }
 
-func (g *Grid) cellMax(c coordinates.Cartesian) float64 {
+func (g *Grid) cellMinMax(c coordinates.Cartesian) (min, max float64) {
 	coords := coordinates.Cell(c, g.cellSize)
-	max := float64(-1)
+	max = float64(-1)
+	min = float64(2)
 	coords.Range(func(coor coordinates.Cartesian) bool {
 		prob := g.Get(coor).Probability()
 		if prob > max {
 			max = prob
 		}
+		if prob < min {
+			min = prob
+		}
 		return false
 	})
-	return max
+	return
 }

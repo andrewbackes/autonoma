@@ -13,18 +13,19 @@ import (
 	"github.com/andrewbackes/autonoma/pkg/hud"
 	"github.com/andrewbackes/autonoma/pkg/map/grid"
 	"github.com/andrewbackes/autonoma/pkg/map/image"
-	"github.com/andrewbackes/autonoma/pkg/mapper"
 	"github.com/andrewbackes/autonoma/pkg/sensor"
 	"github.com/andrewbackes/autonoma/pkg/sensor/simulate"
+	"github.com/andrewbackes/autonoma/pkg/slam"
 )
 
 var (
 	mapPath          = "pkg/map/image/assets/maze1.png"
 	poseSpacing      = 10
-	poseAngleSpacing = 15.0
+	poseAngleSpacing = 5.0
 	gridCellSize     = 5 * distance.Centimeter
-	sensors          = []sensor.Sensor{sensor.UltraSonic}
-	logLevel         = log.InfoLevel
+	sensors          = []sensor.Sensor{sensor.SharpGP2Y0A21YK0F}
+	// sensors  = []sensor.Sensor{sensor.UltraSonicHCSR04}
+	logLevel = log.InfoLevel
 )
 
 func main() {
@@ -38,7 +39,7 @@ func mappingSimulator() {
 	occ := getOccupied(mapPath)
 	bot := simulator.New(occ, sensors...)
 	grid := grid.New(gridCellSize)
-	go mapper.RandomlyMap(grid, bot)
+	go slam.RandomlyMap(grid, bot)
 	hud.ListenAndServe(grid)
 }
 

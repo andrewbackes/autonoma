@@ -18,15 +18,16 @@ type Sensor struct {
 }
 
 var (
-	// UltraSonic represents a physical UltraSonic sensor.
-	UltraSonic = Sensor{
+	// UltraSonicHCSR04 represents an UltraSonic HC-SR04 distance sensor.
+	UltraSonicHCSR04 = Sensor{
 		ViewAngle:   15.0,
 		MaxDistance: 18 * distance.Centimeter,
 		MinDistance: 1 * distance.Centimeter,
 		Binary:      false,
 	}
 
-	IRDistance = Sensor{
+	// SharpGP2Y0A21YK0F represents a Sharp IR Distance Sensor GP2Y0A21YK0F
+	SharpGP2Y0A21YK0F = Sensor{
 		ViewAngle:   0.0,
 		MaxDistance: 80 * distance.Centimeter,
 		MinDistance: 10 * distance.Centimeter,

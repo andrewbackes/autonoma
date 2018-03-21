@@ -31,7 +31,7 @@ func New(occ coordinates.CartesianSet, sensors ...sensor.Sensor) *Simulator {
 	}
 }
 
-func (s *Simulator) Heading(heading float64) {
+func (s *Simulator) Rotate(heading float64) {
 	errMargin := (float64(-1 * rand.Intn(2))) * (rotationError * rand.Float64())
 	s.pose.Heading = heading + errMargin
 }
@@ -48,7 +48,7 @@ func (s *Simulator) Move(d distance.Distance) {
 	log.Debug("Simulator Pose ", s.pose)
 }
 
-func (s *Simulator) Readings() []sensor.Reading {
+func (s *Simulator) readings() []sensor.Reading {
 	rs := make([]sensor.Reading, 0, len(s.sensors))
 	for _, sensor := range s.sensors {
 		r := simulate.Reading(sensor, s.pose, s.occupied)
@@ -65,12 +65,13 @@ func (s *Simulator) SetPose(p coordinates.Pose) {
 	s.pose = p
 }
 
-func (s *Simulator) Scan(degrees float64) []sensor.Reading {
+func (s *Simulator) Scan() []sensor.Reading {
 	rs := make([]sensor.Reading, 0)
+	degrees := 180.0
 	startingHeading := s.pose.Heading
 	for heading := startingHeading - degrees/2; heading <= startingHeading+degrees/2; heading += scanAngleIncrement {
-		s.Heading(math.Mod(heading, 360))
-		rs = append(rs, s.Readings()...)
+		s.Rotate(math.Mod(heading, 360))
+		rs = append(rs, s.readings()...)
 	}
 	return rs
 }

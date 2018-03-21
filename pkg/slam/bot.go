@@ -1,4 +1,4 @@
-package bot
+package slam
 
 import (
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
@@ -6,13 +6,14 @@ import (
 	"github.com/andrewbackes/autonoma/pkg/sensor"
 )
 
-type Controller interface {
-	Heading(degrees float64)
+// Bot is for controlling bots.
+type Bot interface {
+	Rotate(heading float64)
 	Move(d distance.Distance)
 
 	Pose() coordinates.Pose
 	SetPose(coordinates.Pose)
 
-	Readings() []sensor.Reading
-	Scan(degrees float64) []sensor.Reading
+	// Readings() []sensor.Reading
+	Scan() []sensor.Reading
 }
