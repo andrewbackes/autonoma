@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
-	"net"
 	"time"
 
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
@@ -14,12 +13,13 @@ import (
 )
 
 type Bot struct {
-	pose       coordinates.Pose
-	sensors    map[string]sensor.Sensor
-	dimensions Dimensions
-	wheels     Wheels
-	address    string
-	conn       net.Conn
+	pose         coordinates.Pose
+	sensors      map[string]sensor.Sensor
+	dimensions   Dimensions
+	wheels       Wheels
+	sendReceiver sendReceiver
+
+	rotationError float64
 }
 
 // Dimensions of a bot.
@@ -37,35 +37,50 @@ type Wheels struct {
 // New creates a bot with the specified sensors with given IP.
 func New(address string, sensors map[string]sensor.Sensor, d Dimensions, w Wheels) *Bot {
 	b := &Bot{
-		address:    address,
-		sensors:    sensors,
-		dimensions: d,
-		wheels:     w,
+		sendReceiver:  &tcpSendReceiver{address: address},
+		sensors:       sensors,
+		dimensions:    d,
+		wheels:        w,
+		rotationError: 10,
 	}
 	b.calibrate()
 	return b
 }
 
 func (b *Bot) Rotate(heading float64) {
-	b.rotate(heading)
+	b.rotate(heading, 150)
 }
 
-func (b *Bot) rotate(heading float64) {
-	h := b.Pose().Heading
-	var cwd, ccwd float64
-	if h < heading {
-		cwd = heading - h
-		ccwd = (360 - heading) + h
-	} else {
-		ccwd = h - heading
-		cwd = (360 - h) + heading
+func (b *Bot) rotate(target, turnRate float64) {
+	start := b.Pose().Heading
+	dist, dir := smallestAngle(start, target)
+	t := dist / turnRate
+	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "%s", "time": %f, "power": %d}`, dir, t, b.wheels.MaxPower))
+	end := b.Pose().Heading
+	distFromTarget, _ := smallestAngle(end, target)
+	if distFromTarget > b.rotationError {
+		travelDist, _ := smallestAngle(start, end)
+		newTurnRate := travelDist / t
+		b.rotate(target, newTurnRate)
 	}
-	dir := "clockwise"
+}
+
+func smallestAngle(from, to float64) (dist float64, dir string) {
+	var cwd, ccwd float64
+	if from < to {
+		cwd = to - from
+		ccwd = (360 - to) + from
+	} else {
+		ccwd = to - from
+		cwd = (360 - to) + from
+	}
+	dir = "clockwise"
+	dist = cwd
 	if ccwd < cwd {
 		dir = "counter_clockwise"
+		dist = ccwd
 	}
-	t := 1.0
-	b.send(fmt.Sprintf(`{"command": "move", "direction": "%s", "time": %f, "power": %d}`, dir, t, b.wheels.MaxPower))
+	return
 }
 
 func (b *Bot) Move(d distance.Distance) {
@@ -73,15 +88,16 @@ func (b *Bot) Move(d distance.Distance) {
 	circ := b.wheels.Diameter * math.Pi
 	rot := d / circ
 	t := float64(rot) / float64(b.wheels.RPM*60)
-	b.send(fmt.Sprintf(`{"command": "move", "direction": "forward", "time": %f, "power": %d}`, t, b.wheels.MaxPower))
+	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "forward", "time": %f, "power": %d}`, t, b.wheels.MaxPower))
 	b.pose.Location = coordinates.Add(p.Location, coordinates.CompassRose{Heading: p.Heading, Distance: d})
 }
 
 func (b *Bot) readings() map[string]float64 {
 	time.Sleep(250 * time.Millisecond)
-	resp := b.sendAndReceive(`{"command": "get_readings"}`)
+	b.sendReceiver.send(`{"command": "get_readings"}`)
+	resp := b.sendReceiver.receive()
 	readings := map[string]float64{}
-	err := json.Unmarshal([]byte(resp), readings)
+	err := json.Unmarshal([]byte(resp), &readings)
 	if err != nil {
 		panic(err)
 	}
@@ -110,7 +126,7 @@ func (b *Bot) Scan() []sensor.Reading {
 		Pose:   initPos,
 	})
 	for deg := -90; deg <= 90; deg += 5 {
-		b.send(fmt.Sprintf(`{"command": "servo", "position": %d}`, deg))
+		b.sendReceiver.send(fmt.Sprintf(`{"command": "servo", "position": %d}`, deg))
 		b.readings()
 		rs = append(rs, sensor.Reading{
 			Sensor: b.sensors["ir"],

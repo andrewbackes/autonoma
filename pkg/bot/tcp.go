@@ -2,36 +2,50 @@ package bot
 
 import (
 	"bufio"
+	"fmt"
 	"net"
 )
 
-func (b *Bot) connect() {
-	conn, err := net.Dial("tcp", b.address)
-	if err != nil {
-		panic(err)
-	}
-	b.conn = conn
+type sendReceiver interface {
+	receive() string
+	send(string)
 }
 
-func (b *Bot) send(msg string) {
-	if b.conn == nil {
-		b.connect()
-	}
-	_, err := b.conn.Write([]byte(msg))
-	if err != nil {
-		panic(err)
-	}
+type tcpSendReceiver struct {
+	conn    net.Conn
+	address string
 }
 
-func (b *Bot) receive() string {
-	msg, err := bufio.NewReader(b.conn).ReadString('\n')
+func (t *tcpSendReceiver) connect() {
+	conn, err := net.Dial("tcp", t.address)
 	if err != nil {
 		panic(err)
 	}
+	t.conn = conn
+}
+
+func (t *tcpSendReceiver) send(msg string) {
+	if t.conn == nil {
+		t.connect()
+	}
+	_, err := t.conn.Write([]byte(msg))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("sent:", msg)
+}
+
+func (t *tcpSendReceiver) receive() string {
+	fmt.Println(t.conn)
+	msg, err := bufio.NewReader(t.conn).ReadString('\n')
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("recieved:", msg)
 	return msg
 }
 
-func (b *Bot) sendAndReceive(msg string) string {
-	b.send(msg)
-	return b.receive()
+func (t *tcpSendReceiver) sendAndReceive(msg string) string {
+	t.send(msg)
+	return t.receive()
 }
