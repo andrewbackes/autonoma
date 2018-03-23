@@ -16,11 +16,15 @@ class TCP:
         self.conn = None
 
     def send(self, msg):
-        print('Sending ' + msg)
+        if self.conn:
+            print("Sending " + msg)
+            self.conn.sendall((msg + '\n').encode())
+        else:
+            print("Not connected. Can not send.")
 
     def listen(self, handler):
         print(
-            "Listening for TCP/IP connections on port %d".format(self.bind_port))
+            "Listening for TCP/IP connections on port ", self.bind_port)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind((self.bind_ip, self.bind_port))
         s.listen(1)
