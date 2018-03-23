@@ -35,7 +35,7 @@ class Servo:
         dutyPerc = interval * 100 / self.msPerCylce
         pwm = gpio.PWM(self.config['servo_pin'], self.config['frequency'])
         pwm.start(dutyPerc)
-        # time.sleep(0.5)
+        time.sleep(0.1)
         pwm.stop()
         self.__pos = deg
 
