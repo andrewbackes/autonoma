@@ -12,7 +12,7 @@ class TCP:
     conn_buffer_size = 4096
 
     def __init__(self):
-        logger.basicConfig(level=logging.DEBUG)
+        logger.setLevel(logging.DEBUG)
         self.conn = None
 
     def send(self, msg):
