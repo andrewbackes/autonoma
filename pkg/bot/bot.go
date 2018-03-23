@@ -122,27 +122,27 @@ func (b *Bot) SetPose(p coordinates.Pose) {
 func (b *Bot) Scan() []sensor.Reading {
 	log.Info("Scanning.")
 	rs := make([]sensor.Reading, 0)
-	r1 := b.readings()
+	r0 := b.readings()
 	initPos := coordinates.Pose{
-		Heading:  r1["heading"],
+		Heading:  r0["heading"],
 		Location: b.pose.Location,
 	}
 	rs = append(rs, sensor.Reading{
 		Sensor: b.sensors["ultrasonic"],
-		Value:  distance.Distance(r1["ultrasonic"]),
+		Value:  distance.Distance(r0["ultrasonic"]),
 		Pose:   initPos,
 	})
 	for deg := -90; deg <= 90; deg += 5 {
 		b.sendReceiver.send(fmt.Sprintf(`{"command": "servo", "position": %d}`, deg))
 		time.Sleep(150 * time.Millisecond)
-		b.readings()
+		readings := b.readings()
 		h := int(initPos.Heading+float64(deg)) % 360
 		if h < 0 {
 			h = h + 360
 		}
 		r := sensor.Reading{
 			Sensor: b.sensors["ir"],
-			Value:  distance.Distance(r1["ir"]),
+			Value:  distance.Distance(readings["ir"]),
 			Pose: coordinates.Pose{
 				Location: initPos.Location,
 				Heading:  float64(h),
@@ -156,8 +156,8 @@ func (b *Bot) Scan() []sensor.Reading {
 
 func (b *Bot) calibrate() {
 	log.Info("Calibrating...")
-	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "clockwise", "time": 2, "speed": %d}`, b.wheels.MaxPower))
-	time.Sleep(2500 * time.Millisecond)
-	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "counter_clockwise", "time": 2, "speed": %d}`, b.wheels.MaxPower))
-	time.Sleep(2500 * time.Millisecond)
+	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "clockwise", "time": 1, "speed": %d}`, b.wheels.MaxPower))
+	time.Sleep(1500 * time.Millisecond)
+	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "counter_clockwise", "time": 1, "speed": %d}`, b.wheels.MaxPower))
+	time.Sleep(1500 * time.Millisecond)
 }
