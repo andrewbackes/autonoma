@@ -8,6 +8,18 @@ import (
 	"github.com/andrewbackes/autonoma/pkg/map/grid"
 )
 
+func Static(g *grid.Grid, bot Bot) {
+	log.Info("Mapping...")
+	done := false
+	for !done {
+		bot.Rotate(0.0)
+		g.Apply(bot.Scan()...)
+		bot.Rotate(180.0)
+		g.Apply(bot.Scan()...)
+	}
+	log.Info("Done mapping.")
+}
+
 func RandomlyMap(g *grid.Grid, bot Bot) {
 	log.Info("Mapping...")
 	done := false

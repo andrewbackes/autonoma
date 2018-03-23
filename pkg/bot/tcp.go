@@ -46,8 +46,3 @@ func (t *tcpSendReceiver) receive() string {
 	log.Info("Recieved:", msg)
 	return msg
 }
-
-func (t *tcpSendReceiver) sendAndReceive(msg string) string {
-	t.send(msg)
-	return t.receive()
-}

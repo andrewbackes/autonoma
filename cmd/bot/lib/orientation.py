@@ -11,6 +11,7 @@ class Orientation:
         self.bno055 = BNO055.BNO055()
 
     def heading(self):
+        time.sleep(0.01)
         heading, roll, pitch = self.bno055.read_euler()
         return heading
 

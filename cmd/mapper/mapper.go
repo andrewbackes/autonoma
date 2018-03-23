@@ -12,7 +12,7 @@ import (
 
 // settings:
 var (
-	logLevel     = log.InfoLevel
+	logLevel     = log.DebugLevel
 	gridCellSize = 5 * distance.Centimeter
 )
 
@@ -41,6 +41,6 @@ func main() {
 	log.Info("Mapper started.")
 	b := bot.New(address, sensors, dimensions, wheels)
 	g := grid.New(gridCellSize)
-	go slam.RandomlyMap(g, b)
+	go slam.Static(g, b)
 	hud.ListenAndServe(g)
 }

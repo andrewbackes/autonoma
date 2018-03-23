@@ -56,13 +56,14 @@ func (b *Bot) Rotate(heading float64) {
 func (b *Bot) rotate(target, turnRate float64) {
 	start := b.Pose().Heading
 	dist, dir := smallestAngle(start, target)
-	t := dist / turnRate
-	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "%s", "time": %f, "power": %d}`, dir, t, b.wheels.MaxPower))
+	t := math.Max(dist/turnRate, 0.1)
+	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "%s", "time": %f, "speed": %d}`, dir, t, b.wheels.MaxPower))
 	end := b.Pose().Heading
 	distFromTarget, _ := smallestAngle(end, target)
 	if distFromTarget > b.rotationError {
-		travelDist, _ := smallestAngle(start, end)
-		newTurnRate := travelDist / t
+		//travelDist, _ := smallestAngle(start, end)
+		//newTurnRate := travelDist / t
+		newTurnRate := 150.0
 		b.rotate(target, newTurnRate)
 	}
 }
@@ -70,11 +71,11 @@ func (b *Bot) rotate(target, turnRate float64) {
 func smallestAngle(from, to float64) (dist float64, dir string) {
 	var cwd, ccwd float64
 	if from < to {
-		cwd = to - from
-		ccwd = (360 - to) + from
+		cwd = math.Abs(to - from)
+		ccwd = math.Abs((360 - to) + from)
 	} else {
-		ccwd = to - from
-		cwd = (360 - to) + from
+		ccwd = math.Abs(to - from)
+		cwd = math.Abs((360 - to) + from)
 	}
 	dir = "clockwise"
 	dist = cwd
@@ -82,6 +83,7 @@ func smallestAngle(from, to float64) (dist float64, dir string) {
 		dir = "counter_clockwise"
 		dist = ccwd
 	}
+	log.Debug("Smallest angle: ", dist)
 	return
 }
 
@@ -91,13 +93,14 @@ func (b *Bot) Move(d distance.Distance) {
 	rot := d / circ
 	t := float64(rot) / float64(b.wheels.RPM*60)
 	log.Info("Moving ", "forward", " for ", t, " seconds")
-	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "forward", "time": %f, "power": %d}`, t, b.wheels.MaxPower))
+	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "forward", "time": %f, "speed": %d}`, t, b.wheels.MaxPower))
+	time.Sleep(time.Duration(t*1000) * time.Millisecond)
 	b.pose.Location = coordinates.Add(p.Location, coordinates.CompassRose{Heading: p.Heading, Distance: d})
 }
 
 func (b *Bot) readings() map[string]float64 {
-	time.Sleep(250 * time.Millisecond)
 	b.sendReceiver.send(`{"command": "get_readings"}`)
+	time.Sleep(20 * time.Millisecond)
 	resp := b.sendReceiver.receive()
 	readings := map[string]float64{}
 	err := json.Unmarshal([]byte(resp), &readings)
@@ -131,16 +134,30 @@ func (b *Bot) Scan() []sensor.Reading {
 	})
 	for deg := -90; deg <= 90; deg += 5 {
 		b.sendReceiver.send(fmt.Sprintf(`{"command": "servo", "position": %d}`, deg))
+		time.Sleep(150 * time.Millisecond)
 		b.readings()
-		rs = append(rs, sensor.Reading{
+		h := int(initPos.Heading+float64(deg)) % 360
+		if h < 0 {
+			h = h + 360
+		}
+		r := sensor.Reading{
 			Sensor: b.sensors["ir"],
 			Value:  distance.Distance(r1["ir"]),
-			Pose:   initPos,
-		})
+			Pose: coordinates.Pose{
+				Location: initPos.Location,
+				Heading:  float64(h),
+			},
+		}
+		rs = append(rs, r)
+		log.Info(r)
 	}
 	return rs
 }
 
 func (b *Bot) calibrate() {
-
+	log.Info("Calibrating...")
+	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "clockwise", "time": 2, "speed": %d}`, b.wheels.MaxPower))
+	time.Sleep(2500 * time.Millisecond)
+	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "counter_clockwise", "time": 2, "speed": %d}`, b.wheels.MaxPower))
+	time.Sleep(2500 * time.Millisecond)
 }

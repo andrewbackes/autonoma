@@ -21,8 +21,8 @@ var (
 	// UltraSonicHCSR04 represents an UltraSonic HC-SR04 distance sensor.
 	UltraSonicHCSR04 = Sensor{
 		ViewAngle:   15.0,
-		MaxDistance: 18 * distance.Centimeter,
-		MinDistance: 1 * distance.Centimeter,
+		MaxDistance: 140 * distance.Centimeter,
+		MinDistance: 2 * distance.Centimeter,
 		Binary:      false,
 	}
 
