@@ -90,7 +90,7 @@ class Bot:
         elif p['command'] == 'servo':
             self.servo.move(p['position'])
         elif p['command'] == 'get_readings':
-            self.tcp.send(json.dumps(self.get_readings()))
+            self.tcp.send(self.get_readings())
 
     def network_control(self):
         self.tcp = TCP()
