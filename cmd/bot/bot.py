@@ -92,7 +92,10 @@ class Bot:
         elif p['command'] == 'get_readings':
             self.tcp.send(self.get_readings())
         elif p['command'] == 'isready':
-            self.tcp.send('readyok')
+            self.tcp.send('{"status":"readyok"}')
+        else:
+            print("Did not understand command", p)
+            os.exit(1)
 
     def network_control(self):
         self.tcp = TCP()

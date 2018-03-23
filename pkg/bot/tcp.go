@@ -2,7 +2,6 @@ package bot
 
 import (
 	"bufio"
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"net"
 )
@@ -40,7 +39,7 @@ func (t *tcpSendReceiver) send(msg string) {
 
 func (t *tcpSendReceiver) ready() {
 	log.Info("Ready?")
-	_, err := t.conn.Write([]byte("isready\n"))
+	_, err := t.conn.Write([]byte(`{"command":"isready"}\n`))
 	if err != nil {
 		panic(err)
 	}
@@ -51,7 +50,6 @@ func (t *tcpSendReceiver) ready() {
 }
 
 func (t *tcpSendReceiver) receive() string {
-	fmt.Println(t.conn)
 	msg, err := bufio.NewReader(t.conn).ReadString('\n')
 	if err != nil {
 		panic(err)
