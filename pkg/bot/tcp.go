@@ -3,6 +3,7 @@ package bot
 import (
 	"bufio"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"net"
 )
 
@@ -17,6 +18,7 @@ type tcpSendReceiver struct {
 }
 
 func (t *tcpSendReceiver) connect() {
+	log.Info("Connecting to ", t.address)
 	conn, err := net.Dial("tcp", t.address)
 	if err != nil {
 		panic(err)
@@ -32,7 +34,7 @@ func (t *tcpSendReceiver) send(msg string) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("sent:", msg)
+	log.Info("Sent:", msg)
 }
 
 func (t *tcpSendReceiver) receive() string {
@@ -41,7 +43,7 @@ func (t *tcpSendReceiver) receive() string {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("recieved:", msg)
+	log.Info("Eecieved:", msg)
 	return msg
 }
 

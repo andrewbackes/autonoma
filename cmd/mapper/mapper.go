@@ -29,7 +29,7 @@ var (
 		Depth:  20 * distance.Centimeter,
 		Width:  20 * distance.Centimeter,
 	}
-	wheels = bot.wheels{
+	wheels = bot.Wheels{
 		Diameter: 6.477 * distance.Centimeter,
 		RPM:      140,
 		MaxPower: 50, // percentage

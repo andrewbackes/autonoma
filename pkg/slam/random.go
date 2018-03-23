@@ -9,7 +9,7 @@ import (
 )
 
 func RandomlyMap(g *grid.Grid, bot Bot) {
-
+	log.Info("Mapping...")
 	done := false
 	for !done {
 
@@ -20,10 +20,12 @@ func RandomlyMap(g *grid.Grid, bot Bot) {
 		// First try to move forward
 		pt := coordinates.Add(bot.Pose().Location, coordinates.CompassRose{Heading: startHeading, Distance: g.CellSize()})
 		if g.CellIsVacant(pt) {
+			log.Info("Cell is vacant: ", pt)
 			bot.Move(g.CellSize())
 			p := g.LocalizePose(bot.Pose())
 			bot.SetPose(p)
 		} else {
+			log.Info("Cell is NOT vacant: ", pt)
 			heading := bot.Pose().Heading + float64(rand.Intn(360)/45)*45.0
 			bot.Rotate(heading)
 		}

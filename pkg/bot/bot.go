@@ -4,6 +4,7 @@ package bot
 import (
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"math"
 	"time"
 
@@ -48,6 +49,7 @@ func New(address string, sensors map[string]sensor.Sensor, d Dimensions, w Wheel
 }
 
 func (b *Bot) Rotate(heading float64) {
+	log.Info("Rotating to ", heading)
 	b.rotate(heading, 150)
 }
 
@@ -88,6 +90,7 @@ func (b *Bot) Move(d distance.Distance) {
 	circ := b.wheels.Diameter * math.Pi
 	rot := d / circ
 	t := float64(rot) / float64(b.wheels.RPM*60)
+	log.Info("Moving ", "forward", " for ", t, " seconds")
 	b.sendReceiver.send(fmt.Sprintf(`{"command": "move", "direction": "forward", "time": %f, "power": %d}`, t, b.wheels.MaxPower))
 	b.pose.Location = coordinates.Add(p.Location, coordinates.CompassRose{Heading: p.Heading, Distance: d})
 }
@@ -114,6 +117,7 @@ func (b *Bot) SetPose(p coordinates.Pose) {
 }
 
 func (b *Bot) Scan() []sensor.Reading {
+	log.Info("Scanning.")
 	rs := make([]sensor.Reading, 0)
 	r1 := b.readings()
 	initPos := coordinates.Pose{
