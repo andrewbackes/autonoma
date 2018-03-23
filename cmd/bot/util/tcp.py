@@ -20,7 +20,7 @@ class TCP:
 
     def listen(self, handler):
         logger.info(
-            "Listening for TCP/IP connections on port " + self.bind_port)
+            "Listening for TCP/IP connections on port %d".format(self.bind_port))
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind((self.bind_ip, self.bind_port))
         s.listen(1)
