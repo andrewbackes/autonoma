@@ -39,12 +39,14 @@ func (t *tcpSendReceiver) send(msg string) {
 }
 
 func (t *tcpSendReceiver) ready() {
-	log.Info("Ready?")
 	_, err := t.conn.Write([]byte(`{"command": "isready"}` + "\n"))
 	if err != nil {
 		panic(err)
 	}
-	resp := t.receive()
+	resp, err := bufio.NewReader(t.conn).ReadString('\n')
+	if err != nil {
+		panic(err)
+	}
 	if strings.TrimSpace(resp) != `{"status":"readyok"}` {
 		panic("got " + resp + ` wanted '{"status":"readyok"}'`)
 	}
