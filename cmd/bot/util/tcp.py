@@ -19,7 +19,7 @@ class TCP:
         print('Sending ' + msg)
 
     def listen(self, handler):
-        logger.info(
+        print(
             "Listening for TCP/IP connections on port %d".format(self.bind_port))
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind((self.bind_ip, self.bind_port))
@@ -28,7 +28,7 @@ class TCP:
         while True:
             try:
                 self.conn, addr = s.accept()
-                logger.info('Connection address: ' + addr[0])
+                print('Connection address: ' + addr[0])
                 smsg = ""
                 while True:
                     buffer = self.conn.recv(self.conn_buffer_size)
@@ -46,7 +46,7 @@ class TCP:
                         if cmd:
                             handler(cmd)
             except KeyboardInterrupt:
-                logger.info("User exit.")
+                print("User exit.")
                 exit = True
                 break
             if exit:
@@ -54,4 +54,4 @@ class TCP:
         if self.conn:
             self.conn.close()
             self.conn = None
-            logger.info("Connection closed.")
+            print("Connection closed.")
