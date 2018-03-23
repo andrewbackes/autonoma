@@ -37,7 +37,7 @@ class TCP:
                 while True:
                     buffer = self.conn.recv(self.conn_buffer_size)
                     smsg += str(buffer, "utf-8")
-                    print("Received " + str(buffer, "utf-8"))
+                    # print("Received " + str(buffer, "utf-8"))
                     if not buffer:
                         break
                     cmds = smsg.split('\n')

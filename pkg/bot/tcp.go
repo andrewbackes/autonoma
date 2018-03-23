@@ -4,6 +4,7 @@ import (
 	"bufio"
 	log "github.com/sirupsen/logrus"
 	"net"
+	"strings"
 )
 
 type sendReceiver interface {
@@ -39,13 +40,13 @@ func (t *tcpSendReceiver) send(msg string) {
 
 func (t *tcpSendReceiver) ready() {
 	log.Info("Ready?")
-	_, err := t.conn.Write([]byte(`{"command":"isready"}\n`))
+	_, err := t.conn.Write([]byte(`{"command": "isready"}` + "\n"))
 	if err != nil {
 		panic(err)
 	}
 	resp := t.receive()
-	if resp != "readyok" {
-		panic("got " + resp + " wanted 'readyok'")
+	if strings.TrimSpace(resp) != `{"status":"readyok"}` {
+		panic("got " + resp + ` wanted '{"status":"readyok"}'`)
 	}
 }
 
