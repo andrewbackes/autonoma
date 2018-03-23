@@ -30,7 +30,7 @@ func (t *tcpSendReceiver) send(msg string) {
 	if t.conn == nil {
 		t.connect()
 	}
-	_, err := t.conn.Write([]byte(msg))
+	_, err := t.conn.Write([]byte(msg + "\n"))
 	if err != nil {
 		panic(err)
 	}
@@ -43,7 +43,7 @@ func (t *tcpSendReceiver) receive() string {
 	if err != nil {
 		panic(err)
 	}
-	log.Info("Eecieved:", msg)
+	log.Info("Recieved:", msg)
 	return msg
 }
 
