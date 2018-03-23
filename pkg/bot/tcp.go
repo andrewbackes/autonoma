@@ -30,11 +30,24 @@ func (t *tcpSendReceiver) send(msg string) {
 	if t.conn == nil {
 		t.connect()
 	}
+	t.ready()
 	_, err := t.conn.Write([]byte(msg + "\n"))
 	if err != nil {
 		panic(err)
 	}
 	log.Info("Sent:", msg)
+}
+
+func (t *tcpSendReceiver) ready() {
+	log.Info("Ready?")
+	_, err := t.conn.Write([]byte("isready\n"))
+	if err != nil {
+		panic(err)
+	}
+	resp := t.receive()
+	if resp != "readyok" {
+		panic("got " + resp + " wanted 'readyok'")
+	}
 }
 
 func (t *tcpSendReceiver) receive() string {

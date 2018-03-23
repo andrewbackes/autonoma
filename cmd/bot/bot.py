@@ -91,6 +91,8 @@ class Bot:
             self.servo.move(p['position'])
         elif p['command'] == 'get_readings':
             self.tcp.send(self.get_readings())
+        elif p['command'] == 'isready':
+            self.tcp.send('readyok')
 
     def network_control(self):
         self.tcp = TCP()

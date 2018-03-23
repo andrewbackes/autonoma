@@ -8,6 +8,7 @@ import Adafruit_MCP3008
 class IR:
 
     def distance(self):
+        time.sleep(0.05)
         # Hardware SPI configuration:
         # https://www.upgradeindustries.com/product/58/Sharp-10-80cm-Infrared-Distance-Sensor-(GP2Y0A21YK0F)
         # http://www.instructables.com/id/Get-started-with-distance-sensors-and-Arduino/
