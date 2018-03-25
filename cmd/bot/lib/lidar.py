@@ -8,12 +8,16 @@
 # red,  orange, yellow, green,  blue,   black
 # 5v,   enable, mode,   scl,    sda,    ground
 
+import Adafruit_GPIO.I2C as I2C
+import time
 
 ##########################################################################
 #
 #  Garmin LIDAR-Lite V3 range finder
 #
 ##########################################################################
+
+
 class GLL:
     i2c = None
 
@@ -47,7 +51,8 @@ class GLL:
     __GLL_POWER_CONTROL = 0x65
 
     def __init__(self, address=0x62, rate=10):
-        self.i2c = I2C(address)
+        # self.i2c = I2C(address)
+        self.i2c = I2C.get_i2c_device(address)
         self.rate = rate
 
         # ----------------------------------------------------------------------
