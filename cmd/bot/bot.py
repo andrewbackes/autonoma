@@ -111,18 +111,24 @@ class Bot:
 
     def __execute(self, cmd):
         if cmd['command'] == 'move' and cmd['direction'] == 'forward':
-            self.move not None and self.move.forward(cmd['time'], cmd['speed'])
+            if self.move:
+                self.move.forward(cmd['time'], cmd['speed'])
         elif cmd['command'] == 'move' and cmd['direction'] == 'backward':
-            self.move not None and self.move.backward(cmd['time'], cmd['speed'])
+            if self.move:
+                self.move.backward(cmd['time'], cmd['speed'])
         elif cmd['command'] == 'move' and cmd['direction'] == 'counter_clockwise':
-            self.move not None and self.move.counter_clockwise(
-                cmd['time'], cmd['speed'])
+            if self.move:
+                self.move.counter_clockwise(
+                    cmd['time'], cmd['speed'])
         elif cmd['command'] == 'move' and cmd['direction'] == 'clockwise':
-            self.move not None and self.move.clockwise(cmd['time'], cmd['speed'])
+            if self.move:
+                self.move.clockwise(cmd['time'], cmd['speed'])
         elif cmd['command'] == 'servo':
-            self.servo not None and self.servo.move(cmd['position'])
+            if self.servo:
+                and self.servo.move(cmd['position'])
         elif cmd['command'] == 'get_readings':
-            self.servo not None and self.tcp.send(self.get_readings())
+            if self.servo:
+                and self.tcp.send(self.get_readings())
         elif cmd['command'] == 'isready':
             self.tcp.send('{"status":"readyok"}')
 
