@@ -4,40 +4,43 @@ import time
 import RPi.GPIO as gpio
 
 
-default_config = {
-    'servo_pin': 37,
-    'frequency': 50,
-    'calibration': {
-        'right': 0.5,
-        'left': 2.5
-    }
-}
-
-
 class Servo:
+    _config = {
+        'gpio': 37,
+        'frequency': 50,
+        'ratio': 1,
+        'calibration': {
+            'right': 0.5,
+            'left': 2.5
+        }
+    }
 
-    def __init__(self, config=default_config):
-        self.config = config
-        print("Servo config:", config)
+    def __init__(self, config=None):
+        if config:
+            self._config.update(config)
+        print("Servo config: ", config)
         if gpio.getmode() != gpio.BOARD:
             gpio.setmode(gpio.BOARD)
-        self.msPerCylce = 1000 / self.config['frequency']
-        gpio.setup(self.config['servo_pin'], gpio.OUT)
+        self.msPerCylce = 1000 / self._config['frequency']
+        gpio.setup(self._config['gpio'], gpio.OUT)
         self.move(0)  # move to center position
 
     def __calc_interval(self, deg):
-        pos = ((self.config['calibration']['left'] -
-                self.config['calibration']['right']) / 180)
-        return pos * deg + self.config['calibration']['left']
+        pos = ((self._config['calibration']['left'] -
+                self._config['calibration']['right']) / 180)
+        return pos * deg + self._config['calibration']['left']
 
     def move(self, deg):
-        interval = self.__calc_interval((deg + 90) * -1)
+        # adjust for a possible external gear ratio:
+        adjusted_deg = deg / self._config['ratio']
+
+        interval = self.__calc_interval((adjusted_deg + 90) * -1)
         dutyPerc = interval * 100 / self.msPerCylce
-        pwm = gpio.PWM(self.config['servo_pin'], self.config['frequency'])
+        pwm = gpio.PWM(self._config['gpio'], self._config['frequency'])
         pwm.start(dutyPerc)
         time.sleep(0.1)
         pwm.stop()
-        self.__pos = deg
+        self.__pos = adjusted_deg
 
     def position(self):
         return self.__pos

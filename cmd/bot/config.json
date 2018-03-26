@@ -1,50 +1,39 @@
 {
     "hbridge": {
-        "pwm": {
-            "left": 38,
-            "right": 40
-        },
-        "driver": {
-            "in1": 15,
-            "in2": 13,
-            "in3": 11,
-            "in4": 7
+        "enable": false,
+        "gpio": {
+            "pwm_left": 38,
+            "pwm_right": 40,
+            "driver_in1": 15,
+            "driver_in2": 13,
+            "driver_in3": 11,
+            "driver_in4": 7
         }
     },
-    "servo": 37,
-    "compass": {
+    "servo": {
+        "enabled": true,
+        "gpio": 37,
+        "ratio": 2,
+        "frequency": 50,
         "calibration": {
-            "accelerometer": {
-                "min": [
-                    -250,
-                    -993,
-                    -1007
-                ],
-                "max": [
-                    1026,
-                    1017,
-                    1031
-                ]
-            },
-            "magnetometer": {
-                "min": [
-                    -461,
-                    -716,
-                    -610
-                ],
-                "max": [
-                    544,
-                    747,
-                    893
-                ]
-            }
+            "right": 0.5,
+            "left": 2.5
         }
     },
-    "ultrasonic": {
-        "front": {}
-    },
-    "sharp": {
-        "spi_port": 0,
-        "spi_device": 0
+    "sensors": {
+        "orientation": {
+            "enabled": false
+        },
+        "ultrasonic": {
+            "enabled": false
+        },
+        "ir": {
+            "enabled": false,
+            "spi_port": 0,
+            "spi_device": 0
+        },
+        "lidar": {
+            "enabled": true
+        }
     }
 }

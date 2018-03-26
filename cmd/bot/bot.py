@@ -7,39 +7,53 @@ from lib.servo import Servo
 from lib.move import Move
 from lib.ir import IR
 from lib.ultrasonic import UltraSonic
-
+from lib.lidar import Lidar
 
 from util.getch import *
 from util.tcp import TCP
 
 import json
 import sys
+import os
 
 
 class Bot:
+    _config = {}
+    _sensor_readers = {}
 
-    def __init__(self):
+    def __init__(self, peripherals):
         gpio.setmode(gpio.BOARD)
-        self.move = Move()
-        self.orientation = Orientation()
-        self.servo = Servo()
-        self.ir = IR()
-        self.ultrasonic = UltraSonic()
+
+        # controls:
+        if self._config['hbridge'] and self._config['hbridge']['enabled']:
+            self.move = Move()
+        if self._config['servo'] and self._config['servo']['enabled']:
+            self.servo = Servo(self._config['servo'])
+
+        # sensors:
+        if self._config['orientation'] and self._config['orientation']['enabled']:
+            orientation = Orientation()
+            self._sensor_readers['orientation'] = orientation.heading
+        if self._config['ir'] and self._config['ir']['enabled']:
+            ir = IR()
+            self._sensor_readers['ir'] = ir.distance
+        if self._config['ultrasonic'] and self._config['ultrasonic']['enabled']:
+            ultrasonic = UltraSonic()
+            self._sensor_readers['ultrasonic'] = ultrasonic.distance
+        if self._config['lidar'] and self._config['lidar']['enabled']:
+            lidar = Lidar()
+            self._sensor_readers['lidar'] = lidar.distance
 
     def __del__(self):
         print("done")
         gpio.cleanup()
 
     def get_readings(self):
-        usd = self.ultrasonic.distance()
-        if not usd:
-            usd = 0
-        r = {
-            'heading': self.orientation.heading(),
-            'servo': self.servo.position(),
-            'ir': self.ir.distance(),
-            'ultrasonic': usd
-        }
+        r = {}
+        self.servo and r['servo'] = self.servo.position()
+        for name, read in self._sensor_readers.items():
+            r[name] = read()
+        r['timestamp'] = time.time()
         return json.dumps(r)
 
     def manual_control(self):
@@ -47,66 +61,87 @@ class Bot:
         t = 0.2
         speed = 50
         step = 10
+        servo_step = 30
         while True:
             print(self.get_readings())
             print('Speed ', speed)
             k = getch()
+            cmd = {}
             if k == "w":
-                self.move.forward(t, speed)
+                cmd = {'command': 'move', 'direction': 'forward',
+                       'speed': speed, 'time': t}
             elif k == "s":
-                self.move.backward(t, speed)
+                cmd = {'command': 'move', 'direction': 'backward',
+                       'speed': speed, 'time': t}
             elif k == "a":
-                self.move.counter_clockwise(t, speed)
+                cmd = {'command': 'move', 'direction': 'counter_clockwise',
+                       'speed': speed, 'time': t}
             elif k == "d":
-                self.move.clockwise(t, speed)
+                cmd = {'command': 'move', 'direction': 'clockwise',
+                       'speed': speed, 'time': t}
             elif k == 'r':
                 speed = min(100, speed + step)
             elif k == 'f':
                 speed = max(0, speed - step)
             elif k == "q":
-                self.servo.move(max(-90, self.servo.position() - 45))
+                cmd = {'command': 'servo',
+                       'position': max(-180, self.servo.position() - servo_step)}
             elif k == "e":
-                self.servo.move(min(90, self.servo.position() + 45))
+                cmd = {'command': 'servo',
+                       'position': min(180, self.servo.position() + servo_step)}
             elif k == 'p':
                 continue
             elif k == "x":
                 break
-
-    def __handler(self, payload):
-        print('Handling ' + payload)
-        try:
-            p = json.loads(payload)
-        except:
-            print("Could not decode json")
-            return
-        if p['command'] == 'move' and p['direction'] == 'forward':
-            self.move.forward(p['time'], p['speed'])
-        elif p['command'] == 'move' and p['direction'] == 'backward':
-            self.move.backward(p['time'], p['speed'])
-        elif p['command'] == 'move' and p['direction'] == 'counter_clockwise':
-            self.move.counter_clockwise(p['time'], p['speed'])
-        elif p['command'] == 'move' and p['direction'] == 'clockwise':
-            self.move.clockwise(p['time'], p['speed'])
-        elif p['command'] == 'servo':
-            self.servo.move(p['position'])
-        elif p['command'] == 'get_readings':
-            self.tcp.send(self.get_readings())
-        elif p['command'] == 'isready':
-            self.tcp.send('{"status":"readyok"}')
-        else:
-            print("Did not understand command", p)
-            os.exit(1)
+            self.__execute(cmd)
 
     def network_control(self):
         self.tcp = TCP()
         self.tcp.listen(self.__handler)
 
+    def __handler(self, payload):
+        print('Handling ' + payload)
+        try:
+            cmd = json.loads(payload)
+        except:
+            print("Could not decode json")
+            return
+        self.__execute(cmd)
+
+    def __execute(self, cmd):
+        if cmd['command'] == 'move' and cmd['direction'] == 'forward':
+            self.move and self.move.forward(cmd['time'], cmd['speed'])
+        elif cmd['command'] == 'move' and cmd['direction'] == 'backward':
+            self.move and self.move.backward(cmd['time'], cmd['speed'])
+        elif cmd['command'] == 'move' and cmd['direction'] == 'counter_clockwise':
+            self.move and self.move.counter_clockwise(
+                cmd['time'], cmd['speed'])
+        elif cmd['command'] == 'move' and cmd['direction'] == 'clockwise':
+            self.move and self.move.clockwise(cmd['time'], cmd['speed'])
+        elif cmd['command'] == 'servo':
+            self.servo and self.servo.move(cmd['position'])
+        elif cmd['command'] == 'get_readings':
+            self.servo and self.tcp.send(self.get_readings())
+        elif cmd['command'] == 'isready':
+            self.tcp.send('{"status":"readyok"}')
+
 
 if __name__ == "__main__":
+    # check args:
     if len(sys.argv) <= 1:
         print("Please specify --network or --manual")
         sys.exit(1)
-    bot = Bot()
+
+    # set working dir:
+    abspath = os.path.abspath(__file__)
+    dname = os.path.dirname(abspath)
+    os.chdir(dname)
+
+    # Control bot:
+    f = open('config.json')
+    settings = json.load(f)
+    close(f)
+    bot = Bot(settings)
     if sys.argv[1] == '--network':
         bot.network_control()
     elif sys.argv[1] == '--manual':
