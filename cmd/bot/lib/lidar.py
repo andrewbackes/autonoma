@@ -84,9 +84,9 @@ class Lidar:
 
         dist1 = self.i2c.readU8(self.__FULL_DELAY_HIGH)
         dist2 = self.i2c.readU8(self.__FULL_DELAY_LOW)
-        distance = ((dist1 << 8) + dist2) / 100
+        distance = ((dist1 << 8) + dist2)  # / 100
 
-        velocity = -self.i2c.readS8(self.__VELOCITY) * self.rate / 100
+        velocity = -self.i2c.readS8(self.__VELOCITY) * self.rate  # / 100
         return distance, velocity
 
     def distance(self):
