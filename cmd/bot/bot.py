@@ -65,7 +65,6 @@ class Bot:
         t = 0.2
         speed = 50
         step = 10
-        servo_step = 30
         while True:
             print(self.get_readings())
             print('Speed ', speed)
@@ -87,12 +86,12 @@ class Bot:
                 speed = min(100, speed + step)
             elif k == 'f':
                 speed = max(0, speed - step)
-            elif k == "q":
+            elif k == "q" and self.servo:
                 cmd = {'command': 'servo',
-                       'position': max(-180, self.servo.position() - servo_step)}
-            elif k == "e":
+                       'position': max(-180, self.servo.position() - 30)}
+            elif k == "e" and self.servo:
                 cmd = {'command': 'servo',
-                       'position': min(180, self.servo.position() + servo_step)}
+                       'position': min(180, self.servo.position() + 30)}
             elif k == 'p':
                 continue
             elif k == "x":
