@@ -50,7 +50,8 @@ class Bot:
 
     def get_readings(self):
         r = {}
-        self.servo and r['servo'] = self.servo.position()
+        if self.servo:
+            r['servo'] = self.servo.position()
         for name, read in self._sensor_readers.items():
             r[name] = read()
         r['timestamp'] = time.time()
@@ -110,18 +111,18 @@ class Bot:
 
     def __execute(self, cmd):
         if cmd['command'] == 'move' and cmd['direction'] == 'forward':
-            self.move and self.move.forward(cmd['time'], cmd['speed'])
+            self.move not None and self.move.forward(cmd['time'], cmd['speed'])
         elif cmd['command'] == 'move' and cmd['direction'] == 'backward':
-            self.move and self.move.backward(cmd['time'], cmd['speed'])
+            self.move not None and self.move.backward(cmd['time'], cmd['speed'])
         elif cmd['command'] == 'move' and cmd['direction'] == 'counter_clockwise':
-            self.move and self.move.counter_clockwise(
+            self.move not None and self.move.counter_clockwise(
                 cmd['time'], cmd['speed'])
         elif cmd['command'] == 'move' and cmd['direction'] == 'clockwise':
-            self.move and self.move.clockwise(cmd['time'], cmd['speed'])
+            self.move not None and self.move.clockwise(cmd['time'], cmd['speed'])
         elif cmd['command'] == 'servo':
-            self.servo and self.servo.move(cmd['position'])
+            self.servo not None and self.servo.move(cmd['position'])
         elif cmd['command'] == 'get_readings':
-            self.servo and self.tcp.send(self.get_readings())
+            self.servo not None and self.tcp.send(self.get_readings())
         elif cmd['command'] == 'isready':
             self.tcp.send('{"status":"readyok"}')
 
@@ -146,6 +147,8 @@ if __name__ == "__main__":
         bot.network_control()
     elif sys.argv[1] == '--manual':
         bot.manual_control()
+    elif sys.argv[1] == '--test':
+        print("todo")
     else:
         print("unknown arguement")
     del(bot)
