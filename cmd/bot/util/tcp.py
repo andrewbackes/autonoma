@@ -58,4 +58,5 @@ class TCP:
         if self.conn:
             self.conn.close()
             self.conn = None
+            s.close()
             print("Connection closed.")
