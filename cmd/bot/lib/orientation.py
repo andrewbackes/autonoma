@@ -42,7 +42,7 @@ class Orientation:
 
     def heading(self):
         time.sleep(0.01)
-        euler, cal = read
+        euler, cal = self.read()
         heading, roll, pitch = euler
         return heading
 
