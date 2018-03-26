@@ -125,10 +125,10 @@ class Bot:
                 self.move.clockwise(cmd['time'], cmd['speed'])
         elif cmd['command'] == 'servo':
             if self.servo:
-                and self.servo.move(cmd['position'])
+                self.servo.move(cmd['position'])
         elif cmd['command'] == 'get_readings':
             if self.servo:
-                and self.tcp.send(self.get_readings())
+                self.tcp.send(self.get_readings())
         elif cmd['command'] == 'isready':
             self.tcp.send('{"status":"readyok"}')
 
