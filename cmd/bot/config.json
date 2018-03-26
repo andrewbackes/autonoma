@@ -1,6 +1,6 @@
 {
     "hbridge": {
-        "enable": false,
+        "enabled": false,
         "gpio": {
             "pwm_left": 38,
             "pwm_right": 40,
@@ -20,20 +20,18 @@
             "left": 2.5
         }
     },
-    "sensors": {
-        "orientation": {
-            "enabled": false
-        },
-        "ultrasonic": {
-            "enabled": false
-        },
-        "ir": {
-            "enabled": false,
-            "spi_port": 0,
-            "spi_device": 0
-        },
-        "lidar": {
-            "enabled": true
-        }
+    "orientation": {
+        "enabled": false
+    },
+    "ultrasonic": {
+        "enabled": false
+    },
+    "ir": {
+        "enabled": false,
+        "spi_port": 0,
+        "spi_device": 0
+    },
+    "lidar": {
+        "enabled": true
     }
 }
