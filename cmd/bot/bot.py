@@ -147,7 +147,7 @@ if __name__ == "__main__":
     # Control bot:
     f = open('config.json')
     settings = json.load(f)
-    close(f)
+    f.close()
     bot = Bot(settings)
     if sys.argv[1] == '--network':
         bot.network_control()
