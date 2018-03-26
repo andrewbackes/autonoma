@@ -143,7 +143,8 @@ class Bot:
                 self.tcp.send(self.get_readings())
         elif cmd['command'] == 'isready':
             self.tcp.send('{"status":"readyok"}')
-        self.__gpio_reset()
+        elif cmd['command'] == 'reset':
+            self.__gpio_reset()
 
 
 if __name__ == "__main__":
