@@ -81,7 +81,7 @@ class Lidar:
         dist2 = gll_bytes[1]
         distance = ((dist1 << 8) + dist2) / 100
         '''
-
+        time.sleep(0.002)
         dist1 = self.i2c.readU8(self.__FULL_DELAY_HIGH)
         dist2 = self.i2c.readU8(self.__FULL_DELAY_LOW)
         distance = ((dist1 << 8) + dist2)  # / 100
