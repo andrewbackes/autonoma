@@ -21,9 +21,9 @@ class Bot:
     _config = {}
     _sensor_readers = {}
 
-    def __init__(self, peripherals):
+    def __init__(self, config):
         gpio.setmode(gpio.BOARD)
-
+        self._config.update(config)
         # controls:
         if self._config['hbridge'] and self._config['hbridge']['enabled']:
             self.move = Move()
