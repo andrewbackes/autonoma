@@ -26,6 +26,7 @@ class TCP:
         print(
             "Listening for TCP/IP connections on port ", self.bind_port)
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((self.bind_ip, self.bind_port))
         s.listen(1)
         exit = False
