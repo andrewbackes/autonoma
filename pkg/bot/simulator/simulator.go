@@ -1,6 +1,7 @@
 package simulator
 
 import (
+	"github.com/andrewbackes/autonoma/pkg/map/image"
 	log "github.com/sirupsen/logrus"
 	"math"
 	"math/rand"
@@ -23,7 +24,13 @@ type Simulator struct {
 	sensors  []sensor.Sensor
 }
 
-func New(occ coordinates.CartesianSet, sensors ...sensor.Sensor) *Simulator {
+// New bot simulator using mapFilepath as the source.
+func New(mapFilepath string, sensors ...sensor.Sensor) *Simulator {
+	log.Info("Creating new bot simulator from ", mapFilepath)
+	occ, err := image.Occupied(mapFilepath)
+	if err != nil {
+		panic(err)
+	}
 	return &Simulator{
 		occupied: occ,
 		pose:     coordinates.NewPose(0, 0, 0),
@@ -75,3 +82,5 @@ func (s *Simulator) Scan() []sensor.Reading {
 	}
 	return rs
 }
+
+func (s *Simulator) Reset() {}

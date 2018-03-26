@@ -36,8 +36,7 @@ func main() {
 
 func mappingSimulator() {
 	// mapName := filepath.Base(mapPath)
-	occ := getOccupied(mapPath)
-	bot := simulator.New(occ, sensors...)
+	bot := simulator.New(mapPath, sensors...)
 	grid := grid.New(gridCellSize)
 	go slam.RandomlyMap(grid, bot)
 	hud.ListenAndServe(grid)
@@ -45,7 +44,10 @@ func mappingSimulator() {
 
 func fixedReadingsSimulator() {
 	mapName := filepath.Base(mapPath)
-	occ := getOccupied(mapPath)
+	occ, err := image.Occupied(mapPath)
+	if err != nil {
+		panic(err)
+	}
 	poses := makePoses(mapPath)
 	readings := simulateSensorReadings(poses, occ)
 
@@ -73,20 +75,6 @@ func fixedReadingsSimulator() {
 		check(err)
 	*/
 	log.Info("Simulator Ended.")
-}
-
-func getOccupied(mapFilePath string) coordinates.CartesianSet {
-	mapName := filepath.Base(mapFilePath)
-	log.Infof("Using map %s", mapName)
-
-	log.Info("Simulator Started.")
-
-	// Load image of map
-	log.Info("Loading map from image.")
-	occ, err := image.Occupied(mapFilePath)
-	check(err)
-	log.Debugf("There are %d occupied cells.", occ.Len())
-	return occ
 }
 
 func makePoses(mapFilePath string) []coordinates.Pose {

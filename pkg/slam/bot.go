@@ -13,6 +13,7 @@ type Bot interface {
 
 	Pose() coordinates.Pose
 	SetPose(coordinates.Pose)
+	Reset()
 
 	// Readings() []sensor.Reading
 	Scan() []sensor.Reading

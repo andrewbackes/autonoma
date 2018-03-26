@@ -44,7 +44,6 @@ func New(address string, sensors map[string]sensor.Sensor, d Dimensions, w Wheel
 		wheels:        w,
 		rotationError: 10,
 	}
-	b.calibrate()
 	return b
 }
 
@@ -127,31 +126,32 @@ func (b *Bot) Scan() []sensor.Reading {
 		Heading:  r0["heading"],
 		Location: b.pose.Location,
 	}
-	rs = append(rs, sensor.Reading{
-		Sensor: b.sensors["ultrasonic"],
-		Value:  distance.Distance(r0["ultrasonic"]),
-		Pose:   initPos,
-	})
-	for deg := -90; deg <= 90; deg += 5 {
+
+	for deg := -90; deg <= 90; deg += 1 {
 		b.sendReceiver.send(fmt.Sprintf(`{"command": "servo", "position": %d}`, deg))
-		time.Sleep(150 * time.Millisecond)
 		readings := b.readings()
 		h := int(initPos.Heading+float64(deg)) % 360
 		if h < 0 {
 			h = h + 360
 		}
 		r := sensor.Reading{
-			Sensor: b.sensors["ir"],
-			Value:  distance.Distance(readings["ir"]),
+			Sensor: b.sensors["lidar"],
+			Value:  distance.Distance(readings["lidar"]),
 			Pose: coordinates.Pose{
 				Location: initPos.Location,
 				Heading:  float64(h),
 			},
+			RelativeHeading: float64(deg),
 		}
 		rs = append(rs, r)
 		log.Info(r)
 	}
+
 	return rs
+}
+
+func (b *Bot) Reset() {
+	b.sendReceiver.send(`{"command": "reset"}`)
 }
 
 func (b *Bot) calibrate() {

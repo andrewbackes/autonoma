@@ -3,6 +3,7 @@ package bot
 import (
 	"bufio"
 	log "github.com/sirupsen/logrus"
+	"io"
 	"net"
 	"strings"
 )
@@ -44,6 +45,11 @@ func (t *tcpSendReceiver) ready() {
 		panic(err)
 	}
 	resp, err := bufio.NewReader(t.conn).ReadString('\n')
+	if err == io.EOF {
+		t.connect()
+		t.ready()
+		return
+	}
 	if err != nil {
 		panic(err)
 	}

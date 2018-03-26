@@ -25,6 +25,8 @@ type Reading struct {
 	Sensor Sensor
 	// Pose is the orientation of the sensor.
 	Pose coordinates.Pose
+	// RelativeHeading to the front of the bot.
+	RelativeHeading float64
 }
 
 func (r Reading) String() string {
