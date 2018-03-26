@@ -29,9 +29,9 @@ class Bot:
         self._config.update(config)
         # controls:
         if self._config['hbridge'] and self._config['hbridge']['enabled']:
-            self.move = Move()
+            self._move = Move()
         if self._config['servo'] and self._config['servo']['enabled']:
-            self.servo = Servo(self._config['servo'])
+            self._servo = Servo(self._config['servo'])
 
         # sensors:
         if self._config['orientation'] and self._config['orientation']['enabled']:
@@ -53,8 +53,8 @@ class Bot:
 
     def get_readings(self):
         r = {}
-        if self.servo:
-            r['servo'] = self.servo.position()
+        if self._servo:
+            r['servo'] = self._servo.position()
         for name, read in self._sensor_readers.items():
             r[name] = read()
         r['timestamp'] = time.time()
@@ -86,12 +86,12 @@ class Bot:
                 speed = min(100, speed + step)
             elif k == 'f':
                 speed = max(0, speed - step)
-            elif k == "q" and self.servo:
+            elif k == "q" and self._servo:
                 cmd = {'command': 'servo',
-                       'position': max(-90, self.servo.position() - 15)}
-            elif k == "e" and self.servo:
+                       'position': max(-90, self._servo.position() - 15)}
+            elif k == "e" and self._servo:
                 cmd = {'command': 'servo',
-                       'position': min(90, self.servo.position() + 15)}
+                       'position': min(90, self._servo.position() + 15)}
             elif k == 'p':
                 continue
             elif k == "x":
@@ -113,23 +113,23 @@ class Bot:
 
     def __execute(self, cmd):
         if cmd['command'] == 'move' and cmd['direction'] == 'forward':
-            if self.move:
-                self.move.forward(cmd['time'], cmd['speed'])
+            if self._move:
+                self._move.forward(cmd['time'], cmd['speed'])
         elif cmd['command'] == 'move' and cmd['direction'] == 'backward':
-            if self.move:
-                self.move.backward(cmd['time'], cmd['speed'])
+            if self._move:
+                self._move.backward(cmd['time'], cmd['speed'])
         elif cmd['command'] == 'move' and cmd['direction'] == 'counter_clockwise':
-            if self.move:
-                self.move.counter_clockwise(
+            if self._move:
+                self._move.counter_clockwise(
                     cmd['time'], cmd['speed'])
         elif cmd['command'] == 'move' and cmd['direction'] == 'clockwise':
-            if self.move:
-                self.move.clockwise(cmd['time'], cmd['speed'])
+            if self._move:
+                self._move.clockwise(cmd['time'], cmd['speed'])
         elif cmd['command'] == 'servo':
-            if self.servo:
-                self.servo.move(cmd['position'])
+            if self._servo:
+                self._servo.move(cmd['position'])
         elif cmd['command'] == 'get_readings':
-            if self.servo:
+            if self._servo:
                 self.tcp.send(self.get_readings())
         elif cmd['command'] == 'isready':
             self.tcp.send('{"status":"readyok"}')
