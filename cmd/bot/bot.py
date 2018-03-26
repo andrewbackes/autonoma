@@ -88,10 +88,10 @@ class Bot:
                 speed = max(0, speed - step)
             elif k == "q" and self.servo:
                 cmd = {'command': 'servo',
-                       'position': max(-180, self.servo.position() - 30)}
+                       'position': max(-90, self.servo.position() - 15)}
             elif k == "e" and self.servo:
                 cmd = {'command': 'servo',
-                       'position': min(180, self.servo.position() + 30)}
+                       'position': min(90, self.servo.position() + 15)}
             elif k == 'p':
                 continue
             elif k == "x":
