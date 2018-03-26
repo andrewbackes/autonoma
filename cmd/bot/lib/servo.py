@@ -40,7 +40,7 @@ class Servo:
         pwm.start(dutyPerc)
         time.sleep(0.1)
         pwm.stop()
-        self.__pos = adjusted_deg
+        self.__pos = deg
 
     def position(self):
         return self.__pos
