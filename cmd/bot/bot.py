@@ -47,6 +47,16 @@ class Bot:
             lidar = Lidar()
             self._sensor_readers['lidar'] = lidar.distance
 
+    def __gpio_reset(self):
+        gpio.cleanup()
+        if self._config['hbridge'] and self._config['hbridge']['enabled']:
+            self._move = Move()
+        if self._config['servo'] and self._config['servo']['enabled']:
+            self._servo = Servo(self._config['servo'])
+        if self._config['ultrasonic'] and self._config['ultrasonic']['enabled']:
+            ultrasonic = UltraSonic()
+            self._sensor_readers['ultrasonic'] = ultrasonic.distance
+
     def __del__(self):
         print("done")
         gpio.cleanup()
@@ -133,6 +143,7 @@ class Bot:
                 self.tcp.send(self.get_readings())
         elif cmd['command'] == 'isready':
             self.tcp.send('{"status":"readyok"}')
+        self.__gpio_reset()
 
 
 if __name__ == "__main__":
