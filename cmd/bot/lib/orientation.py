@@ -7,8 +7,11 @@ import time
 class Orientation:
 
     def __init__(self):
-        # use i2c
+        # use i2c by not passing arg in constructor
         self.bno055 = BNO055.BNO055()
+        if not self.bno055.begin():
+            raise RuntimeError(
+                'Failed to initialize BNO055! Is the sensor connected?')
         self.__self_test()
         self.__revision_info()
 
@@ -34,8 +37,8 @@ class Orientation:
     def read(self):
         time.sleep(0.01)
         # heading, roll, pitch = self.bno055.read_euler()
-        # sys, gyro, accel, mag = bno.get_calibration_status()
-        return self.bno055.read_euler(), bno.get_calibration_status()
+        # sys, gyro, accel, mag = self.bno055.get_calibration_status()
+        return self.bno055.read_euler(), self.bno055.get_calibration_status()
 
     def heading(self):
         time.sleep(0.01)
