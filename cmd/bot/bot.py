@@ -21,6 +21,8 @@ import time
 class Bot:
     _config = {}
     _sensor_readers = {}
+    _move = None
+    _servo = None
 
     def __init__(self, config):
         gpio.setmode(gpio.BOARD)
