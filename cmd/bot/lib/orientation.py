@@ -13,7 +13,6 @@ class Orientation:
             raise RuntimeError(
                 'Failed to initialize BNO055! Is the sensor connected?')
         self.__self_test()
-        self.__revision_info()
 
     def __self_test(self):
         print('Running BNO055 self test')
@@ -25,8 +24,6 @@ class Orientation:
         if status == 0x01:
             print('System error: {0}'.format(error))
             print('See datasheet section 4.3.59 for the meaning.')
-
-    def __revision_info(self):
         sw, bl, accel, mag, gyro = self.bno055.get_revision()
         print('Software version:   {0}'.format(sw))
         print('Bootloader version: {0}'.format(bl))
