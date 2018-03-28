@@ -53,7 +53,7 @@ class Servo:
             diff = deg - self.__pos
         else:
             diff = self.__pos - deg
-        return (self._config['secondsPer60deg'] * (self.__delta(deg) / 60))
+        return (self._config['secondsPer60deg'] * (diff / 60))
 
 
 if __name__ == "__main__":
