@@ -9,6 +9,7 @@ class Servo:
         'gpio': 37,
         'frequency': 50,
         'ratio': 1,
+        'secondsPer60deg': 0.19,
         'calibration': {
             'right': 0.5,
             'left': 2.5
@@ -38,7 +39,8 @@ class Servo:
         dutyPerc = interval * 100 / self.msPerCylce
         pwm = gpio.PWM(self._config['gpio'], self._config['frequency'])
         pwm.start(dutyPerc)
-        time.sleep(0.2)
+
+        time.sleep(0.1 + (deg / self._config['secondsPer60deg'] * (deg / 60)))
         pwm.stop()
         self.__pos = deg
 
