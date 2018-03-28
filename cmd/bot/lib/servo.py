@@ -15,6 +15,7 @@ class Servo:
             'left': 2.5
         }
     }
+    __pos = 0
 
     def __init__(self, config=None):
         if config:
