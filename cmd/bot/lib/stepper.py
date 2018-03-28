@@ -34,9 +34,9 @@ class Stepper:
     def one(self):
         for x in range(self._config['stepsPerRevolution']):
             gpio.output(self._config['gpio']['step'], gpio.HIGH)
-            time.sleep(self._config['gpio']['stepDelay'])
+            time.sleep(self._config['stepDelay'])
             gpio.output(self._config['gpio']['step'], gpio.LOW)
-            time.sleep(self._config['gpio']['stepDelay'])
+            time.sleep(self._config['stepDelay'])
 
 
 if __name__ == "__main__":
