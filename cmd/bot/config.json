@@ -21,6 +21,12 @@
             "left": 2.5
         }
     },
+    "stepper": {
+        "gpio": {
+            "step": 36,
+            "dir": 32
+        }
+    },
     "orientation": {
         "enabled": true
     },
