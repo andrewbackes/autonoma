@@ -40,12 +40,19 @@ class Servo:
         pwm = gpio.PWM(self._config['gpio'], self._config['frequency'])
         pwm.start(dutyPerc)
 
-        time.sleep(0.1 + (self._config['secondsPer60deg'] * (deg / 60)))
+        time.sleep(0.1 + self.__spin_time(deg))
         pwm.stop()
         self.__pos = deg
 
     def position(self):
         return self.__pos
+
+    def __spin_time(self, deg):
+        if deg > self.__pos:
+            diff = deg - self.__pos
+        else:
+            diff = self.__pos - deg
+        return (self._config['secondsPer60deg'] * (self.__delta(deg) / 60))
 
 
 if __name__ == "__main__":
