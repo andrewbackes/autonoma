@@ -48,7 +48,7 @@ class Servo:
         self.__pi.set_PWM_frequency(
             self._config['gpioBCN'], self._config['frequency'])
         self.__pi.set_PWM_dutycycle(self._config['gpioBCN'], dutyPerc)
-        time.sleep(0.1 + self.__spin_time(deg))
+        time.sleep(0.5 + self.__spin_time(deg))
         self.__pi.set_PWM_dutycycle(self._config['gpioBCN'], 0)
         self.__pos = deg
 
