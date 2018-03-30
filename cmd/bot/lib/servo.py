@@ -40,10 +40,8 @@ class Servo:
         return pos * deg + self._config['calibration']['left']
 
     def move(self, deg):
-        # adjust for a possible external gear ratio:
-        adjusted_deg = deg / self._config['ratio']
         self.__pi.set_servo_pulsewidth(
-            self._config['gpioBCN'], self.__calc_interval(deg))
+            self._config['gpioBCN'], self.__calc_interval(deg + 90))
         time.sleep(0.5 + self.__spin_time(deg))
         self.__pi.set_servo_pulsewidth(self._config['gpioBCN'], 0)
         self.__pos = deg
