@@ -61,7 +61,7 @@ class Stepper:
         gpio.output(self._config['gpio']['enable'], gpio.HIGH)
 
     def one(self):
-        for x in range(self._config['stepsPerRevolution']):
+        for x in range(self._config['stepsPerRevolution'] * 16):
             gpio.output(self._config['gpio']['step'], gpio.HIGH)
             time.sleep(self._config['stepDelay'])
             gpio.output(self._config['gpio']['step'], gpio.LOW)
@@ -74,4 +74,5 @@ if __name__ == "__main__":
     stepper.enable()
     stepper.one()
     stepper.disable()
+    time.sleep(10000000000000)
     gpio.cleanup()
