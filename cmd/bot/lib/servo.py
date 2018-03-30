@@ -51,15 +51,15 @@ class Servo:
         # time.sleep(0.5 + self.__spin_time(deg))
         # self.__pi.set_PWM_dutycycle(self._config['gpioBCN'], 0)
 
-        self.__pi.set_servo_pulsewidth(17, 0)
+        self.__pi.set_servo_pulsewidth(self._config['gpioBCN'], 0)
         time.sleep(1)
-        self.__pi.set_servo_pulsewidth(17, 1000)
+        self.__pi.set_servo_pulsewidth(self._config['gpioBCN'], 1000)
         time.sleep(1)
-        self.__pi.set_servo_pulsewidth(17, 1500)
+        self.__pi.set_servo_pulsewidth(self._config['gpioBCN'], 1500)
         time.sleep(1)
-        self.__pi.set_servo_pulsewidth(17, 2000)
+        self.__pi.set_servo_pulsewidth(self._config['gpioBCN'], 2000)
         time.sleep(1)
-        self.__pi.set_servo_pulsewidth(17, 0)
+        self.__pi.set_servo_pulsewidth(self._config['gpioBCN'], 0)
         self.__pos = deg
 
     def position(self):
