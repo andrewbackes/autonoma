@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import time
+import os
 import pigpio
 
 
@@ -23,11 +24,11 @@ class Servo:
         if config:
             self._config.update(config)
         print("Servo config: ", config)
-        self.msPerCylce = 1000 / self._config['frequency']
 
         self.__pi = pigpio.pi()
         if not self.__pi.connected:
             print("Could not connect to pigpiod.")
+            os.exit(1)
         self.__pi.set_mode(self._config['gpioBCN'], pigpio.OUTPUT)
         self.move(0)  # move to center position
 
@@ -40,11 +41,9 @@ class Servo:
         return pos * (deg + 90) + self._config['calibration']['right']
 
     def move(self, deg):
-        interval = self.__calc_pulse_width(deg)
-        print(interval)
         self.__pi.set_servo_pulsewidth(
-            self._config['gpioBCN'], interval)
-        time.sleep(0.5 + self.__spin_time(deg))
+            self._config['gpioBCN'], self.__calc_pulse_width(deg))
+        time.sleep(0.1 + self.__spin_time(deg))
         self.__pi.set_servo_pulsewidth(self._config['gpioBCN'], 0)
         self.__pos = deg
 
