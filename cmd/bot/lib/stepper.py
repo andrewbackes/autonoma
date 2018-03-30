@@ -51,8 +51,8 @@ class Stepper:
         gpio.output(self._config['gpio']['dir'], self.CLOCKWISE)
         gpio.setup(self._config['gpio']['enable'], gpio.OUT)
         # adjust for micro-stepping:
-        self._stepsPerRevolution = self._config[
-            'stepsPerRevolution'] / self._config['microstepping']
+        self._stepsPerRevolution = int(self._config[
+            'stepsPerRevolution'] / self._config['microstepping'])
         self._stepDelay = 1.0 / self._stepsPerRevolution
         self._mode = (
             self._config['gpio']['ms1'],
