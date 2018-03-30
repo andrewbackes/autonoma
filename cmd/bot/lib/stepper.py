@@ -81,7 +81,10 @@ if __name__ == "__main__":
     print("Stepper test")
     stepper = Stepper()
     stepper.enable()
-    stepper.one()
+    try:
+        while:
+            stepper.one()
+    except:
+        pass
     stepper.disable()
-    time.sleep(10000000000000)
     gpio.cleanup()
