@@ -45,11 +45,21 @@ class Servo:
         interval = self.__calc_interval((adjusted_deg + 90) * -1)
         dutyPerc = interval * 100 / self.msPerCylce
 
-        self.__pi.set_PWM_frequency(
-            self._config['gpioBCN'], self._config['frequency'])
-        self.__pi.set_PWM_dutycycle(self._config['gpioBCN'], dutyPerc)
-        time.sleep(0.5 + self.__spin_time(deg))
-        self.__pi.set_PWM_dutycycle(self._config['gpioBCN'], 0)
+        # self.__pi.set_PWM_frequency(
+        #    self._config['gpioBCN'], self._config['frequency'])
+        # self.__pi.set_PWM_dutycycle(self._config['gpioBCN'], dutyPerc)
+        # time.sleep(0.5 + self.__spin_time(deg))
+        # self.__pi.set_PWM_dutycycle(self._config['gpioBCN'], 0)
+
+        self.__pi.set_servo_pulsewidth(17, 0)
+        time.sleep(1)
+        self.__pi.set_servo_pulsewidth(17, 1000)
+        time.sleep(1)
+        self.__pi.set_servo_pulsewidth(17, 1500)
+        time.sleep(1)
+        self.__pi.set_servo_pulsewidth(17, 2000)
+        time.sleep(1)
+        self.__pi.set_servo_pulsewidth(17, 0)
         self.__pos = deg
 
     def position(self):
@@ -65,6 +75,11 @@ class Servo:
 
 if __name__ == "__main__":
     servo = Servo()
+
+#    pi.set_servo_pulsewidth(17, 0)    # off
+#    pi.set_servo_pulsewidth(17, 1000) # safe anti-clockwise
+#    pi.set_servo_pulsewidth(17, 1500) # centre
+#    pi.set_servo_pulsewidth(17, 2000) # safe clockwise
     positions = [-90, -45, 0, 45, 90, 0]
     for p in positions:
         print("Position ", p)
