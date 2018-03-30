@@ -37,11 +37,13 @@ class Servo:
     def __calc_interval(self, deg):
         pos = ((self._config['calibration']['left'] -
                 self._config['calibration']['right']) / 180)
-        return pos * deg + self._config['calibration']['left']
+        return pos * (deg + 90) + self._config['calibration']['left']
 
     def move(self, deg):
+        interval = self.__calc_interval(deg)
+        print(interval)
         self.__pi.set_servo_pulsewidth(
-            self._config['gpioBCN'], self.__calc_interval(deg + 90))
+            self._config['gpioBCN'], interval)
         time.sleep(0.5 + self.__spin_time(deg))
         self.__pi.set_servo_pulsewidth(self._config['gpioBCN'], 0)
         self.__pos = deg
