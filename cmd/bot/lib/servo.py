@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
 import time
-import RPi.GPIO as gpio
+import pigpio
 
 
 class Servo:
     _config = {
         'gpio': 37,
+        'gpioBCN': 26,
         'frequency': 50,
         'ratio': 1,
         'secondsPer60deg': 0.19,
@@ -16,16 +17,22 @@ class Servo:
         }
     }
     __pos = 0
+    __pi = None
 
     def __init__(self, config=None):
         if config:
             self._config.update(config)
         print("Servo config: ", config)
-        if gpio.getmode() != gpio.BOARD:
-            gpio.setmode(gpio.BOARD)
         self.msPerCylce = 1000 / self._config['frequency']
-        gpio.setup(self._config['gpio'], gpio.OUT)
+
+        self.__pi = pigpio.pi()
+        if not self.__pi.connected:
+            print("Could not connect to pigpiod.")
+        self.__pi.set_mode(self._config['gpioBCN'], pigpio.OUTPUT)
         self.move(0)  # move to center position
+
+    def __del__(self):
+        self.__pi.stop()
 
     def __calc_interval(self, deg):
         pos = ((self._config['calibration']['left'] -
@@ -35,14 +42,14 @@ class Servo:
     def move(self, deg):
         # adjust for a possible external gear ratio:
         adjusted_deg = deg / self._config['ratio']
-
         interval = self.__calc_interval((adjusted_deg + 90) * -1)
         dutyPerc = interval * 100 / self.msPerCylce
-        pwm = gpio.PWM(self._config['gpio'], self._config['frequency'])
-        pwm.start(dutyPerc)
 
+        self.__pi.set_PWM_frequency(
+            self._config['gpioBCN'], self._config['frequency'])
+        self.__pi.set_PWM_dutycycle(self._config['gpioBCN'], dutyPerc)
         time.sleep(0.1 + self.__spin_time(deg))
-        pwm.stop()
+        self.__pi.set_PWM_dutycycle(self._config['gpioBCN'], 0)
         self.__pos = deg
 
     def position(self):
@@ -63,4 +70,3 @@ if __name__ == "__main__":
         print("Position ", p)
         servo.move(p)
         time.sleep(0.5)
-    gpio.cleanup()
