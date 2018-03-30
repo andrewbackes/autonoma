@@ -26,15 +26,20 @@ class Stepper:
             "ms3":      18,  # GPIO-24
             "enable":   12   # GPIO-18
         },
+
+        # without micro-stepping:
         "stepsPerRevolution": 200,  # 1.8 per step
         "stepDelay": 1.0 / 200,
-        "resolution": {
+
+        # micro-stepping:
+        "microstepping": 1.0,
+        "resolution_map": {
             #        MS1,          MS2,           MS3
-            'Full': (gpio.LOW,     gpio.LOW,      gpio.LOW),
-            'Half': (gpio.HIGH,    gpio.LOW,      gpio.LOW),
-            '1/4':  (gpio.LOW,     gpio.HIGH,     gpio.LOW),
-            '1/8':  (gpio.HIGH,    gpio.HIGH,     gpio.LOW),
-            '1/16': (gpio.HIGH,    gpio.HIGH,     gpio.HIGH),
+            1:      (gpio.LOW,     gpio.LOW,      gpio.LOW),
+            1 / 2:  (gpio.HIGH,    gpio.LOW,      gpio.LOW),
+            1 / 4:  (gpio.LOW,     gpio.HIGH,     gpio.LOW),
+            1 / 8:  (gpio.HIGH,    gpio.HIGH,     gpio.LOW),
+            1 / 16: (gpio.HIGH,    gpio.HIGH,     gpio.HIGH),
         },
     }
 
@@ -45,14 +50,18 @@ class Stepper:
         gpio.setup(self._config['gpio']['step'], gpio.OUT)
         gpio.output(self._config['gpio']['dir'], self.CLOCKWISE)
         gpio.setup(self._config['gpio']['enable'], gpio.OUT)
-        # for micro-stepping:
+        # adjust for micro-stepping:
+        self._stepsPerRevolution = self._config[
+            'stepsPerRevolution'] / self._config['microstepping']
+        self._stepDelay = 1.0 / self._stepsPerRevolution
         self._mode = (
             self._config['gpio']['ms1'],
             self._config['gpio']['ms2'],
             self._config['gpio']['ms3']
         )
         gpio.setup(self._mode, gpio.OUT)
-        gpio.output(self._mode, self._config['resolution']['1/16'])
+        gpio.output(self._mode, self._config['resolution_map'][
+                    self._config['microstepping']])
 
     def enable(self):
         gpio.output(self._config['gpio']['enable'], gpio.LOW)
@@ -61,11 +70,11 @@ class Stepper:
         gpio.output(self._config['gpio']['enable'], gpio.HIGH)
 
     def one(self):
-        for x in range(self._config['stepsPerRevolution'] * 16):
+        for x in range(self._stepsPerRevolution):
             gpio.output(self._config['gpio']['step'], gpio.HIGH)
-            time.sleep(self._config['stepDelay'])
+            time.sleep(self._stepDelay)
             gpio.output(self._config['gpio']['step'], gpio.LOW)
-            time.sleep(self._config['stepDelay'])
+            time.sleep(self._stepDelay)
 
 
 if __name__ == "__main__":
