@@ -82,7 +82,7 @@ if __name__ == "__main__":
     stepper = Stepper()
     stepper.enable()
     try:
-        while:
+        while True:
             stepper.one()
     except:
         pass
