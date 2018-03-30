@@ -47,9 +47,9 @@ class Stepper:
         gpio.setup(self._config['gpio']['enable'], gpio.OUT)
         # for micro-stepping:
         self._mode = (
-            self._config['gpio']['m1'],
-            self._config['gpio']['m2'],
-            self._config['gpio']['m3']
+            self._config['gpio']['ms1'],
+            self._config['gpio']['ms2'],
+            self._config['gpio']['ms3']
         )
         gpio.setup(self._mode, gpio.OUT)
         gpio.output(self._mode, self._config['resolution']['1/16'])
@@ -71,5 +71,7 @@ class Stepper:
 if __name__ == "__main__":
     print("Stepper test")
     stepper = Stepper()
+    stepper.enable()
     stepper.one()
+    stepper.disable()
     gpio.cleanup()
