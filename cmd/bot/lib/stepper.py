@@ -33,7 +33,7 @@ class Stepper:
         "stepDelay": 1.0 / 200,
 
         # micro-stepping:
-        "microstepping": 1.0,
+        "microstepping": 1 / 16,
         "resolution_map": {
             #        MS1,          MS2,           MS3
             1:      (gpio.LOW,     gpio.LOW,      gpio.LOW),
