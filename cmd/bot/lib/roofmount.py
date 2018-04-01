@@ -83,7 +83,7 @@ def self_test():
                            roofmount._config['servo']['max_degrees'])
     roofmount.level()
     print("Done.")
-    return
+
     # Stepper:
     print("Full clockwise rotation....")
     for degrees in range(36):
