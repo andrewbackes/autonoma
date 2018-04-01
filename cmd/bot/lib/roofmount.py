@@ -86,9 +86,9 @@ def self_test():
     roofmount = RoofMount()
     # Servo:
     print("Vertical movement test")
-    self.set_vertical_position(-35)
-    self.set_vertical_position(83)
-    self.set_vertical_position(0)
+    roofmount.set_vertical_position(-35)
+    roofmount.set_vertical_position(83)
+    roofmount.set_vertical_position(0)
     # roofmount.set_position(roofmount.horizontal_position(),
     #                       roofmount._config['servo']['min_degrees'])
     # roofmount.set_position(roofmount.horizontal_position(),
