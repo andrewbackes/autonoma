@@ -70,7 +70,8 @@ class Servo:
             raise ValueError("Must be between -75 and 75")
         self.__pi.set_servo_pulsewidth(
             self._config['gpioBCN'], self.__calc_pulse_width(deg))
-        time.sleep(0.1 + self.__spin_time(deg))
+        # time.sleep(0.1 + self.__spin_time(deg))
+        time.sleep(1)
         self.__pi.set_servo_pulsewidth(self._config['gpioBCN'], 0)
         self.__pos = deg
 
