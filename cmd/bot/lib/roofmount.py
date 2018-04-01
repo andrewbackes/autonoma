@@ -82,7 +82,6 @@ class RoofMount:
         if degrees < min or degrees > max:
             raise ValueError('Position out of range')
         pos = -degrees + self._config['servo']['level_degrees']
-        print(pos)
         self._servo.set_position(pos)
 
 
@@ -90,28 +89,28 @@ def self_test():
     print("Roof mount self test.")
     roofmount = RoofMount()
     # Test 1
-    print("Leveling...")
+    print("Testing vertical movement...")
     roofmount.set_vertical_position(83)
     roofmount.set_vertical_position(0)
     roofmount.set_vertical_position(-35)
     print("Done.")
 
     # Test 2
-    print("Full clockwise downward rotation....")
+    print("Clockwise downward rotation....")
     roofmount.set_vertical_position(-35)
     for degrees in range(36):
         roofmount.clockwise(10)
     print("Done.")
 
     # Test 3
-    print("Full counter-clockwise upward rotation....")
+    print("Counter-clockwise level rotation....")
     roofmount.set_vertical_position(0)
     for degrees in range(36):
         roofmount.counter_clockwise(10)
     print("Done.")
 
     # Test 4
-    print("Full clockwise downward rotation....")
+    print("Full clockwise upward rotation....")
     roofmount.set_vertical_position(83)
     for degrees in range(36):
         roofmount.clockwise(10)
