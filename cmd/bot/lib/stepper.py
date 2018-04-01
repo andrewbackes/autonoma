@@ -118,10 +118,8 @@ class Stepper:
             target = (degrees % 360) + 360
         print("pos:", self.position(), " target: (", target -
               self._degrees_per_step, ",", target + self._degrees_per_step, ")")
-        print(self.position() >= target + self._degrees_per_step and self.position()
-              <= target - self._degrees_per_step)
         while self.position() >= target + self._degrees_per_step \
-                and self.position() <= target - self._degrees_per_step:
+                or self.position() <= target - self._degrees_per_step:
             self.step()
             print("pos:", self.position(), " target:", target)
 
