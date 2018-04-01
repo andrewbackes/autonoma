@@ -73,11 +73,13 @@ class RoofMount:
 
     def set_vertical_position(self, degrees):
         '''Position relative to the horizon'''
-        min = -(self._config['max_degrees'] - self._config['level_degrees'])
-        max = -(self._config['min_degrees'] - self._config['level_degrees'])
+        min = -(self._config['servo']['max_degrees'] -
+                self._config['servo']['level_degrees'])
+        max = -(self._config['servo']['min_degrees'] -
+                self._config['servo']['level_degrees'])
         if degrees < min or degrees > max:
             raise ValueError('Position out of range')
-        pos = -degrees + self._config['level_degrees']
+        pos = -degrees + self._config['servo']['level_degrees']
         self._servo.set_position(pos)
 
 
