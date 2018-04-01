@@ -62,7 +62,7 @@ class Servo:
 
 if __name__ == "__main__":
     servo = Servo()
-    for p in range(servo._config.minDegrees, servo._config.maxDegrees, 10):
+    for p in range(servo._config['minDegrees'], servo._config['maxDegrees'], 10):
         print("Position ", p)
         servo.move(p)
         time.sleep(0.5)
