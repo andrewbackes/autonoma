@@ -14,7 +14,7 @@ SG5010 = {
 }
 
 
-HD1160A  {
+HD1160A = {
     'secondsPer60deg': 0.12,  # @ 4.8v
     'calibration': {
         'min': 800,
