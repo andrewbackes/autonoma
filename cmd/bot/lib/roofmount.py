@@ -80,7 +80,7 @@ def self_test():
     roofmount.set_position(roofmount.horizontal_position(),
                            roofmount._config['servo']['min_degrees'])
     for degrees in range(23):
-        roofmount.up(5)
+        roofmount.down(5)
     roofmount.level()
     print("Done.")
     return
