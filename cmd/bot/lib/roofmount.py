@@ -76,8 +76,8 @@ def self_test():
     print("Roof mount self test.")
     roofmount = RoofMount()
     # Servo:
-    roofmount.set_position(self.horizontal_position(),
-                           self._config['servo']['min_degrees'])
+    roofmount.set_position(roofmount.horizontal_position(),
+                           roofmount._config['servo']['min_degrees'])
     for degrees in range(11):
         roofmount.up()
     roofmount.level()
