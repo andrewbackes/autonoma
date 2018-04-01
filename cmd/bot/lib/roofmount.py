@@ -91,6 +91,8 @@ def self_test():
     roofmount = RoofMount()
     # Servo:
     print("Vertical movement test")
+    roofmount.set_vertical_position(0)
+    time.sleep(3)
     roofmount.set_vertical_position(-35)
     time.sleep(3)
     roofmount.set_vertical_position(83)
