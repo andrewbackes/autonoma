@@ -93,11 +93,11 @@ class Stepper:
             delta = number
         else:
             delta = -number
-        self._step = (self._step + delta) % self._stepsPerRevolution
+        self._steps = (self._steps + delta) % self._stepsPerRevolution
 
     def home(self):
         '''Set stepper to home position'''
-        while self._step % self._stepsPerRevolution != 0:
+        while self._steps % self._stepsPerRevolution != 0:
             self.step()
 
     def set_position(self, degrees):
@@ -111,7 +111,7 @@ class Stepper:
 
     def position(self):
         '''Position in degrees from 'home' position'''
-        pos = ((self._step % self._stepsPerRevolution) /
+        pos = ((self._steps % self._stepsPerRevolution) /
                self._stepsPerRevolution) * 360
         if pos < 0:
             pos = pos + 360
