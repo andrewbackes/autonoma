@@ -39,6 +39,8 @@ class RoofMount:
 if __name__ == "__main__":
     print("Roof mount self test.")
     roofmount = RoofMount()
+    roofmount.clockwise(10)
+    '''
     print("Full clockwise rotation....")
     for degrees in range(36):
         roofmount.clockwise(10)
@@ -47,3 +49,4 @@ if __name__ == "__main__":
     for degrees in range(36):
         roofmount.counter_clockwise(10)
     print("Done.")
+    '''
