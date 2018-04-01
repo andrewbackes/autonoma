@@ -14,8 +14,8 @@ import RPi.GPIO as gpio
 
 class Stepper:
 
-    CLOCKWISE = 1
-    COUNTER_CLOCKWISE = 0
+    CLOCKWISE = 0
+    COUNTER_CLOCKWISE = 1
 
     _config = {
         "gpio": {
@@ -106,8 +106,9 @@ class Stepper:
             target = (degrees % 360)
         else:
             target = (degrees % 360) + 360
-        while self.position() != degrees:
+        while self.position() != target:
             self.step()
+            print("pos:", self.position(), " target:", target)
 
     def position(self):
         '''Position in degrees from 'home' position'''
