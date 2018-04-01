@@ -119,7 +119,12 @@ class Stepper:
         return pos
 
 
-if __name__ == "__main__":
+def main():
+    if len(sys.argv) > 1 and sys.argv[1] == '--disable':
+        stepper = Stepper()
+        stepper.disable()
+        print("Stepper disabled")
+        return
     print("Stepper test")
     stepper = Stepper()
     stepper.enable()
@@ -130,3 +135,6 @@ if __name__ == "__main__":
         pass
     stepper.disable()
     gpio.cleanup()
+
+if __name__ == "__main__":
+    main()
