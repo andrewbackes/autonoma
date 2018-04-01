@@ -89,23 +89,17 @@ class RoofMount:
 def self_test():
     print("Roof mount self test.")
     roofmount = RoofMount()
-    # Servo:
-    print("Vertical movement test")
-    roofmount.set_vertical_position(0)
-
-    roofmount.set_vertical_position(-35)
-
-    roofmount.set_vertical_position(83)
-
+    print("Leveling...")
     roofmount.set_vertical_position(0)
     print("Done.")
-    return
-    # Stepper:
-    print("Full clockwise rotation....")
+    print("Full clockwise downward rotation....")
+    roofmount.set_vertical_position(-35)
     for degrees in range(36):
         roofmount.clockwise(10)
     print("Done.")
-    print("Full counter-clockwise rotation....")
+    print("Full counter-clockwise upward rotation....")
+    roofmount.set_vertical_position(83)
+    roofmount.set_vertical_position(0)
     for degrees in range(36):
         roofmount.counter_clockwise(10)
     print("Done.")
