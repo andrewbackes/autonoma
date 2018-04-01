@@ -45,11 +45,16 @@ class Stepper:
 
     def __init__(self, config={}):
         self._config.update(config)
-        gpio.setmode(gpio.BOARD)
+        if gpio.getmode() != gpio.BOARD:
+            gpio.setmode(gpio.BOARD)
         gpio.setup(self._config['gpio']['dir'], gpio.OUT)
         gpio.setup(self._config['gpio']['step'], gpio.OUT)
-        gpio.output(self._config['gpio']['dir'], self.CLOCKWISE)
         gpio.setup(self._config['gpio']['enable'], gpio.OUT)
+        self.set_direction(self.CLOCKWISE)
+
+        # for tracking:
+        self._steps = 0
+
         # adjust for micro-stepping:
         self._stepsPerRevolution = int(self._config[
             'stepsPerRevolution'] / self._config['microstepping'])
@@ -69,12 +74,48 @@ class Stepper:
     def disable(self):
         gpio.output(self._config['gpio']['enable'], gpio.HIGH)
 
-    def one(self):
-        for x in range(self._stepsPerRevolution):
+    def set_direction(self, dir):
+        if dir != self.CLOCKWISE and dir != self.COUNTER_CLOCKWISE:
+            raise ValueError('dir must be 0 or 1')
+        self.__direction = dir
+        gpio.output(self._config['gpio']['dir'], dir)
+
+    def direction(self):
+        return self.__direction
+
+    def step(self, number=1):
+        for x in range(number):
             gpio.output(self._config['gpio']['step'], gpio.HIGH)
             time.sleep(self._stepDelay)
             gpio.output(self._config['gpio']['step'], gpio.LOW)
             time.sleep(self._stepDelay)
+        if self.direction() == self.CLOCKWISE:
+            delta = number
+        else:
+            delta = -number
+        self._step = (self._step + delta) % self._stepsPerRevolution
+
+    def home(self):
+        '''Set stepper to home position'''
+        while self._step % self._stepsPerRevolution != 0:
+            self.step()
+
+    def set_position(self, degrees):
+        '''Move to a position in degrees'''
+        if degrees > 0:
+            target = (degrees % 360)
+        else:
+            target = (degrees % 360) + 360
+        while self.position() != degrees:
+            self.step()
+
+    def position(self):
+        '''Position in degrees from 'home' position'''
+        pos = ((self._step % self._stepsPerRevolution) /
+               self._stepsPerRevolution) * 360
+        if pos < 0:
+            pos = pos + 360
+        return pos
 
 
 if __name__ == "__main__":
@@ -83,7 +124,7 @@ if __name__ == "__main__":
     stepper.enable()
     try:
         while True:
-            stepper.one()
+            stepper.step(self._stepsPerRevolution)
     except:
         pass
     stepper.disable()

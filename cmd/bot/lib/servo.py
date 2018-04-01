@@ -16,6 +16,8 @@ class Servo:
             'right': 500,
             'left': 2500
         }
+        'downMax': 70,
+        'upMax': -48,
     }
     __pos = 0
     __pi = None
