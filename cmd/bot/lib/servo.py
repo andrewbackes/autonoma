@@ -30,6 +30,7 @@ class Servo:
         'frequency': 50,
         'ratio': 1,
         'secondsPer60deg': 0.12,
+        'loadCoefficient': 2,
         'calibration': {
             'right': 500,
             'left': 2500
@@ -63,8 +64,8 @@ class Servo:
             diff = deg - self.__pos
         else:
             diff = self.__pos - deg
-        load_coeff = 2
-        return ((self._config['secondsPer60deg'] * load_coeff) * (diff / 60))
+        return ((self._config['secondsPer60deg'] *
+                 self._config['loadCoefficient']) * (diff / 60))
 
     def set_position(self, deg):
         if deg > 75 or deg < -75:
