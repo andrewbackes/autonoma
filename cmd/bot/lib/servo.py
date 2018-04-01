@@ -15,7 +15,7 @@ class Servo:
         'calibration': {
             'right': 500,
             'left': 2500
-        }
+        },
         'maxDegrees': 70,
         'minDegrees': -48,
     }
