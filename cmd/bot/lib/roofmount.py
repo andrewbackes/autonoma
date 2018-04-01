@@ -27,7 +27,7 @@ class RoofMount:
         self._stepper.set_position(pos)
         self._stepper.disable()
 
-    def counter_clockwise(self, degrees == 10):
+    def counter_clockwise(self, degrees=10):
         self.__rotate(Stepper.COUNTER_CLOCKWISE, degrees)
 
     def home(self):
