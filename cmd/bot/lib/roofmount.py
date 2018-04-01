@@ -98,11 +98,7 @@ def self_test():
     roofmount.set_vertical_position(83)
     time.sleep(3)
     roofmount.set_vertical_position(0)
-    # roofmount.set_position(roofmount.horizontal_position(),
-    #                       roofmount._config['servo']['min_degrees'])
-    # roofmount.set_position(roofmount.horizontal_position(),
-    #                       roofmount._config['servo']['max_degrees'])
-    # roofmount.level()
+    roofmount.set_vertical_position(0)
     print("Done.")
     return
     # Stepper:
