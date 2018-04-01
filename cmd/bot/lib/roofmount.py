@@ -8,7 +8,7 @@ class RoofMount:
 
     _config = {
         'servo': {
-            'level_degrees': 40,
+            'level_degrees': 35,
             'max_degrees': 70,   # down
             'min_degrees': -48,  # up
         }
