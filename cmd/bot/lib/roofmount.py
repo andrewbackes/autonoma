@@ -6,10 +6,19 @@ from stepper import Stepper
 
 class RoofMount:
 
-    def __init__(self):
+    _config = {
+        'servo': {
+            'level_degrees': 40,
+            'max_degrees': 70,   # down
+            'min_degrees': -48,  # up
+        }
+    }
+
+    def __init__(self, config={}):
+        self._config.update(config)
         self._stepper = Stepper()
         self._stepper.disable()
-        # self._servo = Servo()
+        self._servo = Servo()
 
     def up(self, degrees=10):
         pass
@@ -40,9 +49,14 @@ class RoofMount:
         pass
 
 
-if __name__ == "__main__":
+def self_test():
     print("Roof mount self test.")
     roofmount = RoofMount()
+    # Servo:
+    roofmount.level()
+    return
+
+    # Stepper:
     print("Full clockwise rotation....")
     for degrees in range(36):
         roofmount.clockwise(10)
@@ -51,3 +65,6 @@ if __name__ == "__main__":
     for degrees in range(36):
         roofmount.counter_clockwise(10)
     print("Done.")
+
+if __name__ == "__main__":
+    self_test()
