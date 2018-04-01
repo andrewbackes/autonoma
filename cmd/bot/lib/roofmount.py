@@ -99,10 +99,10 @@ def self_test():
     print("Done.")
     print("Full counter-clockwise upward rotation....")
     roofmount.set_vertical_position(83)
-    roofmount.set_vertical_position(0)
     for degrees in range(36):
         roofmount.counter_clockwise(10)
     print("Done.")
+    roofmount.set_vertical_position(0)
 
 if __name__ == "__main__":
     self_test()
