@@ -91,10 +91,9 @@ def self_test():
     roofmount = RoofMount()
     # Test 1
     print("Leveling...")
-    roofmount.set_vertical_position(0)
     roofmount.set_vertical_position(83)
-    roofmount.set_vertical_position(-35)
     roofmount.set_vertical_position(0)
+    roofmount.set_vertical_position(-35)
     print("Done.")
 
     # Test 2
