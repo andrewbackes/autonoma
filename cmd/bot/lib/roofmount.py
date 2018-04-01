@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import time
+
 from stepper import Stepper
 from servo import Servo
 
@@ -90,7 +92,9 @@ def self_test():
     # Servo:
     print("Vertical movement test")
     roofmount.set_vertical_position(-35)
+    time.sleep(3)
     roofmount.set_vertical_position(83)
+    time.sleep(3)
     roofmount.set_vertical_position(0)
     # roofmount.set_position(roofmount.horizontal_position(),
     #                       roofmount._config['servo']['min_degrees'])
@@ -98,7 +102,7 @@ def self_test():
     #                       roofmount._config['servo']['max_degrees'])
     # roofmount.level()
     print("Done.")
-
+    return
     # Stepper:
     print("Full clockwise rotation....")
     for degrees in range(36):
