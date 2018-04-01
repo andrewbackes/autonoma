@@ -30,7 +30,7 @@ class Servo:
             print("Could not connect to pigpiod.")
             os.exit(1)
         self.__pi.set_mode(self._config['gpioBCN'], pigpio.OUTPUT)
-        self.move(0)  # move to center position
+        self.set_position(0)  # move to center position
 
     def __del__(self):
         self.__pi.stop()
