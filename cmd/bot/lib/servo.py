@@ -15,9 +15,7 @@ class Servo:
         'calibration': {
             'right': 500,
             'left': 2500
-        },
-        'maxDegrees': 70,
-        'minDegrees': -48,
+        }
     }
     __pos = 0
     __pi = None
@@ -42,7 +40,14 @@ class Servo:
                self._config['calibration']['right']) / 180
         return pos * (deg + 90) + self._config['calibration']['right']
 
-    def move(self, deg):
+    def __spin_time(self, deg):
+        if deg > self.__pos:
+            diff = deg - self.__pos
+        else:
+            diff = self.__pos - deg
+        return (self._config['secondsPer60deg'] * (diff / 60))
+
+    def set_position(self, deg):
         self.__pi.set_servo_pulsewidth(
             self._config['gpioBCN'], self.__calc_pulse_width(deg))
         time.sleep(0.1 + self.__spin_time(deg))
@@ -52,17 +57,14 @@ class Servo:
     def position(self):
         return self.__pos
 
-    def __spin_time(self, deg):
-        if deg > self.__pos:
-            diff = deg - self.__pos
-        else:
-            diff = self.__pos - deg
-        return (self._config['secondsPer60deg'] * (diff / 60))
 
+def self_test():
+    servo = Servo()
+    for p in range(-75, 75, 10):
+        print("Position ", p)
+        servo.set_position(p)
+        time.sleep(0.5)
+    del(servo)
 
 if __name__ == "__main__":
-    servo = Servo()
-    for p in range(servo._config['minDegrees'], servo._config['maxDegrees'], 10):
-        print("Position ", p)
-        servo.move(p)
-        time.sleep(0.5)
+    self_test()
