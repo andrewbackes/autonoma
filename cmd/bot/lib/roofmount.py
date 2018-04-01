@@ -80,6 +80,7 @@ class RoofMount:
         if degrees < min or degrees > max:
             raise ValueError('Position out of range')
         pos = -degrees + self._config['servo']['level_degrees']
+        print(pos)
         self._servo.set_position(pos)
 
 
