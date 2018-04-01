@@ -30,7 +30,7 @@ class Servo:
         'frequency': 50,
         'ratio': 1,
         'secondsPer60deg': 0.12,
-        'loadCoefficient': 2,
+        'loadCoefficient': 1.5,
         'calibration': {
             'right': 500,
             'left': 2500
