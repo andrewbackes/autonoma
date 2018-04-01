@@ -68,6 +68,12 @@ class Stepper:
         gpio.setup(self._mode, gpio.OUT)
         gpio.output(self._mode, self._config['resolution_map'][
                     self._config['microstepping']])
+        print('Stepper values: ', {
+            '_stepsPerRevolution': self. _stepsPerRevolution,
+            '_stepDelay': self._stepDelay,
+            '_direction': self.__direction,
+            '_steps': self._steps,
+        })
 
     def enable(self):
         gpio.output(self._config['gpio']['enable'], gpio.LOW)
