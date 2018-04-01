@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from stepper import Stepper
-# from servo import Servo
+from servo import Servo
 
 
 class RoofMount:
