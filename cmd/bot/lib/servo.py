@@ -5,13 +5,31 @@ import os
 import pigpio
 
 
+SG5010 = {
+    'secondsPer60deg': 0.19,
+    'calibration': {
+        'min': 500,
+        'max': 2500
+    }
+}
+
+
+HD1160A  {
+    'secondsPer60deg': 0.12,  # @ 4.8v
+    'calibration': {
+        'min': 800,
+        'max': 2200
+    }
+}
+
+
 class Servo:
     _config = {
         'gpio': 37,
         'gpioBCN': 26,
         'frequency': 50,
         'ratio': 1,
-        'secondsPer60deg': 0.19,
+        'secondsPer60deg': 0.12,
         'calibration': {
             'right': 500,
             'left': 2500

@@ -71,17 +71,29 @@ class RoofMount:
         # self._stepper.set_position(horizontal)
         self._servo.set_position(vertical)
 
+    def set_vertical_position(self, degrees):
+        '''Position relative to the horizon'''
+        min = -(self._config['max_degrees'] - self._config['level_degrees'])
+        max = -(self._config['min_degrees'] - self._config['level_degrees'])
+        if degrees < min or degrees > max:
+            raise ValueError('Position out of range')
+        pos = -degrees + self._config['level_degrees']
+        self._servo.set_position(pos)
+
 
 def self_test():
     print("Roof mount self test.")
     roofmount = RoofMount()
     # Servo:
     print("Vertical movement test")
-    roofmount.set_position(roofmount.horizontal_position(),
-                           roofmount._config['servo']['min_degrees'])
-    roofmount.set_position(roofmount.horizontal_position(),
-                           roofmount._config['servo']['max_degrees'])
-    roofmount.level()
+    self.set_vertical_position(-35)
+    self.set_vertical_position(83)
+    self.set_vertical_position(0)
+    # roofmount.set_position(roofmount.horizontal_position(),
+    #                       roofmount._config['servo']['min_degrees'])
+    # roofmount.set_position(roofmount.horizontal_position(),
+    #                       roofmount._config['servo']['max_degrees'])
+    # roofmount.level()
     print("Done.")
 
     # Stepper:
