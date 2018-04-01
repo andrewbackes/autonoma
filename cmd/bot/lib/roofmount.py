@@ -41,7 +41,7 @@ class RoofMount:
 
     def level(self):
         '''Vertically level the mount'''
-        pass
+        self._servo.set_position(self._config['servo']['level_degrees'])
 
     def home(self):
         '''Move stepper and servo to home positions'''
