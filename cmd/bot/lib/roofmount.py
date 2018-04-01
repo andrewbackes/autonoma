@@ -20,15 +20,15 @@ class RoofMount:
     def clockwise(self, degrees=10):
         self.__rotate(Stepper.CLOCKWISE, degrees)
 
+    def counter_clockwise(self, degrees=10):
+        self.__rotate(Stepper.COUNTER_CLOCKWISE, -degrees)
+
     def __rotate(self, dir, degrees):
         self._stepper.enable()
         self._stepper.set_direction(dir)
         pos = (self._stepper.position() + degrees) % 360
         self._stepper.set_position(pos)
         self._stepper.disable()
-
-    def counter_clockwise(self, degrees=10):
-        self.__rotate(Stepper.COUNTER_CLOCKWISE, degrees)
 
     def home(self):
         '''Move stepper and servo to home positions'''
