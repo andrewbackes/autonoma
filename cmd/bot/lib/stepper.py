@@ -53,9 +53,6 @@ class Stepper:
         gpio.setup(self._config['gpio']['enable'], gpio.OUT)
         self.set_direction(self.CLOCKWISE)
 
-        # for tracking:
-        self._steps = 0
-
         # adjust for micro-stepping:
         self._stepsPerRevolution = int(self._config[
             'stepsPerRevolution'] / self._config['microstepping'])
@@ -68,6 +65,12 @@ class Stepper:
         gpio.setup(self._mode, gpio.OUT)
         gpio.output(self._mode, self._config['resolution_map'][
                     self._config['microstepping']])
+
+        # for tracking:
+        self._steps = 0
+        self._degrees_per_step = (1.0 / self._stepsPerRevolution) * 360
+
+        # logging:
         print('Stepper values: ', {
             '_stepsPerRevolution': self. _stepsPerRevolution,
             '_stepDelay': self._stepDelay,
@@ -113,7 +116,8 @@ class Stepper:
             target = (degrees % 360)
         else:
             target = (degrees % 360) + 360
-        while self.position() != target:
+        while self.position() >= target + self._degrees_per_step \
+                and self.position() <= target - self._degrees_per_step:
             self.step()
             print("pos:", self.position(), " target:", target)
 
