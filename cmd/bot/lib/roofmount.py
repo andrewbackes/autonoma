@@ -79,8 +79,8 @@ def self_test():
     print("Vertical movement test")
     roofmount.set_position(roofmount.horizontal_position(),
                            roofmount._config['servo']['min_degrees'])
-    for degrees in range(23):
-        roofmount.down(5)
+    roofmount.set_position(roofmount.horizontal_position(),
+                           roofmount._config['servo']['max_degrees'])
     roofmount.level()
     print("Done.")
     return
