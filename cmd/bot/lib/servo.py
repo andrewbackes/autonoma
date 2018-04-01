@@ -16,8 +16,8 @@ class Servo:
             'right': 500,
             'left': 2500
         }
-        'downMax': 70,
-        'upMax': -48,
+        'maxDegrees': 70,
+        'minDegrees': -48,
     }
     __pos = 0
     __pi = None
@@ -62,8 +62,7 @@ class Servo:
 
 if __name__ == "__main__":
     servo = Servo()
-    positions = [-90, -45, 0, 45, 90, 0]
-    for p in positions:
+    for p in range(servo._config.minDegrees, servo._config.maxDegrees, 10):
         print("Position ", p)
         servo.move(p)
         time.sleep(0.5)

@@ -30,6 +30,10 @@ class RoofMount:
         self._stepper.set_position(pos)
         self._stepper.disable()
 
+    def level(self):
+        '''Vertically level the mount'''
+        pass
+
     def home(self):
         '''Move stepper and servo to home positions'''
         self._stepper.home()
