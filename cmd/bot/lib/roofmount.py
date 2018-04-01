@@ -65,7 +65,7 @@ class RoofMount:
         return self._servo.position()
 
     def position(self):
-        return (self.horizontal_position, self.vertical_position)
+        return (self.horizontal_position(), self.vertical_position())
 
     def set_position(self, horizontal, vertical):
         self._stepper.set_position(horizontal)
@@ -76,11 +76,13 @@ def self_test():
     print("Roof mount self test.")
     roofmount = RoofMount()
     # Servo:
+    print("Vertical movement test")
     roofmount.set_position(roofmount.horizontal_position(),
                            roofmount._config['servo']['min_degrees'])
     for degrees in range(11):
         roofmount.up()
     roofmount.level()
+    print("Done.")
     return
     # Stepper:
     print("Full clockwise rotation....")
