@@ -63,15 +63,15 @@ class Servo:
             diff = deg - self.__pos
         else:
             diff = self.__pos - deg
-        return (self._config['secondsPer60deg'] * (diff / 60))
+        load_coeff = 2
+        return ((self._config['secondsPer60deg'] * load_coeff) * (diff / 60))
 
     def set_position(self, deg):
         if deg > 75 or deg < -75:
             raise ValueError("Must be between -75 and 75")
         self.__pi.set_servo_pulsewidth(
             self._config['gpioBCN'], self.__calc_pulse_width(deg))
-        # time.sleep(0.1 + self.__spin_time(deg))
-        time.sleep(1)
+        time.sleep(0.1 + self.__spin_time(deg))
         self.__pi.set_servo_pulsewidth(self._config['gpioBCN'], 0)
         self.__pos = deg
 
