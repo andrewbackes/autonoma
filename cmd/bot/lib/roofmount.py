@@ -2,7 +2,7 @@
 
 import time
 
-from stepper import Stepper
+from lib.stepper import Stepper
 from servo import Servo
 
 
