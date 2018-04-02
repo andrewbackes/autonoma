@@ -22,6 +22,7 @@ class RoofMount:
         self._stepper = Stepper()
         self._stepper.disable()
         self._servo = Servo()
+        self.set_vertical_position(0)
 
     def up(self, degrees=10):
         '''Move up relative to current position'''
