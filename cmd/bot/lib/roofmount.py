@@ -110,6 +110,7 @@ class RoofMount:
         '''Performs a 360 scan at a specified angle. Resolution is a
         percentage and dictates how often a readings is performed during
         the scan.'''
+        print("Performing scan.")
         readings = []
         for step in range(self._stepper._stepsPerRevolution):
             if step % (1 / resolution):
