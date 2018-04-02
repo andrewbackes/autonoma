@@ -13,7 +13,10 @@
     "roofmount": {
         "enabled": true,
         "servo": {
-            "enabled": true
+            "enabled": true,
+            "level_degrees": 35,
+            "max_degrees": 70,
+            "min_degrees": -48
         },
         "stepper": {
             "enabled": true,
