@@ -39,13 +39,15 @@ class Bot:
             self._roofmount = RoofMount(self._config['roofmount'])
 
         # sensors:
-        if self._config['orientation'] and self._config['orientation']['enabled']:
+        if self._config['orientation'] \
+                and self._config['orientation']['enabled']:
             orientation = Orientation()
             self._sensor_readers['orientation'] = orientation.heading
         if self._config['ir'] and self._config['ir']['enabled']:
             ir = IR()
             self._sensor_readers['ir'] = ir.distance
-        if self._config['ultrasonic'] and self._config['ultrasonic']['enabled']:
+        if self._config['ultrasonic'] \
+                and self._config['ultrasonic']['enabled']:
             ultrasonic = UltraSonic()
             self._sensor_readers['ultrasonic'] = ultrasonic.distance
 
@@ -55,7 +57,8 @@ class Bot:
             self._move = Move()
         if self._config['servo'] and self._config['servo']['enabled']:
             self._servo = Servo(self._config['servo'])
-        if self._config['ultrasonic'] and self._config['ultrasonic']['enabled']:
+        if self._config['ultrasonic'] \
+                and self._config['ultrasonic']['enabled']:
             ultrasonic = UltraSonic()
             self._sensor_readers['ultrasonic'] = ultrasonic.distance
 
@@ -103,10 +106,12 @@ class Bot:
                 speed = max(0, speed - step)
             elif k == "q" and self._roofmount is not None:
                 cmd = {'command': 'horizontal_position',
-                       'position': (self._roofmount.horizontal_position() + (360 - 15)) % 360}
+                       'position': (self._roofmount.horizontal_position() +
+                                    (360 - 15)) % 360}
             elif k == "e" and self._roofmount is not None:
                 cmd = {'command': 'horizontal_position',
-                       'position': (self._roofmount.horizontal_position() + 15) % 360}
+                       'position': (self._roofmount.horizontal_position() +
+                                    15) % 360}
             elif k == "r" and self._roofmount is not None:
                 cmd = {'command': 'vertical_position',
                        'position': self._roofmount.vertical_position() + 15}
@@ -140,7 +145,8 @@ class Bot:
         elif cmd['command'] == 'move' and cmd['direction'] == 'backward':
             if self._move:
                 self._move.backward(cmd['time'], cmd['speed'])
-        elif cmd['command'] == 'move' and cmd['direction'] == 'counter_clockwise':
+        elif cmd['command'] == 'move' \
+                and cmd['direction'] == 'counter_clockwise':
             if self._move:
                 self._move.counter_clockwise(
                     cmd['time'], cmd['speed'])
