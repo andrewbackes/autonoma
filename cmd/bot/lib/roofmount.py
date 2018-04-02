@@ -19,7 +19,8 @@ class RoofMount:
             'min_degrees': -48,  # up
         },
         'lidar': {
-            'enabled': True
+            'enabled': True,
+            'updateRatePerSecond': 270
         }
     }
 
@@ -100,6 +101,7 @@ class RoofMount:
         self._servo.set_position(pos)
 
     def get_readings(self):
+
         return {
             'vertical_position': self.vertical_position(),
             'horizontal_position': self.horizontal_position(),
