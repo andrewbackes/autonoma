@@ -51,10 +51,6 @@ class Lidar:
     __ACQ_SETTINGS = 0x5D
     __POWER_CONTROL = 0x65
 
-    _config = {
-        'updatesRatePerSecond': 270
-    }
-
     def __init__(self, address=0x62, rate=270):
         self.i2c = I2C.get_i2c_device(address)
         self.rate = rate
@@ -84,25 +80,15 @@ class Lidar:
         # Distance is in cm
         # Velocity is in cm between consecutive reads; sampling rate converts
         # these to a velocity.
-        '''
-        gll_bytes = self.i2c.readList(0x80 | self.__LAST_DELAY_HIGH, 2)
-        dist1 = gll_bytes[0]
-        dist2 = gll_bytes[1]
-        distance = ((dist1 << 8) + dist2) / 100
-        '''
         dur = time.time() - self._last_read
         if dur < self._read_delay:
             diff = self._read_delay - dur
-            print('sleeping: ', diff, 'last read:', self._last_read,
-                  'time ago:', dur, 'not within:', self._read_delay)
             time.sleep(diff)
-
         dist1 = self.i2c.readU8(self.__FULL_DELAY_HIGH)
         dist2 = self.i2c.readU8(self.__FULL_DELAY_LOW)
         self._last_read = time.time()
-        distance = ((dist1 << 8) + dist2)  # / 100
-
-        velocity = -self.i2c.readS8(self.__VELOCITY) * self.rate  # / 100
+        distance = ((dist1 << 8) + dist2)
+        velocity = -self.i2c.readS8(self.__VELOCITY) * self.rate
         return distance, velocity
 
     def distance(self):
