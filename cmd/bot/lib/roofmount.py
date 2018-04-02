@@ -12,7 +12,7 @@ class RoofMount:
 
     _config = {
         'servo': {
-            'enabled': true,
+            'enabled': True,
             # for calibration
             'level_degrees': 35,
             'max_degrees': 70,   # down
