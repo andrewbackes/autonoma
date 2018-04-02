@@ -66,7 +66,7 @@ class RoofMount:
         return self._stepper.position()
 
     def vertical_position(self):
-        return self._servo.position()
+        return self._config['servo']['level_degrees'] - self._servo.position()
 
     def position(self):
         return (self.horizontal_position(), self.vertical_position())
