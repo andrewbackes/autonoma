@@ -19,7 +19,7 @@ class RoofMount:
             'min_degrees': -48,  # up
         },
         'lidar': {
-            'enabled': true
+            'enabled': True
         }
     }
 
