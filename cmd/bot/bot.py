@@ -103,10 +103,10 @@ class Bot:
                 speed = max(0, speed - step)
             elif k == "q" and self._roofmount is not None:
                 cmd = {'command': 'horizontal_position',
-                       'position': self._roofmount.horizontal_position() - 15}
+                       'position': (self._roofmount.horizontal_position() + (360 - 15)) % 360}
             elif k == "e" and self._roofmount is not None:
                 cmd = {'command': 'horizontal_position',
-                       'position': self._roofmount.horizontal_position() + 15}
+                       'position': (self._roofmount.horizontal_position() + 15) % 360}
             elif k == "r" and self._roofmount is not None:
                 cmd = {'command': 'vertical_position',
                        'position': self._roofmount.vertical_position() + 15}

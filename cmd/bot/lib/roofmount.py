@@ -69,9 +69,6 @@ class RoofMount:
     def vertical_position(self):
         return self._config['servo']['level_degrees'] - self._servo.position()
 
-    def position(self):
-        return (self.horizontal_position(), self.vertical_position())
-
     def set_horizontal_position(self, degrees):
         '''Take shortest path to target degrees'''
         diff = degrees - self._stepper.position()
