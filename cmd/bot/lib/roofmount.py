@@ -101,8 +101,8 @@ class RoofMount:
 
     def get_readings(self):
         return {
-            'vertical_position': self._roofmount.vertical_position(),
-            'horizontal_position': self._roofmount.horizontal_position(),
+            'vertical_position': self.vertical_position(),
+            'horizontal_position': self.horizontal_position(),
             'lidar': self._lidar.distance(),
         }
 
