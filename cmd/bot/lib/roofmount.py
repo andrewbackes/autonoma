@@ -3,7 +3,7 @@
 import time
 
 from lib.stepper import Stepper
-from servo import Servo
+from lib.servo import Servo
 
 
 class RoofMount:
