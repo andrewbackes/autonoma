@@ -85,7 +85,7 @@ class Bot:
             print(self.get_readings())
             print('Speed ', speed)
             k = getch()
-            cmd = {}
+            cmd = None
             if k == "w":
                 cmd = {'command': 'move', 'direction': 'forward',
                        'speed': speed, 'time': t}
@@ -120,7 +120,8 @@ class Bot:
                 continue
             elif k == "x":
                 break
-            self.__execute(cmd)
+            if cmd not None:
+                self.__execute(cmd)
 
     def network_control(self):
         self.tcp = TCP()
