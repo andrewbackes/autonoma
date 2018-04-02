@@ -10,6 +10,7 @@ class RoofMount:
 
     _config = {
         'servo': {
+            # for calibration
             'level_degrees': 35,
             'max_degrees': 70,   # down
             'min_degrees': -48,  # up
@@ -42,17 +43,18 @@ class RoofMount:
 
     def clockwise(self, degrees=10):
         '''Move clockwise relative to current position'''
-        self.__rotate(Stepper.CLOCKWISE, degrees)
+        self.__rotate(Stepper.CLOCKWISE,
+                      (self._stepper.position() + degrees) % 360)
 
     def counter_clockwise(self, degrees=10):
         '''Move counter-clockwise relative to current position'''
-        self.__rotate(Stepper.COUNTER_CLOCKWISE, -degrees)
+        self.__rotate(Stepper.COUNTER_CLOCKWISE,
+                      (self._stepper.position() - degrees) % 360)
 
     def __rotate(self, dir, degrees):
         self._stepper.enable()
         self._stepper.set_direction(dir)
-        pos = (self._stepper.position() + degrees) % 360
-        self._stepper.set_position(pos)
+        self._stepper.set_position(degrees)
         self._stepper.disable()
 
     def home(self):
@@ -69,9 +71,15 @@ class RoofMount:
     def position(self):
         return (self.horizontal_position(), self.vertical_position())
 
-    def set_position(self, horizontal, vertical):
-        # self._stepper.set_position(horizontal)
-        self._servo.set_position(vertical)
+    def set_horizontal_position(self, degrees):
+        '''Take shortest path to target degrees'''
+        diff = degrees - self._stepper.position()
+        if diff < 0:
+            diff += 360
+        if diff <= 180:
+            self.__rotate(Stepper.CLOCKWISE, degrees)
+        else:
+            self.__rotate(Stepper.COUNTER_CLOCKWISE, degrees)
 
     def set_vertical_position(self, degrees):
         '''Position relative to the horizon'''

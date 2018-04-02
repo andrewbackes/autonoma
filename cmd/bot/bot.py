@@ -3,11 +3,10 @@
 
 import RPi.GPIO as gpio
 from lib.orientation import Orientation
-from lib.servo import Servo
 from lib.move import Move
+from lib.roofmount import RoofMount
 from lib.ir import IR
 from lib.ultrasonic import UltraSonic
-from lib.lidar import Lidar
 
 from util.getch import *
 from util.tcp import TCP
@@ -19,10 +18,16 @@ import time
 
 
 class Bot:
-    _config = {}
+    _config = {
+        "hbridge": {"enabled": False},
+        "roofmount": {"enabled": False},
+        "orientation": {"enabled": False},
+        "ultrasonic": {"enabled": False},
+        "ir": {"enabled": False},
+    }
     _sensor_readers = {}
     _move = None
-    _servo = None
+    _roofmount = None
 
     def __init__(self, config):
         gpio.setmode(gpio.BOARD)
@@ -30,8 +35,8 @@ class Bot:
         # controls:
         if self._config['hbridge'] and self._config['hbridge']['enabled']:
             self._move = Move()
-        if self._config['servo'] and self._config['servo']['enabled']:
-            self._servo = Servo(self._config['servo'])
+        if self._config['roofmount'] and self._config['roofmount']['enabled']:
+            self._roofmount = RoofMount(self._config['roofmount'])
 
         # sensors:
         if self._config['orientation'] and self._config['orientation']['enabled']:
@@ -43,9 +48,6 @@ class Bot:
         if self._config['ultrasonic'] and self._config['ultrasonic']['enabled']:
             ultrasonic = UltraSonic()
             self._sensor_readers['ultrasonic'] = ultrasonic.distance
-        if self._config['lidar'] and self._config['lidar']['enabled']:
-            lidar = Lidar()
-            self._sensor_readers['lidar'] = lidar.distance
 
     def __gpio_reset(self):
         gpio.cleanup()
@@ -92,16 +94,22 @@ class Bot:
             elif k == "d":
                 cmd = {'command': 'move', 'direction': 'clockwise',
                        'speed': speed, 'time': t}
-            elif k == 'r':
+            elif k == 't':
                 speed = min(100, speed + step)
-            elif k == 'f':
+            elif k == 'g':
                 speed = max(0, speed - step)
-            elif k == "q" and self._servo:
-                cmd = {'command': 'servo',
-                       'position': max(-90, self._servo.position() - 15)}
-            elif k == "e" and self._servo:
-                cmd = {'command': 'servo',
-                       'position': min(90, self._servo.position() + 15)}
+            elif k == "q" and self._roofmount is not None:
+                cmd = {'command': 'horizontal_position',
+                       'position': self._roofmount.horizontal_position() - 15}
+            elif k == "e" and self._roofmount is not None:
+                cmd = {'command': 'horizontal_position',
+                       'position': self._roofmount.horizontal_position() + 15}
+            elif k == "r" and self._roofmount is not None:
+                cmd = {'command': 'vertical_position',
+                       'position': self._roofmount.vertical_position() + 15}
+            elif k == "f" and self._roofmount is not None:
+                cmd = {'command': 'vertical_position',
+                       'position': self._roofmount.vertical_position() - 15}
             elif k == 'p':
                 continue
             elif k == "x":
@@ -122,6 +130,7 @@ class Bot:
         self.__execute(cmd)
 
     def __execute(self, cmd):
+        # Drive controls:
         if cmd['command'] == 'move' and cmd['direction'] == 'forward':
             if self._move:
                 self._move.forward(cmd['time'], cmd['speed'])
@@ -135,12 +144,21 @@ class Bot:
         elif cmd['command'] == 'move' and cmd['direction'] == 'clockwise':
             if self._move:
                 self._move.clockwise(cmd['time'], cmd['speed'])
-        elif cmd['command'] == 'servo':
-            if self._servo:
-                self._servo.move(cmd['position'])
+
+        # View controls:
+        elif cmd['command'] == 'horizontal_position':
+            if self._roofmount:
+                self._roofmount.set_horizontal_position(cmd['position'])
+        elif cmd['command'] == 'vertical_position':
+            if self._roofmount:
+                self._roofmount.set_vertical_position(cmd['position'])
+
+        # Sensor controls:
         elif cmd['command'] == 'get_readings':
             if self._servo:
                 self.tcp.send(self.get_readings())
+
+        # Communication controls:
         elif cmd['command'] == 'isready':
             self.tcp.send('{"status":"readyok"}')
         elif cmd['command'] == 'reset':

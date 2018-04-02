@@ -10,20 +10,20 @@
             "driver_in4": 7
         }
     },
-    "servo": {
+    "roofmount": {
         "enabled": true,
-        "gpio": 37,
-        "gpioBCN": 26,
-        "secondsPer60deg": 0.19,
-        "calibration": {
-            "right": 500,
-            "left": 2500
-        }
-    },
-    "stepper": {
-        "gpio": {
-            "step": 36,
-            "dir": 32
+        "servo": {
+            "enabled": true
+        },
+        "stepper": {
+            "enabled": true,
+            "gpio": {
+                "step": 36,
+                "dir": 32
+            }
+        },
+        "lidar": {
+            "enabled": true
         }
     },
     "orientation": {
@@ -36,8 +36,5 @@
         "enabled": false,
         "spi_port": 0,
         "spi_device": 0
-    },
-    "lidar": {
-        "enabled": true
     }
 }
