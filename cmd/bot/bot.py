@@ -30,6 +30,7 @@ class Bot:
     _roofmount = None
 
     def __init__(self, config):
+        print("Initializing Bot...")
         gpio.setmode(gpio.BOARD)
         self._config.update(config)
         # controls:
@@ -116,6 +117,9 @@ class Bot:
             elif k == "f" and self._roofmount is not None:
                 cmd = {'command': 'vertical_position',
                        'position': self._roofmount.vertical_position() - 15}
+            elif k == 'z' and self._roofmount is not None:
+                self._roofmount.horizontal_scan(
+                    self._roofmount.vertical_position(), 1.0)
             elif k == 'p':
                 continue
             elif k == "x":

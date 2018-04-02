@@ -106,6 +106,16 @@ class RoofMount:
             'lidar': self._lidar.distance(),
         }
 
+    def horizontal_scan(self, vertical_degrees, resolution=1.0):
+        '''Performs a 360 scan at a specified angle. Resolution is a
+        percentage and dictates how often a readings is performed during
+        the scan.'''
+        readings = []
+        for step in range(self._stepper._stepsPerRevolution):
+            if step % (1 / resolution):
+                readings.append(self.get_readings())
+        return readings
+
 
 def self_test():
     print("Roof mount self test.")
