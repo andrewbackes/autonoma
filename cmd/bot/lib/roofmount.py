@@ -5,15 +5,21 @@ import time
 from lib.stepper import Stepper
 from lib.servo import Servo
 
+from lib.lidar import Lidar
+
 
 class RoofMount:
 
     _config = {
         'servo': {
+            'enabled': true,
             # for calibration
             'level_degrees': 35,
             'max_degrees': 70,   # down
             'min_degrees': -48,  # up
+        },
+        'lidar': {
+            'enabled': true
         }
     }
 
@@ -23,6 +29,7 @@ class RoofMount:
         self._stepper.disable()
         self._servo = Servo()
         self.set_vertical_position(0)
+        self._lidar = Lidar()
 
     def up(self, degrees=10):
         '''Move up relative to current position'''
@@ -91,6 +98,13 @@ class RoofMount:
             return
         pos = -degrees + self._config['servo']['level_degrees']
         self._servo.set_position(pos)
+
+    def get_readings(self):
+        return {
+            'vertical_position': self._roofmount.vertical_position(),
+            'horizontal_position': self._roofmount.horizontal_position(),
+            'lidar': self._lidar.distance(),
+        }
 
 
 def self_test():

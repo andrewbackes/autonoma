@@ -37,8 +37,9 @@ class Bot:
             self._move = Move()
         if self._config['roofmount'] and self._config['roofmount']['enabled']:
             self._roofmount = RoofMount(self._config['roofmount'])
+            self._sensor_readers['roofmount'] = self._roofmount.get_readings
 
-        # sensors:
+        # sensors readers:
         if self._config['orientation'] \
                 and self._config['orientation']['enabled']:
             orientation = Orientation()
@@ -69,10 +70,7 @@ class Bot:
     def get_readings(self):
         r = {}
         if self._roofmount is not None:
-            r.update({
-                'vertical_position': self._roofmount.vertical_position(),
-                'horizontal_position': self._roofmount.horizontal_position(),
-            })
+            r.update(self._roofmount.get_readings())
         for name, read in self._sensor_readers.items():
             r[name] = read()
         r['timestamp'] = time.time()
