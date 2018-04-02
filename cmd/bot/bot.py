@@ -120,7 +120,7 @@ class Bot:
                 continue
             elif k == "x":
                 break
-            if cmd not None:
+            if cmd is not None:
                 self.__execute(cmd)
 
     def network_control(self):
