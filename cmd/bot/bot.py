@@ -65,8 +65,11 @@ class Bot:
 
     def get_readings(self):
         r = {}
-        if self._servo:
-            r['servo'] = self._servo.position()
+        if self._roofmount is not None:
+            r.update({
+                'vertical_position': self._roofmount.vertical_position(),
+                'horizontal_position': self._roofmount.horizontal_position(),
+            })
         for name, read in self._sensor_readers.items():
             r[name] = read()
         r['timestamp'] = time.time()
