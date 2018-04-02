@@ -118,8 +118,8 @@ class Bot:
                 cmd = {'command': 'vertical_position',
                        'position': self._roofmount.vertical_position() - 15}
             elif k == 'z' and self._roofmount is not None:
-                self._roofmount.horizontal_scan(
-                    self._roofmount.vertical_position(), 1.0)
+                cmd = {'command': 'horizontal_scan', 'vertical_position':
+                       self._roofmount.vertical_position(), 'resolution': 1.0}
             elif k == 'p':
                 continue
             elif k == "x":
@@ -167,10 +167,13 @@ class Bot:
 
         # Sensor controls:
         elif cmd['command'] == 'get_readings':
-            if self._servo:
-                self.tcp.send(self.get_readings())
+            self.tcp.send(self.get_readings())
+        elif cmd['command'] == 'horizontal_scan':
+            readings = self._roofmount.horizontal_scan(
+                cmd['vertical_position'], cmd['resolution'])
+            print(readings)
 
-        # Communication controls:
+            # Communication controls:
         elif cmd['command'] == 'isready':
             self.tcp.send('{"status":"readyok"}')
         elif cmd['command'] == 'reset':
