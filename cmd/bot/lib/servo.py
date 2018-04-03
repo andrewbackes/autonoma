@@ -98,17 +98,17 @@ def self_test_software_pwm():
     p = GPIO.PWM(pin, freq)
 
     p.ChangeDutyCycle(0.5)
-    p.start()
+    p.start(1)
     time.sleep(1)
     p.stop()
 
     p.ChangeDutyCycle(0.25)
-    p.start()
+    p.start(1)
     time.sleep(1)
     p.stop()
 
     p.ChangeDutyCycle(0.75)
-    p.start()
+    p.start(1)
     time.sleep(1)
     p.stop()
 
