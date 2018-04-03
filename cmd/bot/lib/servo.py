@@ -113,5 +113,5 @@ def self_test_software_pwm():
     p.stop()
 
 if __name__ == "__main__":
-    self_test_software_pwm()
-    # self_test()
+    # self_test_software_pwm()
+    self_test()
