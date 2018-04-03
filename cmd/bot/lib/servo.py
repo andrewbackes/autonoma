@@ -88,5 +88,30 @@ def self_test():
         time.sleep(0.5)
     del(servo)
 
+
+def self_test_software_pwm():
+    freq = 50
+    pin = 37
+
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(pin, GPIO.OUT)
+    p = GPIO.PWM(pin, freq)
+
+    p.ChangeDutyCycle(0.5)
+    p.start()
+    time.sleep(1)
+    p.stop()
+
+    p.ChangeDutyCycle(0.25)
+    p.start()
+    time.sleep(1)
+    p.stop()
+
+    p.ChangeDutyCycle(0.75)
+    p.start()
+    time.sleep(1)
+    p.stop()
+
 if __name__ == "__main__":
-    self_test()
+    self_test_software_pwm()
+    # self_test()

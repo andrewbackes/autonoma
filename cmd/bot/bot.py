@@ -44,21 +44,10 @@ class Bot:
         if self._config['orientation'] \
                 and self._config['orientation']['enabled']:
             orientation = Orientation()
-            self._sensor_readers['orientation'] = orientation.heading
+            self._sensor_readers['heading'] = orientation.heading
         if self._config['ir'] and self._config['ir']['enabled']:
             ir = IR()
             self._sensor_readers['ir'] = ir.distance
-        if self._config['ultrasonic'] \
-                and self._config['ultrasonic']['enabled']:
-            ultrasonic = UltraSonic()
-            self._sensor_readers['ultrasonic'] = ultrasonic.distance
-
-    def __gpio_reset(self):
-        gpio.cleanup()
-        if self._config['hbridge'] and self._config['hbridge']['enabled']:
-            self._move = Move()
-        if self._config['servo'] and self._config['servo']['enabled']:
-            self._servo = Servo(self._config['servo'])
         if self._config['ultrasonic'] \
                 and self._config['ultrasonic']['enabled']:
             ultrasonic = UltraSonic()
@@ -171,9 +160,9 @@ class Bot:
         elif cmd['command'] == 'horizontal_scan':
             readings = self._roofmount.horizontal_scan(
                 cmd['vertical_position'], cmd['resolution'])
-            print(readings)
+            self.tcp.send(readings)
 
-            # Communication controls:
+        # Communication controls:
         elif cmd['command'] == 'isready':
             self.tcp.send('{"status":"readyok"}')
         elif cmd['command'] == 'reset':

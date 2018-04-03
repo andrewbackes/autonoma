@@ -117,7 +117,7 @@ class RoofMount:
         self._stepper.enable()
         for step in range(self._stepper._stepsPerRevolution):
             self._stepper.step()
-            # if step % (1 / resolution):
+            # if step % (1 / resolution) == 0:
             readings.append(self.get_readings())
         self._stepper.disable()
         return readings
