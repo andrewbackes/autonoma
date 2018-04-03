@@ -3,7 +3,7 @@
 import time
 import os
 import pigpio
-
+import RPi.GPIO as GPIO
 
 SG5010 = {
     'secondsPer60deg': 0.19,
