@@ -155,7 +155,7 @@ class Bot:
         elif cmd['command'] == 'horizontal_scan':
             readings = self._roofmount.horizontal_scan(
                 cmd['vertical_position'], cmd['resolution'])
-            self.tcp.send(readings)
+            self.tcp.send(json.dumps(readings))
 
         # Communication controls:
         elif cmd['command'] == 'isready':
