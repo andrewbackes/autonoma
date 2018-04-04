@@ -22,12 +22,10 @@ class Bot:
         "hbridge": {"enabled": False},
         "roofmount": {"enabled": False},
         "orientation": {"enabled": False},
-        "ultrasonic": {"enabled": False},
-        "ir": {"enabled": False},
     }
-    _sensor_readers = {}
     _move = None
     _roofmount = None
+    _orientation = None
 
     def __init__(self, config):
         print("Initializing Bot...")
@@ -39,19 +37,10 @@ class Bot:
         if self._config['roofmount'] and self._config['roofmount']['enabled']:
             self._roofmount = RoofMount(self._config['roofmount'])
             self._sensor_readers['roofmount'] = self._roofmount.get_readings
-
         # sensors readers:
         if self._config['orientation'] \
                 and self._config['orientation']['enabled']:
-            orientation = Orientation()
-            self._sensor_readers['heading'] = orientation.heading
-        if self._config['ir'] and self._config['ir']['enabled']:
-            ir = IR()
-            self._sensor_readers['ir'] = ir.distance
-        if self._config['ultrasonic'] \
-                and self._config['ultrasonic']['enabled']:
-            ultrasonic = UltraSonic()
-            self._sensor_readers['ultrasonic'] = ultrasonic.distance
+            self.orientation = Orientation()
 
     def __del__(self):
         print("done")
@@ -61,10 +50,15 @@ class Bot:
         r = {}
         if self._roofmount is not None:
             r.update(self._roofmount.get_readings())
-        for name, read in self._sensor_readers.items():
-            r[name] = read()
         r['timestamp'] = time.time()
         return json.dumps(r)
+
+    def get_orientation(self):
+        r = {}
+        if self.orientation is not None:
+            r['heading'] = self.orientation.heading()
+            r['timestamp'] = time.time()
+        return r
 
     def manual_control(self):
         print("Use w,a,s,d to move the vehicle. to exit")
@@ -155,6 +149,8 @@ class Bot:
                 self._roofmount.set_vertical_position(cmd['position'])
 
         # Sensor controls:
+        elif cmd['command'] == 'get_orientation':
+            self.tcp.send(self.get_orientation())
         elif cmd['command'] == 'get_readings':
             self.tcp.send(self.get_readings())
         elif cmd['command'] == 'horizontal_scan':
@@ -165,8 +161,6 @@ class Bot:
         # Communication controls:
         elif cmd['command'] == 'isready':
             self.tcp.send('{"status":"readyok"}')
-        elif cmd['command'] == 'reset':
-            self.__gpio_reset()
 
 
 if __name__ == "__main__":

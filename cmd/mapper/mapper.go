@@ -44,6 +44,14 @@ var (
 func main() {
 	log.SetLevel(logLevel)
 	log.Info("Mapper started.")
+	b := slamBot()
+	g := grid.New(gridCellSize)
+	// go slam.Manual(g, b)
+	go slam.Threesixty(g, b)
+	hud.ListenAndServe(g)
+}
+
+func slamBot() slam.Bot {
 	useSim := len(os.Args) > 1 && strings.Contains(os.Args[1], "simulat")
 	var b slam.Bot
 	if useSim {
@@ -55,7 +63,5 @@ func main() {
 	} else {
 		b = bot.New(address, sensors, dimensions, wheels)
 	}
-	g := grid.New(gridCellSize)
-	go slam.Manual(g, b)
-	hud.ListenAndServe(g)
+	return b
 }

@@ -25,7 +25,6 @@ func Manual(g *grid.Grid, bot Bot) {
 			break
 		}
 		log.Info("Scanning...")
-		bot.Reset()
 		set1 := bot.Scan()
 		for i := range set1 {
 			// scans go from -90 to 90
@@ -35,7 +34,6 @@ func Manual(g *grid.Grid, bot Bot) {
 		log.Info("Turn the bot around and press 'enter'")
 		scanner.Scan()
 		log.Info("Scanning...")
-		bot.Reset()
 		set2 := bot.Scan()
 		for i := range set2 {
 			// scans go from -90 to 90

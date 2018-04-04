@@ -31,7 +31,7 @@ func (b *Bot) horizontalScan(vertPos float64) []RoofmountScanResult {
 func (b *Bot) Scan() []sensor.Reading {
 	log.Info("Scanning.")
 	rs := make([]sensor.Reading, 0)
-	r0 := b.readings()
+	r0 := b.orientation()
 	currentPose := coordinates.Pose{
 		Heading:  r0["heading"],
 		Location: b.pose.Location,

@@ -8,12 +8,6 @@ import (
 
 func Threesixty(g *grid.Grid, bot Bot) {
 	log.Info("Mapping...")
-	done := false
-	for !done {
-		for i := 0.0; i <= 360; i += 15.0 {
-			bot.Rotate(i)
-			g.Apply(bot.Scan()...)
-		}
-	}
+	g.Apply(bot.Scan()...)
 	log.Info("Done mapping.")
 }

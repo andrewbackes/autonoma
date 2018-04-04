@@ -109,6 +109,17 @@ func (b *Bot) readings() map[string]float64 {
 	return readings
 }
 
+func (b *Bot) orientation() map[string]float64 {
+	b.sendReceiver.send(`{"command": "get_orientation"}`)
+	resp := b.sendReceiver.receive()
+	readings := map[string]float64{}
+	err := json.Unmarshal([]byte(resp), &readings)
+	if err != nil {
+		panic(err)
+	}
+	return readings
+}
+
 func (b *Bot) Pose() coordinates.Pose {
 	b.pose.Heading = b.readings()["heading"]
 	return b.pose
