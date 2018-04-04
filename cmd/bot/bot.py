@@ -57,7 +57,7 @@ class Bot:
         if self.orientation is not None:
             r['heading'] = self.orientation.heading()
             r['timestamp'] = time.time()
-        return r
+        return json.dumps(r)
 
     def manual_control(self):
         print("Use w,a,s,d to move the vehicle. to exit")
