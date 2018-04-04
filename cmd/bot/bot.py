@@ -36,8 +36,7 @@ class Bot:
             self._move = Move()
         if self._config['roofmount'] and self._config['roofmount']['enabled']:
             self._roofmount = RoofMount(self._config['roofmount'])
-            self._sensor_readers['roofmount'] = self._roofmount.get_readings
-        # sensors readers:
+        # orientation:
         if self._config['orientation'] \
                 and self._config['orientation']['enabled']:
             self.orientation = Orientation()
