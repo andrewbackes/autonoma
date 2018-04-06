@@ -55,8 +55,12 @@ class Bot:
     def get_orientation(self):
         r = {}
         if self.orientation is not None:
-            r['heading'] = self.orientation.heading()
-            r['timestamp'] = time.time()
+            yaw, roll, pitch = self.orientation.euler()
+            r = {
+                'yaw': yaw,
+                'roll': roll,
+                'pitch': pitch
+            }
         return json.dumps(r)
 
     def manual_control(self):

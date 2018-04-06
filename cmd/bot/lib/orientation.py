@@ -37,11 +37,11 @@ class Orientation:
         # sys, gyro, accel, mag = self.bno055.get_calibration_status()
         return self.bno055.read_euler(), self.bno055.get_calibration_status()
 
-    def heading(self):
+    def euler(self):
         time.sleep(0.01)
         euler, cal = self.read()
-        heading, roll, pitch = euler
-        return heading
+        # heading, roll, pitch = euler
+        return euler
 
 
 if __name__ == "__main__":

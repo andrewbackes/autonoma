@@ -14,6 +14,6 @@ type Bot interface {
 	Pose() coordinates.Pose
 	SetPose(coordinates.Pose)
 
-	// Readings() []sensor.Reading
 	Scan() []sensor.Reading
+	LidarScan(verticalPos int) []coordinates.Point
 }

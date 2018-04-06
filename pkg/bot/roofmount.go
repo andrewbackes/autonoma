@@ -17,8 +17,8 @@ type RoofmountScanResult struct {
 	Lidar              float64 `json:"lidar"`
 }
 
-func (b *Bot) horizontalScan(vertPos float64) []RoofmountScanResult {
-	b.sendReceiver.send(fmt.Sprintf(`{"command": "horizontal_scan", "vertical_position": %f, "resolution": 1.0}`, vertPos))
+func (b *Bot) horizontalScan(vertPos int) []RoofmountScanResult {
+	b.sendReceiver.send(fmt.Sprintf(`{"command": "horizontal_scan", "vertical_position": %d, "resolution": 1.0}`, vertPos))
 	resp := b.sendReceiver.receive()
 	readings := []RoofmountScanResult{}
 	err := json.Unmarshal([]byte(resp), &readings)
@@ -28,15 +28,15 @@ func (b *Bot) horizontalScan(vertPos float64) []RoofmountScanResult {
 	return readings
 }
 
-func (b *Bot) Scan() []sensor.Reading {
+func (b *Bot) Scan(verticalPos int) []sensor.Reading {
 	log.Info("Scanning.")
 	rs := make([]sensor.Reading, 0)
 	r0 := b.orientation()
 	currentPose := coordinates.Pose{
-		Heading:  r0["heading"],
+		Heading:  r0.Yaw,
 		Location: b.pose.Location,
 	}
-	scans := b.horizontalScan(0)
+	scans := b.horizontalScan(verticalPos)
 	for _, scan := range scans {
 		h := math.Mod(currentPose.Heading+scan.HorizontalPosition, 360.0)
 		r := sensor.Reading{
@@ -52,4 +52,22 @@ func (b *Bot) Scan() []sensor.Reading {
 		log.Info(r)
 	}
 	return rs
+}
+
+// LidarScan spins the lidar for one rotation.
+func (b *Bot) LidarScan(verticalPos int, resolution float64) []coordinates.Point {
+	log.Info("Lidar Scan...")
+	ps := make([]coordinates.Point, 0)
+	orientation := b.orientation()
+	origin := coordinates.Vector{X: b.pose.Location.X, Y: b.pose.Location.Y}
+	scans := b.horizontalScan(verticalPos)
+	for _, scan := range scans {
+		p := coordinates.Point{
+			Origin:      origin,
+			Orientation: orientation,
+			Vector:      coordinates.NewVector(scan.HorizontalPosition, scan.VerticalPosition, scan.Lidar),
+		}
+		ps = append(ps, p)
+	}
+	return ps
 }

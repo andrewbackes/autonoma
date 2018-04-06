@@ -109,15 +109,15 @@ func (b *Bot) readings() map[string]float64 {
 	return readings
 }
 
-func (b *Bot) orientation() map[string]float64 {
+func (b *Bot) orientation() coordinates.Euler {
 	b.sendReceiver.send(`{"command": "get_orientation"}`)
 	resp := b.sendReceiver.receive()
-	readings := map[string]float64{}
-	err := json.Unmarshal([]byte(resp), &readings)
+	euler := coordinates.Euler{}
+	err := json.Unmarshal([]byte(resp), &euler)
 	if err != nil {
 		panic(err)
 	}
-	return readings
+	return euler
 }
 
 func (b *Bot) Pose() coordinates.Pose {

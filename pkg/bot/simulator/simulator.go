@@ -72,7 +72,7 @@ func (s *Simulator) SetPose(p coordinates.Pose) {
 	s.pose = p
 }
 
-func (s *Simulator) Scan() []sensor.Reading {
+func (s *Simulator) Scan(verticalPos int) []sensor.Reading {
 	rs := make([]sensor.Reading, 0)
 	degrees := 180.0
 	startingHeading := s.pose.Heading
