@@ -28,7 +28,7 @@ func (b *Bot) horizontalScan(vertPos int) []RoofmountScanResult {
 	return readings
 }
 
-func (b *Bot) Scan(verticalPos int) []sensor.Reading {
+func (b *Bot) Scan() []sensor.Reading {
 	log.Info("Scanning.")
 	rs := make([]sensor.Reading, 0)
 	r0 := b.orientation()
@@ -36,7 +36,7 @@ func (b *Bot) Scan(verticalPos int) []sensor.Reading {
 		Heading:  r0.Yaw,
 		Location: b.pose.Location,
 	}
-	scans := b.horizontalScan(verticalPos)
+	scans := b.horizontalScan(0)
 	for _, scan := range scans {
 		h := math.Mod(currentPose.Heading+scan.HorizontalPosition, 360.0)
 		r := sensor.Reading{
@@ -55,7 +55,7 @@ func (b *Bot) Scan(verticalPos int) []sensor.Reading {
 }
 
 // LidarScan spins the lidar for one rotation.
-func (b *Bot) LidarScan(verticalPos int, resolution float64) []coordinates.Point {
+func (b *Bot) LidarScan(verticalPos int) []coordinates.Point {
 	log.Info("Lidar Scan...")
 	ps := make([]coordinates.Point, 0)
 	orientation := b.orientation()

@@ -72,7 +72,7 @@ func (s *Simulator) SetPose(p coordinates.Pose) {
 	s.pose = p
 }
 
-func (s *Simulator) Scan(verticalPos int) []sensor.Reading {
+func (s *Simulator) Scan() []sensor.Reading {
 	rs := make([]sensor.Reading, 0)
 	degrees := 180.0
 	startingHeading := s.pose.Heading
@@ -84,3 +84,7 @@ func (s *Simulator) Scan(verticalPos int) []sensor.Reading {
 }
 
 func (s *Simulator) Reset() {}
+
+func (s *Simulator) LidarScan(verticalPos int) []coordinates.Point {
+	return []coordinates.Point{}
+}

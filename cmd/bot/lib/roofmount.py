@@ -114,6 +114,7 @@ class RoofMount:
         the scan.'''
         print("Performing scan.")
         readings = []
+        self.set_vertical_position(vertical_degrees)
         self._stepper.enable()
         for step in range(self._stepper._stepsPerRevolution):
             self._stepper.step()

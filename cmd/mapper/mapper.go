@@ -8,7 +8,7 @@ import (
 
 	"github.com/andrewbackes/autonoma/pkg/bot"
 	"github.com/andrewbackes/autonoma/pkg/distance"
-	"github.com/andrewbackes/autonoma/pkg/hud"
+	// "github.com/andrewbackes/autonoma/pkg/hud"
 	"github.com/andrewbackes/autonoma/pkg/map/grid"
 	"github.com/andrewbackes/autonoma/pkg/sensor"
 	"github.com/andrewbackes/autonoma/pkg/slam"
@@ -47,8 +47,8 @@ func main() {
 	b := slamBot()
 	g := grid.New(gridCellSize)
 	// go slam.Manual(g, b)
-	go slam.Threesixty(g, b)
-	hud.ListenAndServe(g)
+	slam.ThreeD(g, b)
+	// hud.ListenAndServe(g)
 }
 
 func slamBot() slam.Bot {
