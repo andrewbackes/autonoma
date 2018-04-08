@@ -5,12 +5,14 @@ import (
 )
 
 type Vector struct {
-	X, Y, Z int
+	X int `json:"x"`
+	Y int `json:"y"`
+	Z int `json:"z"`
 }
 
 func NewVector(horizontalPosition, verticalPosition, distance float64) Vector {
-	theta := math.Mod(-verticalPosition+90, 360)
-	roe := math.Mod(-horizontalPosition+90, 360)
+	roe := math.Mod(-verticalPosition+90, 360)
+	theta := math.Mod(-horizontalPosition+90, 360)
 	r := float64(distance)
 	return Vector{
 		X: int(r * math.Sin(toRadians(theta)) * math.Cos(toRadians(roe))),

@@ -8,7 +8,7 @@ import (
 
 	"github.com/andrewbackes/autonoma/pkg/bot"
 	"github.com/andrewbackes/autonoma/pkg/distance"
-	// "github.com/andrewbackes/autonoma/pkg/hud"
+	"github.com/andrewbackes/autonoma/pkg/hud"
 	"github.com/andrewbackes/autonoma/pkg/map/grid"
 	"github.com/andrewbackes/autonoma/pkg/sensor"
 	"github.com/andrewbackes/autonoma/pkg/slam"
@@ -44,11 +44,11 @@ var (
 func main() {
 	log.SetLevel(logLevel)
 	log.Info("Mapper started.")
-	b := slamBot()
+	// b := slamBot()
 	g := grid.New(gridCellSize)
 	// go slam.Manual(g, b)
-	slam.ThreeD(g, b)
-	// hud.ListenAndServe(g)
+	// slam.ThreeD(g, b)
+	hud.ListenAndServe(g)
 }
 
 func slamBot() slam.Bot {
