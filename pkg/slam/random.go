@@ -8,7 +8,7 @@ import (
 	"github.com/andrewbackes/autonoma/pkg/map/grid"
 )
 
-func RandomlyMap(g *grid.Grid, bot Bot) {
+func RandomlyMap(g *grid.Grid, bot bot) {
 	log.Info("Mapping...")
 	done := false
 	for !done {

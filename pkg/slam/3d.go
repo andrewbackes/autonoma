@@ -11,7 +11,7 @@ import (
 )
 
 // ThreeD creates a 3d map.
-func ThreeD(g *grid.Grid, bot Bot) {
+func ThreeD(g *grid.Grid, bot bot) {
 	log.Info("Mapping...")
 	f, _ := os.Create(fmt.Sprintf("output/3d-scan-%v.json", time.Now()))
 	for i := -35; i <= 83; i++ {

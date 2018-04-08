@@ -67,6 +67,9 @@ func (b *Bot) LidarScan(verticalPos int) []coordinates.Point {
 			Orientation: orientation,
 			Vector:      coordinates.NewVector(scan.HorizontalPosition, scan.VerticalPosition, scan.Lidar),
 		}
+		if b.pointPub != nil {
+			b.pointPub.Publish(p)
+		}
 		ps = append(ps, p)
 	}
 	return ps

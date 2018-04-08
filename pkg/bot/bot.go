@@ -13,6 +13,10 @@ import (
 	"github.com/andrewbackes/autonoma/pkg/sensor"
 )
 
+type pointPub interface {
+	Publish(coordinates.Point)
+}
+
 type Bot struct {
 	pose         coordinates.Pose
 	sensors      map[string]sensor.Sensor
@@ -20,6 +24,7 @@ type Bot struct {
 	wheels       Wheels
 	sendReceiver sendReceiver
 
+	pointPub      pointPub
 	rotationError float64
 }
 
@@ -36,13 +41,14 @@ type Wheels struct {
 }
 
 // New creates a bot with the specified sensors with given IP.
-func New(address string, sensors map[string]sensor.Sensor, d Dimensions, w Wheels) *Bot {
+func New(address string, sensors map[string]sensor.Sensor, d Dimensions, w Wheels, p pointPub) *Bot {
 	b := &Bot{
 		sendReceiver:  &tcpSendReceiver{address: address},
 		sensors:       sensors,
 		dimensions:    d,
 		wheels:        w,
 		rotationError: 10,
+		pointPub:      p,
 	}
 	return b
 }

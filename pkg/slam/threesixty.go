@@ -6,7 +6,7 @@ import (
 	"github.com/andrewbackes/autonoma/pkg/map/grid"
 )
 
-func Threesixty(g *grid.Grid, bot Bot) {
+func Threesixty(g *grid.Grid, bot bot) {
 	log.Info("Mapping...")
 	g.Apply(bot.Scan()...)
 	log.Info("Done mapping.")

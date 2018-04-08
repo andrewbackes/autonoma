@@ -5,11 +5,14 @@ import (
 	log "github.com/sirupsen/logrus"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/andrewbackes/autonoma/pkg/bot"
 	"github.com/andrewbackes/autonoma/pkg/distance"
-	"github.com/andrewbackes/autonoma/pkg/hud"
-	"github.com/andrewbackes/autonoma/pkg/map/grid"
+	"github.com/andrewbackes/autonoma/pkg/web"
+	// "github.com/andrewbackes/autonoma/pkg/map/grid"
+	"github.com/andrewbackes/autonoma/pkg/pointfeed"
+	"github.com/andrewbackes/autonoma/pkg/pointfeed/subscribers/file"
 	"github.com/andrewbackes/autonoma/pkg/sensor"
 	"github.com/andrewbackes/autonoma/pkg/slam"
 )
@@ -44,14 +47,13 @@ var (
 func main() {
 	log.SetLevel(logLevel)
 	log.Info("Mapper started.")
-	// b := slamBot()
-	g := grid.New(gridCellSize)
-	// go slam.Manual(g, b)
-	// slam.ThreeD(g, b)
-	hud.ListenAndServe(g)
+	d := pointfeed.New()
+	b := slamBot(d)
+	go slam.Start(d, b)
+	web.NewAPI(d).Start()
 }
 
-func slamBot() slam.Bot {
+func slamBot(d *pointfeed.PointFeed) slam.Bot {
 	useSim := len(os.Args) > 1 && strings.Contains(os.Args[1], "simulat")
 	var b slam.Bot
 	if useSim {
@@ -61,7 +63,8 @@ func slamBot() slam.Bot {
 		}
 		b = simulator.New("pkg/map/image/assets/maze1.png", s...)
 	} else {
-		b = bot.New(address, sensors, dimensions, wheels)
+		b = bot.New(address, sensors, dimensions, wheels, d)
+		file.Subscribe(fmt.Sprintf("output/mapper-%d", time.Now().Unix()), d)
 	}
 	return b
 }

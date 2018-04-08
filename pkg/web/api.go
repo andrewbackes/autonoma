@@ -1,4 +1,4 @@
-package hud
+package web
 
 import (
 	"bufio"
@@ -8,14 +8,23 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
-	"image/png"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/andrewbackes/autonoma/pkg/coordinates"
-	"github.com/andrewbackes/autonoma/pkg/map/grid"
+	"github.com/andrewbackes/autonoma/pkg/pointfeed/subscribers"
 )
+
+// API to serve the front-end.
+type API struct {
+	data subscribers.SubscribeUnsubscriber
+}
+
+// NewAPI server.
+func NewAPI(data subscribers.SubscribeUnsubscriber) *API {
+	return &API{data: data}
+}
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  2048,
@@ -25,10 +34,69 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func ListenAndServe(g *grid.Grid) {
+// Start serving the API.
+func (a *API) Start() {
 	log.Info("Serving hud.")
 	r := mux.NewRouter()
-	r.HandleFunc("/map.png", func(w http.ResponseWriter, r *http.Request) {
+
+	r.HandleFunc("/live", a.live)
+	r.HandleFunc("/scans/{id}", a.scanByID)
+
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	http.ListenAndServe(":8080", handlers.CORS(originsOk, headersOk, methodsOk)(r))
+}
+
+func (a *API) live(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Client subscribed")
+	c := newClient(conn)
+	c.subscribe(a.data)
+	conn.Close()
+	fmt.Println("Client unsubscribed")
+}
+
+func (a *API) scanByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Client subscribed")
+	f, err := os.Open("output/" + id)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	scanner.Split(bufio.ScanLines)
+	vectors := []coordinates.Vector{}
+	for scanner.Scan() {
+		var p coordinates.Point
+		json.Unmarshal([]byte(scanner.Text()), &p)
+		v := coordinates.Vector{X: -p.Vector.X, Y: p.Vector.Z, Z: p.Vector.Y}
+		vectors = append(vectors, v)
+	}
+	for _, v := range vectors {
+		j, _ := json.Marshal(v)
+		conn.WriteMessage(websocket.TextMessage, j)
+		time.Sleep(1 * time.Millisecond)
+	}
+	conn.Close()
+	fmt.Println("Client unsubscribed")
+}
+
+/*
+
+r.HandleFunc("/map.png", func(w http.ResponseWriter, r *http.Request) {
 		img := (*grid.Image)(g)
 		err := png.Encode(w, img)
 		if err != nil {
@@ -104,39 +172,4 @@ func ListenAndServe(g *grid.Grid) {
 		w.Header().Add("Content-Type", "application/json")
 		w.Write(b)
 	})
-
-	r.HandleFunc("/websocket", func(w http.ResponseWriter, r *http.Request) {
-		conn, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		fmt.Println("Client subscribed")
-		f, err := os.Open("output/3d-scan-2018-04-06 18:16:53.807111315 -0700 PDT m=+0.000496495.json")
-		if err != nil {
-			panic(err)
-		}
-		defer f.Close()
-		scanner := bufio.NewScanner(f)
-		scanner.Split(bufio.ScanLines)
-		vectors := []coordinates.Vector{}
-		for scanner.Scan() {
-			var p coordinates.Point
-			json.Unmarshal([]byte(scanner.Text()), &p)
-			v := coordinates.Vector{X: -p.Vector.X, Y: p.Vector.Z, Z: p.Vector.Y}
-			vectors = append(vectors, v)
-		}
-		for _, v := range vectors {
-			j, _ := json.Marshal(v)
-			conn.WriteMessage(websocket.TextMessage, j)
-			time.Sleep(1 * time.Millisecond)
-		}
-		conn.Close()
-		fmt.Println("Client unsubscribed")
-	})
-
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
-	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-	http.ListenAndServe(":8080", handlers.CORS(originsOk, headersOk, methodsOk)(r))
-}
+*/

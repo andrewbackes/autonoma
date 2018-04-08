@@ -13,7 +13,7 @@ import (
 )
 
 // Manual is used to manually reposition the robot while it takes sensor readings.
-func Manual(g *grid.Grid, bot Bot) {
+func Manual(g *grid.Grid, bot bot) {
 	log.Info("Manually Mapping...")
 	readings := make([][]sensor.Reading, 0)
 	scanner := bufio.NewScanner(os.Stdin)

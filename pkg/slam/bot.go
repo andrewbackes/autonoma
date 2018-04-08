@@ -7,7 +7,7 @@ import (
 )
 
 // Bot is for controlling bots.
-type Bot interface {
+type bot interface {
 	Rotate(heading float64)
 	Move(d distance.Distance)
 
