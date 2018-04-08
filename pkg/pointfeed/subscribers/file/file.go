@@ -26,9 +26,10 @@ func newFile(filename string) (*file, error) {
 		return nil, err
 	}
 	return &file{
-		f:      f,
-		buffer: make(chan coordinates.Point, bufferSize),
-		done:   make(chan struct{}),
+		filename: filename,
+		f:        f,
+		buffer:   make(chan coordinates.Point, bufferSize),
+		done:     make(chan struct{}),
 	}, nil
 }
 
@@ -51,7 +52,7 @@ func (f *file) write(p coordinates.Point) {
 		log.Error("Could not write to file - ", err)
 		return
 	}
-	f.f.Write(j)
+	f.f.Write(append(j, '\n'))
 }
 
 func (f *file) Close() {

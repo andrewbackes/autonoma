@@ -5,7 +5,7 @@ import (
 )
 
 // Start SLAM.
-func Start(bot bot) {
+func Start(bot Bot) {
 	log.Info("Mapping...")
 	for i := -35; i <= 83; i++ {
 		bot.LidarScan(i)

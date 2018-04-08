@@ -18,7 +18,7 @@ type RoofmountScanResult struct {
 }
 
 func (b *Bot) horizontalScan(vertPos int) []RoofmountScanResult {
-	b.sendReceiver.send(fmt.Sprintf(`{"command": "horizontal_scan", "vertical_position": %d, "resolution": 1.0}`, vertPos))
+	b.sendReceiver.send(fmt.Sprintf(`{"command": "horizontal_scan", "vertical_position": %d, "resolution": 0.0625}`, vertPos))
 	resp := b.sendReceiver.receive()
 	readings := []RoofmountScanResult{}
 	err := json.Unmarshal([]byte(resp), &readings)

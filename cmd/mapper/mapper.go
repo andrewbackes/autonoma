@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/andrewbackes/autonoma/pkg/bot/simulator"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -9,12 +10,11 @@ import (
 
 	"github.com/andrewbackes/autonoma/pkg/bot"
 	"github.com/andrewbackes/autonoma/pkg/distance"
-	"github.com/andrewbackes/autonoma/pkg/web"
-	// "github.com/andrewbackes/autonoma/pkg/map/grid"
 	"github.com/andrewbackes/autonoma/pkg/pointfeed"
 	"github.com/andrewbackes/autonoma/pkg/pointfeed/subscribers/file"
 	"github.com/andrewbackes/autonoma/pkg/sensor"
 	"github.com/andrewbackes/autonoma/pkg/slam"
+	"github.com/andrewbackes/autonoma/pkg/web"
 )
 
 // settings:
@@ -25,7 +25,7 @@ var (
 
 // bot:
 var (
-	address = "192.168.86.52:9091"
+	address = "192.168.86.54:9091"
 	sensors = map[string]sensor.Sensor{
 		// key is the sensor's id sent by the bot.
 		// "ir":         sensor.SharpGP2Y0A21YK0F,
@@ -49,7 +49,7 @@ func main() {
 	log.Info("Mapper started.")
 	d := pointfeed.New()
 	b := slamBot(d)
-	go slam.Start(d, b)
+	go slam.Start(b)
 	web.NewAPI(d).Start()
 }
 
@@ -64,7 +64,7 @@ func slamBot(d *pointfeed.PointFeed) slam.Bot {
 		b = simulator.New("pkg/map/image/assets/maze1.png", s...)
 	} else {
 		b = bot.New(address, sensors, dimensions, wheels, d)
-		file.Subscribe(fmt.Sprintf("output/mapper-%d", time.Now().Unix()), d)
+		go file.Subscribe(fmt.Sprintf("output/mapper-%d", time.Now().Unix()), d)
 	}
 	return b
 }
