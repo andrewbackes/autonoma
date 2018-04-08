@@ -30,7 +30,7 @@ class Servo:
         'frequency': 50,
         'ratio': 1,
         'secondsPer60deg': 0.12,
-        'loadCoefficient': 1.25,
+        'loadCoefficient': 1.15,
         'calibration': {
             'right': 500,
             'left': 2500
@@ -72,7 +72,7 @@ class Servo:
             raise ValueError("Must be between -75 and 75")
         self.__pi.set_servo_pulsewidth(
             self._config['gpioBCN'], self.__calc_pulse_width(deg))
-        time.sleep(0.1 + self.__spin_time(deg))
+        time.sleep(self.__spin_time(deg))
         self.__pi.set_servo_pulsewidth(self._config['gpioBCN'], 0)
         self.__pos = deg
 
