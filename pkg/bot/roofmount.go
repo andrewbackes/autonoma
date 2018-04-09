@@ -25,6 +25,7 @@ func (b *Bot) LidarScan(verticalPos int) []coordinates.Point {
 	for {
 		resp := b.sendReceiver.receive()
 		if strings.Contains(resp, "complete") {
+			log.Debug("Received scan complete signal.")
 			break
 		}
 		result := RoofmountScanResult{}
