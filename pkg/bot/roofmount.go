@@ -23,13 +23,16 @@ func (b *Bot) LidarScan(verticalPos int) []coordinates.Point {
 	origin := coordinates.Vector{X: b.pose.Location.X, Y: b.pose.Location.Y}
 	b.sendReceiver.send(fmt.Sprintf(`{"command": "horizontal_scan", "vertical_position": %d, "resolution": 0.0625}`, verticalPos))
 	for {
-		resp := b.sendReceiver.receive()
+		resp, err := b.sendReceiver.receive()
+		if err != nil {
+			break
+		}
 		if strings.Contains(resp, "complete") {
 			log.Debug("Received scan complete signal.")
 			break
 		}
 		result := RoofmountScanResult{}
-		err := json.Unmarshal([]byte(resp), &result)
+		err = json.Unmarshal([]byte(resp), &result)
 		if err != nil {
 			log.Error(err)
 		} else {

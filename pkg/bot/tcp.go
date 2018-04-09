@@ -6,10 +6,11 @@ import (
 	"io"
 	"net"
 	"strings"
+	"time"
 )
 
 type sendReceiver interface {
-	receive() string
+	receive() (string, error)
 	send(string)
 }
 
@@ -58,11 +59,15 @@ func (t *tcpSendReceiver) ready() {
 	}
 }
 
-func (t *tcpSendReceiver) receive() string {
+func (t *tcpSendReceiver) receive() (string, error) {
+	t.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
 	msg, err := bufio.NewReader(t.conn).ReadString('\n')
 	if err != nil {
-		panic(err)
+		log.Error(err)
+		t.conn.Close()
+		t.conn = nil
+		return "", err
 	}
-	log.Debug("Recieved:", msg)
-	return msg
+	log.Debug("Recieved:", msg[:len(msg)-1])
+	return msg, nil
 }

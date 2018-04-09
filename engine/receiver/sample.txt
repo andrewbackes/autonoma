@@ -1,2 +1,0 @@
-{"id": "circle", "type": "sensor", "coneWidth": 360}
-{"type":"reading", "sensorId": "circle", "output": 100}

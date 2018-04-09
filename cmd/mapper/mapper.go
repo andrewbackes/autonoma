@@ -64,7 +64,7 @@ func slamBot(d *pointfeed.PointFeed) slam.Bot {
 		b = simulator.New("pkg/map/image/assets/maze1.png", s...)
 	} else {
 		b = bot.New(address, sensors, dimensions, wheels, d)
-		go file.Subscribe(fmt.Sprintf("output/mapper-%d", time.Now().Unix()), d)
+		go file.Subscribe(fmt.Sprintf("output/mapper-%d.json", time.Now().Unix()), d)
 	}
 	return b
 }

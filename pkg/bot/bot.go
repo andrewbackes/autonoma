@@ -106,7 +106,7 @@ func (b *Bot) Move(d distance.Distance) {
 func (b *Bot) readings() map[string]float64 {
 	b.sendReceiver.send(`{"command": "get_readings"}`)
 	time.Sleep(20 * time.Millisecond)
-	resp := b.sendReceiver.receive()
+	resp, _ := b.sendReceiver.receive()
 	readings := map[string]float64{}
 	err := json.Unmarshal([]byte(resp), &readings)
 	if err != nil {
@@ -117,7 +117,7 @@ func (b *Bot) readings() map[string]float64 {
 
 func (b *Bot) orientation() coordinates.Euler {
 	b.sendReceiver.send(`{"command": "get_orientation"}`)
-	resp := b.sendReceiver.receive()
+	resp, _ := b.sendReceiver.receive()
 	euler := coordinates.Euler{}
 	err := json.Unmarshal([]byte(resp), &euler)
 	if err != nil {

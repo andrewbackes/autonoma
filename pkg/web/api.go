@@ -2,7 +2,6 @@ package web
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -10,9 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
-	"time"
 
-	"github.com/andrewbackes/autonoma/pkg/coordinates"
 	"github.com/andrewbackes/autonoma/pkg/pointfeed/subscribers"
 )
 
@@ -54,11 +51,11 @@ func (a *API) live(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("Client subscribed")
+	log.Info("Client subscribed")
 	c := newClient(conn)
 	c.subscribe(a.data)
 	conn.Close()
-	fmt.Println("Client unsubscribed")
+	log.Info("Client unsubscribed")
 }
 
 func (a *API) scanByID(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +67,8 @@ func (a *API) scanByID(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("Client subscribed")
+	log.Info("Client subscribed")
+	log.Info("Showing ", id)
 	f, err := os.Open("output/" + id)
 	if err != nil {
 		panic(err)
@@ -78,20 +76,11 @@ func (a *API) scanByID(w http.ResponseWriter, r *http.Request) {
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
 	scanner.Split(bufio.ScanLines)
-	vectors := []coordinates.Vector{}
 	for scanner.Scan() {
-		var p coordinates.Point
-		json.Unmarshal([]byte(scanner.Text()), &p)
-		v := coordinates.Vector{X: -p.Vector.X, Y: p.Vector.Z, Z: p.Vector.Y}
-		vectors = append(vectors, v)
-	}
-	for _, v := range vectors {
-		j, _ := json.Marshal(v)
-		conn.WriteMessage(websocket.TextMessage, j)
-		time.Sleep(1 * time.Millisecond)
+		conn.WriteMessage(websocket.TextMessage, []byte(scanner.Text()))
 	}
 	conn.Close()
-	fmt.Println("Client unsubscribed")
+	log.Info("Client unsubscribed")
 }
 
 /*

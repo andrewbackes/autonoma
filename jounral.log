@@ -1,8 +1,0 @@
-To keep track of my progress:
-
-06/24/2016 - Bought parts from Fry's: Raspberry Pi 3, H-Bridge, 4 6v motors and tires, plastic box to use as chassis, ir proximity detector, 2 ultrasonic sensors. 
-06/25/2016 - Motors are assembled and working with the Pi.
-06/26/2016 - Got ultrasonic sensors working in python. Issue with ultrasonic sensor not detecting walls at an angle.
-06/27/2016 - IR sensor mounted in the center of the rover. Issue with it not sensing fast enough and/or far enough for the rover coming to a wall at an angle. Still better than the ultrasonic sensor. 
-06/28/2016 - Got another IR sensor. Mounted one above each wheel. Accidently unplugged some wires and it took over 2 hours to figure out that I missunderstood how the +/- rail worked on the breadboard. While doing so, I ended up unplugging other wires over and over again. haha. rough.
-06/29/2016 - Learned about how PWM works and implemented it (at a higher level) with Python's GPIO library.
