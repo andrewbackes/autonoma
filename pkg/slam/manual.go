@@ -1,5 +1,6 @@
 package slam
 
+/*
 import (
 	"bufio"
 	"encoding/json"
@@ -56,3 +57,4 @@ func Manual(g *grid.Grid, bot Bot) {
 	txt.Write(data)
 	txt.Close()
 }
+*/

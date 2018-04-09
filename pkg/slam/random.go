@@ -1,5 +1,6 @@
 package slam
 
+/*
 import (
 	log "github.com/sirupsen/logrus"
 	"math/rand"
@@ -32,3 +33,4 @@ func RandomlyMap(g *grid.Grid, bot Bot) {
 	}
 	log.Info("Done mapping.")
 }
+*/

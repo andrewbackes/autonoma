@@ -101,14 +101,13 @@ class RoofMount:
         self._servo.set_position(pos)
 
     def get_readings(self):
-
         return {
             'vertical_position': self.vertical_position(),
             'horizontal_position': self.horizontal_position(),
             'lidar': self._lidar.distance(),
         }
 
-    def horizontal_scan(self, vertical_degrees, resolution=1.0):
+    def horizontal_scan(self, vertical_degrees, resolution=1.0, callback=None):
         '''Performs a 360 scan at a specified angle. Resolution is a
         percentage and dictates how often a readings is performed during
         the scan.'''
@@ -119,7 +118,10 @@ class RoofMount:
         for step in range(self._stepper._stepsPerRevolution):
             self._stepper.step()
             if step % (1 / resolution) == 0:
-                readings.append(self.get_readings())
+                reading = self.get_readings()
+                readings.append(reading)
+                if callaback is not None:
+                    callback(reading)
         self._stepper.disable()
         return readings
 

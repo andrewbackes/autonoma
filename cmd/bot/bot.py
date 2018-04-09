@@ -158,10 +158,13 @@ class Bot:
             self.tcp.send(self.get_readings())
         elif cmd['command'] == 'horizontal_scan':
             readings = self._roofmount.horizontal_scan(
-                cmd['vertical_position'], cmd['resolution'])
-            self.tcp.send(json.dumps(readings))
+                cmd['vertical_position'],
+                cmd['resolution'],
+                lambda reading: self.tcp.send(json.dumps(reading)))
+            self.tcp.send(json.dumps(
+                '{"command": "horizontal_scan", "status": "complete"}'))
 
-        # Communication controls:
+        # Syncronization controls:
         elif cmd['command'] == 'isready':
             self.tcp.send('{"status":"readyok"}')
 
