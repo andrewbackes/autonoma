@@ -120,7 +120,7 @@ class RoofMount:
             if step % (1 / resolution) == 0:
                 reading = self.get_readings()
                 readings.append(reading)
-                if callaback is not None:
+                if callback is not None:
                     callback(reading)
         self._stepper.disable()
         return readings
