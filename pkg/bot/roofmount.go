@@ -30,16 +30,17 @@ func (b *Bot) LidarScan(verticalPos int) []coordinates.Point {
 		result := RoofmountScanResult{}
 		err := json.Unmarshal([]byte(resp), &result)
 		if err != nil {
-			panic(err)
+			log.Error(err)
+		} else {
+			p := coordinates.Point{
+				Origin:      origin,
+				Orientation: orientation,
+				Vector:      coordinates.NewVector(result.HorizontalPosition, result.VerticalPosition, result.Lidar),
+			}
+			// --
+			ps = append(ps, p)
+			b.pointPub.Publish(p)
 		}
-		p := coordinates.Point{
-			Origin:      origin,
-			Orientation: orientation,
-			Vector:      coordinates.NewVector(result.HorizontalPosition, result.VerticalPosition, result.Lidar),
-		}
-		// --
-		ps = append(ps, p)
-		b.pointPub.Publish(p)
 	}
 	return ps
 }

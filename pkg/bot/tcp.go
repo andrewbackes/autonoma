@@ -36,7 +36,7 @@ func (t *tcpSendReceiver) send(msg string) {
 	if err != nil {
 		panic(err)
 	}
-	log.Info("Sent:", msg)
+	log.Debug("Sent:", msg)
 }
 
 func (t *tcpSendReceiver) ready() {
@@ -63,6 +63,6 @@ func (t *tcpSendReceiver) receive() string {
 	if err != nil {
 		panic(err)
 	}
-	log.Info("Recieved:", msg)
+	log.Debug("Recieved:", msg)
 	return msg
 }
