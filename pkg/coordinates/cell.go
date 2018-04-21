@@ -1,5 +1,6 @@
 package coordinates
 
+/*
 import (
 	"github.com/andrewbackes/autonoma/pkg/distance"
 )
@@ -30,3 +31,4 @@ func rectangle(minX, minY, maxX, maxY int) CartesianSet {
 	}
 	return s
 }
+*/

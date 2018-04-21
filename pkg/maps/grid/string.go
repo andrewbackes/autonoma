@@ -9,7 +9,7 @@ func (g *Grid) String() string {
 	s := ""
 	for x := g.minX; x <= g.maxX; x++ {
 		for y := g.minY; y <= g.maxY; y++ {
-			odds := g.Get(coordinates.Cartesian{X: x, Y: y})
+			odds := g.Get(coordinates.Vector{X: x, Y: y})
 			p := fmt.Sprintf("%.2f ", odds.Probability())
 			s += p
 		}

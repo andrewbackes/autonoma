@@ -4,20 +4,20 @@ import (
 	"sync"
 )
 
-type CartesianSet struct {
-	set   map[Cartesian]struct{}
+type VectorSet struct {
+	set   map[Vector]struct{}
 	mutex *sync.RWMutex
 }
 
-func NewCartesianSet() CartesianSet {
-	return CartesianSet{
-		set:   make(map[Cartesian]struct{}),
+func NewVectorSet() VectorSet {
+	return VectorSet{
+		set:   make(map[Vector]struct{}),
 		mutex: &sync.RWMutex{},
 	}
 }
 
 // Add a key to a set.
-func (s CartesianSet) Add(key Cartesian) {
+func (s VectorSet) Add(key Vector) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	s.set[key] = struct{}{}
@@ -25,14 +25,14 @@ func (s CartesianSet) Add(key Cartesian) {
 }
 
 // Remove a key from a set.
-func (s CartesianSet) Remove(key Cartesian) {
+func (s VectorSet) Remove(key Vector) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 	delete(s.set, key)
 }
 
 // Contains looks for keys in a set.
-func (s CartesianSet) Contains(keys ...Cartesian) bool {
+func (s VectorSet) Contains(keys ...Vector) bool {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 	for _, key := range keys {
@@ -43,7 +43,7 @@ func (s CartesianSet) Contains(keys ...Cartesian) bool {
 	return false
 }
 
-func (s CartesianSet) Range(f func(coor Cartesian) bool) {
+func (s VectorSet) Range(f func(coor Vector) bool) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 	for k := range s.set {
@@ -54,7 +54,7 @@ func (s CartesianSet) Range(f func(coor Cartesian) bool) {
 	}
 }
 
-func (s CartesianSet) Len() int {
+func (s VectorSet) Len() int {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 	return len(s.set)

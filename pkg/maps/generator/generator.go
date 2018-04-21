@@ -1,4 +1,5 @@
-package image
+// Package generator creates a set of occupied locations from a black and white image.
+package generator
 
 import (
 	"fmt"

@@ -37,9 +37,9 @@ func (r Reading) String() string {
 	return string(b)
 }
 
-func (r Reading) Analysis() (vacant, occupied coordinates.CartesianSet) {
-	vacant = coordinates.NewCartesianSet()
-	occupied = coordinates.NewCartesianSet()
+func (r Reading) Analysis() (vacant, occupied coordinates.VectorSet) {
+	vacant = coordinates.NewVectorSet()
+	occupied = coordinates.NewVectorSet()
 	startAngle := r.Pose.Heading - (r.Sensor.ViewAngle / 2)
 	endAngle := startAngle + r.Sensor.ViewAngle
 	val := r.Value.Floor(distance.Centimeter)
@@ -50,14 +50,14 @@ func (r Reading) Analysis() (vacant, occupied coordinates.CartesianSet) {
 		}
 		for a := startAngle; a <= endAngle; a += sensorAngleStepDegrees {
 			angle := math.Mod(a, 360)
-			coord := coordinates.CompassRose{
+			cart := coordinates.CompassRose{
 				Distance: d,
 				Heading:  angle,
 			}.Cartesian()
 			// adjust for position
-			coord = coordinates.Cartesian{
-				X: coord.X + r.Pose.Location.X,
-				Y: coord.Y + r.Pose.Location.Y,
+			coord := coordinates.Vector{
+				X: cart.X + r.Pose.Location.X,
+				Y: cart.Y + r.Pose.Location.Y,
 			}
 			if d == val {
 				// occupied

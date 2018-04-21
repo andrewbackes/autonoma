@@ -1,6 +1,6 @@
 {
     "hbridge": {
-        "enabled": false,
+        "enabled": true,
         "gpio": {
             "pwm_left": 38,
             "pwm_right": 40,

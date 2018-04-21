@@ -1,5 +1,6 @@
 package coordinates
 
+/*
 import (
 	"github.com/andrewbackes/autonoma/pkg/distance"
 	"github.com/stretchr/testify/assert"
@@ -24,3 +25,4 @@ func TestSquare(t *testing.T) {
 	}
 	assert.True(t, s.Contains(expected...))
 }
+*/
