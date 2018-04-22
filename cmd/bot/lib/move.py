@@ -98,4 +98,4 @@ if __name__ == "__main__":
     move = Move()
     # move.counter_clockwise(0.1)
     # move.clockwise(0.1)
-    move.forward(3, 20)
+    move.forward(1, 20)
