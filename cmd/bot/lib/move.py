@@ -1,18 +1,32 @@
 #!/usr/bin/env python3
 
 import time
-import RPi.GPIO as gpio
+import pigpio
 
 default_config = {
-    'pwm': {
-        'left': 38,
-        'right': 40
+    'board': {
+        'pwm': {
+            'left': 38,
+            'right': 40
+        },
+        'driver': {
+            'in4': 7,
+            'in3': 11,
+            'in2': 13,
+            'in1': 15,
+        }
     },
-    'driver': {
-        'in4': 7,
-        'in3': 11,
-        'in2': 13,
-        'in1': 15,
+    'bcn': {
+        'pwm': {
+            'left': 20,
+            'right': 21
+        },
+        'driver': {
+            'in4': 4,
+            'in3': 17,
+            'in2': 27,
+            'in1': 22,
+        }
     }
 }
 
@@ -22,52 +36,59 @@ class Move:
     def __init__(self, config=default_config):
         self.config = config
         print("H-bridge config:", config)
-        if gpio.getmode() != gpio.BOARD:
-            gpio.setmode(gpio.BOARD)
-        for pin in self.config['pwm'].values():
-            gpio.setup(pin, gpio.OUT)
-        for pin in self.config['driver'].values():
-            gpio.setup(pin, gpio.OUT)
 
-    def __run_at_power(self, t, power=80):
-        p = {}
-        p['left'] = gpio.PWM(self.config['pwm']['left'], 100)  # 100 hz
-        p['right'] = gpio.PWM(self.config['pwm']['right'], 100)
-        p['left'].start(power)
-        p['right'].start(power)
+        self.__pi = pigpio.pi()
+        if not self.__pi.connected:
+            print("Could not connect to pigpiod.")
+            os.exit(1)
+
+        for pin in self.config['bcn']['pwm'].values():
+            self.__pi.set_mode(pin, pigpio.OUTPUT)
+        for pin in self.config['bcn']['driver'].values():
+            self.__pi.set_mode(pin, pigpio.OUTPUT)
+
+    def __run_at_power(self, t, power=50):
+        self.__pi.set_PWM_frequency(self.config['bcn']['pwm']['left'], 100)
+        self.__pi.set_PWM_frequency(self.config['bcn']['pwm']['right'], 100)
+        self.__pi.set_PWM_dutycycle(self.config['bcn']['pwm'][
+                                    'left'], 255)  # 255 is on
+        self.__pi.set_PWM_dutycycle(self.config['bcn']['pwm'][
+                                    'right'], 255)  # 255 is on
         time.sleep(t)
-        p['left'].stop()
-        p['right'].stop()
+        self.__pi.set_PWM_dutycycle(self.config['bcn']['pwm'][
+                                    'left'], 0)
+        self.__pi.set_PWM_dutycycle(self.config['bcn']['pwm'][
+                                    'right'], 0)
 
-    def __toggle(self, a, b, c, d, t, power=80):
-        gpio.output(self.config['driver']['in4'], a)
-        gpio.output(self.config['driver']['in3'], b)
-        gpio.output(self.config['driver']['in2'], c)
-        gpio.output(self.config['driver']['in1'], d)
+    def __toggle(self, a, b, c, d, t, power=50):
+        self.__pi.write(self.config['driver']['in4'], a)
+        self.__pi.write(self.config['driver']['in3'], b)
+        self.__pi.write(self.config['driver']['in2'], c)
+        self.__pi.write(self.config['driver']['in1'], d)
         self.__run_at_power(t, power)
 
-    def forward(self, t, power=80):
+    def forward(self, t, power=50):
         print("forward @ " + str(power) + " for t=" + str(t))
         self.__toggle(False, True, True, False, t, power)
         print("movement done")
 
-    def backward(self, t, power=80):
+    def backward(self, t, power=50):
         print("backward @ " + str(power) + " for t=" + str(t))
         self.__toggle(True, False, False, True, t, power)
         print("movement done")
 
-    def turn_left(self, t, power=80):
+    def turn_left(self, t, power=50):
         self.__toggle(False, True, False, False, t, power)
 
-    def turn_right(self, t, power=80):
+    def turn_right(self, t, power=50):
         self.__toggle(True, True, True, False, t, power)
 
-    def counter_clockwise(self, t, power=80):
+    def counter_clockwise(self, t, power=50):
         print("counter_clockwise @ " + str(power) + " for t=" + str(t))
         self.__toggle(False, True, False, True, t, power)
         print("movement done")
 
-    def clockwise(self, t, power=80):
+    def clockwise(self, t, power=50):
         print("clockwise @ " + str(power) + " for t=" + str(t))
         self.__toggle(True, False, True, False, t, power)
         print("movement done")
