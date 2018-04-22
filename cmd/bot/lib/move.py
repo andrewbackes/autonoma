@@ -51,9 +51,9 @@ class Move:
         self.__pi.set_PWM_frequency(self.config['bcn']['pwm']['left'], 100)
         self.__pi.set_PWM_frequency(self.config['bcn']['pwm']['right'], 100)
         self.__pi.set_PWM_dutycycle(self.config['bcn']['pwm'][
-                                    'left'], 255)  # 255 is on
+                                    'left'], (power / 100) * 255)  # 255 is on
         self.__pi.set_PWM_dutycycle(self.config['bcn']['pwm'][
-                                    'right'], 255)  # 255 is on
+                                    'right'], (power / 100) * 255)  # 255 is on
         time.sleep(t)
         self.__pi.set_PWM_dutycycle(self.config['bcn']['pwm'][
                                     'left'], 0)
