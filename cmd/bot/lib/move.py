@@ -61,10 +61,10 @@ class Move:
                                     'right'], 0)
 
     def __toggle(self, a, b, c, d, t, power=50):
-        self.__pi.write(self.config['driver']['in4'], a)
-        self.__pi.write(self.config['driver']['in3'], b)
-        self.__pi.write(self.config['driver']['in2'], c)
-        self.__pi.write(self.config['driver']['in1'], d)
+        self.__pi.write(self.config['bcn']['driver']['in4'], a)
+        self.__pi.write(self.config['bcn']['driver']['in3'], b)
+        self.__pi.write(self.config['bcn']['driver']['in2'], c)
+        self.__pi.write(self.config['bcn']['driver']['in1'], d)
         self.__run_at_power(t, power)
 
     def forward(self, t, power=50):
