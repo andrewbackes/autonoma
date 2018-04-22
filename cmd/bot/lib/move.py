@@ -96,6 +96,6 @@ class Move:
 
 if __name__ == "__main__":
     move = Move()
-    move.counter_clockwise(0.1)
-    move.clockwise(0.1)
-    gpio.cleanup()
+    # move.counter_clockwise(0.1)
+    # move.clockwise(0.1)
+    move.forward(1, 20)
