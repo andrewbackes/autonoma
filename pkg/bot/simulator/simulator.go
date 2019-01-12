@@ -1,7 +1,7 @@
 package simulator
 
 import (
-	"github.com/andrewbackes/autonoma/pkg/map/image"
+	"github.com/andrewbackes/autonoma/pkg/maps/generator"
 	log "github.com/sirupsen/logrus"
 	"math"
 	"math/rand"

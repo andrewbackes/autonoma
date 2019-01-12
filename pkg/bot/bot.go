@@ -92,6 +92,14 @@ func smallestAngle(from, to float64) (dist float64, dir string) {
 	return
 }
 
+/*
+Move the bot a distance.
+
+Experiments:
+	1sec@20% = 7 7/8 in  = 20.0025 cm  => 20    cm/sec
+	2sec@20% = 19 5/8 in = 49.8475 cm  => 25    cm/sec
+	3sec@20% = 32 in     = 81.28 cm    => 27.09 cm/sec
+*/
 func (b *Bot) Move(d distance.Distance) {
 	p := b.Pose()
 	circ := b.wheels.Diameter * math.Pi

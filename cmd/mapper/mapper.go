@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/andrewbackes/autonoma/pkg/bot/simulator"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"strings"
 	"time"
 
+	//"github.com/andrewbackes/autonoma/pkg/bot/simulator"
 	"github.com/andrewbackes/autonoma/pkg/bot"
 	"github.com/andrewbackes/autonoma/pkg/distance"
 	"github.com/andrewbackes/autonoma/pkg/pointfeed"
@@ -25,7 +25,7 @@ var (
 
 // bot:
 var (
-	address = "192.168.86.54:9091"
+	address = "192.168.86.55:9091"
 	sensors = map[string]sensor.Sensor{
 		// key is the sensor's id sent by the bot.
 		// "ir":         sensor.SharpGP2Y0A21YK0F,
@@ -49,7 +49,7 @@ func main() {
 	log.Info("Mapper started.")
 	d := pointfeed.New()
 	b := slamBot(d)
-	go slam.Start(b)
+	go slam.ThreeD(b)
 	web.NewAPI(d).Start()
 }
 
@@ -61,7 +61,7 @@ func slamBot(d *pointfeed.PointFeed) slam.Bot {
 		for _, sensor := range sensors {
 			s = append(s, sensor)
 		}
-		b = simulator.New("pkg/map/image/assets/maze1.png", s...)
+		//b = simulator.New("pkg/map/image/assets/maze1.png", s...)
 	} else {
 		b = bot.New(address, sensors, dimensions, wheels, d)
 		go file.Subscribe(fmt.Sprintf("output/mapper-%d.json", time.Now().Unix()), d)
