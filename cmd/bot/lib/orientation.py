@@ -47,7 +47,7 @@ class Orientation:
 if __name__ == "__main__":
     orientation = Orientation()
     while True:
-        print(orientation.heading())
+        print(orientation.read())
         time.sleep(1)
 
     # Other values you can optionally read:

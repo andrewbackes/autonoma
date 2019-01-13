@@ -29,3 +29,6 @@ _testmain.go
 
 vendor/
 output/
+
+# osx
+.DS_Store

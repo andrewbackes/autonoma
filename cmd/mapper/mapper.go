@@ -25,7 +25,7 @@ var (
 
 // bot:
 var (
-	address = "192.168.86.55:9091"
+	address = "192.168.86.73:9091"
 	sensors = map[string]sensor.Sensor{
 		// key is the sensor's id sent by the bot.
 		// "ir":         sensor.SharpGP2Y0A21YK0F,
