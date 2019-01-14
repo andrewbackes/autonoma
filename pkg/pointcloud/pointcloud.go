@@ -1,6 +1,7 @@
 package pointcloud
 
 import (
+	"fmt"
 	"gonum.org/v1/gonum/mat"
 	"math"
 )
@@ -123,4 +124,15 @@ func (p *PointCloud) Matrix() mat.Matrix {
 		}
 	}
 	return m
+}
+
+func printMatrix(m mat.Matrix) {
+	r, c := m.Dims()
+	for i := 0; i < r; i++ {
+		for j := 0; j < c; j++ {
+			fmt.Print(m.At(i, j), " ")
+		}
+		fmt.Println()
+	}
+	fmt.Println()
 }

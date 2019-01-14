@@ -14,10 +14,22 @@
   version = "v1.1"
 
 [[projects]]
+  name = "github.com/gorilla/handlers"
+  packages = ["."]
+  revision = "7e0847f9db758cdebd26c149d0ae9d5d0b9c98ce"
+  version = "v1.4.0"
+
+[[projects]]
   name = "github.com/gorilla/mux"
   packages = ["."]
   revision = "53c1911da2b537f792e7cafcb446b05ffe33b996"
   version = "v1.6.1"
+
+[[projects]]
+  name = "github.com/gorilla/websocket"
+  packages = ["."]
+  revision = "66b9c49e59c6c48f0ffce28c2d8b8a5678502c6d"
+  version = "v1.4.0"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -49,9 +61,15 @@
   packages = ["unix","windows"]
   revision = "7dca6fe1f43775aa6d1334576870ff63f978f539"
 
+[[projects]]
+  branch = "master"
+  name = "gonum.org/v1/gonum"
+  packages = ["blas","blas/blas64","blas/gonum","floats","internal/asm/c128","internal/asm/f32","internal/asm/f64","internal/math32","lapack","lapack/gonum","lapack/lapack64","mat"]
+  revision = "9b1d3877366eedb865a7ef50de2343d056ecbe17"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "75223d8d0cf91e64386079f4f8e1de2736b388b2e6d30f28d05d14b61410d9c0"
+  inputs-digest = "ee5db516b9476e121b1ea1aa541495958b985e7ad651d410baf3bada6a30426a"
   solver-name = "gps-cdcl"
   solver-version = 1

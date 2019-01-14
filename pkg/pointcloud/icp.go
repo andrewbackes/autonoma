@@ -6,7 +6,7 @@ import (
 )
 
 // ICP is an implementation of iterative closest point.
-func ICP(source, target *PointCloud, epsilon float64, interations int) *Transformation {
+func ICP(source, target *PointCloud, epsilon float64, interations int) (*PointCloud, float64) {
 	transformed := source.Copy()
 	dist := math.MaxFloat64
 	for i := 0; (dist > epsilon) && (i < interations); i++ {
@@ -15,10 +15,11 @@ func ICP(source, target *PointCloud, epsilon float64, interations int) *Transfor
 		matched, dist = closestPoints(transformed, target)
 		// get transformation that moves source to matched target
 		t := findTransformation(transformed, matched)
+		//printMatrix(t.Rotation)
 		// perform transformation on source to move it closer
 		transformed = t.Transform(transformed)
 	}
-	return &Transformation{}
+	return transformed, dist
 }
 
 func findTransformation(source, matched *PointCloud) *Transformation {
@@ -61,14 +62,16 @@ func rotation(crossCovariance mat.Matrix) mat.Matrix {
 
 // translation is C_s - RC_m
 func translation(sourceCentroid, matchedCentroid Point, rotation mat.Matrix) Point {
+	col := matchedCentroid.ColMatrix()
 	var mult mat.Dense
-	mult.Mul(rotation, matchedCentroid.ColMatrix())
-	return Subtract(sourceCentroid, matToPoint(&mult))
+	mult.Mul(rotation, col)
+	pt := Subtract(sourceCentroid, matToPoint(&mult))
+	return pt
 }
 
 func matToPoint(m mat.Matrix) Point {
 	r, _ := m.Dims()
-	var p Point
+	p := Point{x: make([]float64, r)}
 	for i := 0; i < r; i++ {
 		p.x[i] = m.At(i, 0)
 	}
