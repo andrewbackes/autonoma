@@ -25,7 +25,7 @@ var (
 
 // bot:
 var (
-	address = "192.168.86.73:9091"
+	address = "192.168.86.74:9091"
 	sensors = map[string]sensor.Sensor{
 		// key is the sensor's id sent by the bot.
 		// "ir":         sensor.SharpGP2Y0A21YK0F,
@@ -48,8 +48,9 @@ func main() {
 	log.SetLevel(logLevel)
 	log.Info("Mapper started.")
 	d := pointfeed.New()
-	b := slamBot(d)
-	go slam.ThreeD(b)
+	//b := slamBot(d)
+	//go slam.ThreeD(b)
+	//go slam.TwoD(b)
 	web.NewAPI(d).Start()
 }
 

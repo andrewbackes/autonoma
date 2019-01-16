@@ -4,12 +4,10 @@ import (
 	"github.com/andrewbackes/autonoma/pkg/planning"
 )
 
-type Controller struct{}
-
-func NewController() *Controller {
-	return &Controller{}
+type bot interface {
+	Send(Commands)
 }
 
-func (c *Controller) Execute(*planning.Motions) *Commands {
-	return &Commands{}
+func Execute(m *planning.Motions, b bot) {
+	return
 }

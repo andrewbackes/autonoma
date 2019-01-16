@@ -2,77 +2,38 @@
 package os
 
 import (
-	"encoding/json"
-	"fmt"
+	"github.com/andrewbackes/autonoma/pkg/bot/v3"
 	"github.com/andrewbackes/autonoma/pkg/control"
 	"github.com/andrewbackes/autonoma/pkg/perception"
+	"github.com/andrewbackes/autonoma/pkg/perception/signal"
 	"github.com/andrewbackes/autonoma/pkg/planning"
-	"github.com/andrewbackes/autonoma/pkg/sensing"
-	"net/http"
 )
 
 // OperatingSystem is the stack used in the operation of an autonomous robot.
 type OperatingSystem struct {
-	Perceiver  perceiver
-	Planner    planner
-	Controller controller
+	p   *perception.Perception
+	m   *planning.Mission
+	bot *v3.Bot
 }
 
-type perceiver interface {
-	Perceive(*sensing.SensorData) *perception.Perception
-	Perception() *perception.Perception
-}
-type planner interface {
-	Plan(*perception.Perception) *planning.Motions
-	SetMission(*planning.Mission)
-	Mission() *planning.Mission
+func (os *OperatingSystem) Perception() *perception.Perception {
+	return os.p
 }
 
-type controller interface {
-	Execute(*planning.Motions) *control.Commands
+func (os *OperatingSystem) signalHandler(s *signal.Signal) {
+	os.p = signal.UpdatePerception(s, os.p)
+	actions := planning.Plan(os.p, os.m)
+	control.Execute(actions, os.bot)
 }
 
-func (os *OperatingSystem) evaluate(s *sensing.SensorData) {
-	os.Controller.Execute(os.Planner.Plan(os.Perceiver.Perceive(s)))
+func New(bot *v3.Bot) *OperatingSystem {
+	return &OperatingSystem{
+		p:   perception.New(),
+		m:   planning.DefaultMission,
+		bot: bot,
+	}
 }
 
-// Start the vehicle's operating stack.
 func (os *OperatingSystem) Start() {
-	// display the environment and pose
-	http.HandleFunc("/perception", func(w http.ResponseWriter, r *http.Request) {
-		err := json.NewEncoder(w).Encode(os.Perceiver.Perception())
-		if err != nil {
-			fmt.Printf("error - %v", err)
-		}
-	})
-	// update the environment with sensorData
-	http.HandleFunc("/perception/sensorData", func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		if r.Method == http.MethodPost {
-			var s sensing.SensorData
-			err = json.NewDecoder(r.Body).Decode(&s)
-			defer r.Body.Close()
-			os.evaluate(&s)
-		}
-		if err != nil {
-			fmt.Printf("error - %v", err)
-		}
-	})
-	// update the mission
-	http.HandleFunc("/planning/mission", func(w http.ResponseWriter, r *http.Request) {
-		var err error
-		if r.Method == http.MethodPost {
-			var m planning.Mission
-			err = json.NewDecoder(r.Body).Decode(&m)
-			defer r.Body.Close()
-			os.Planner.SetMission(&m)
-		} else {
-			err = json.NewEncoder(w).Encode(os.Planner.Mission())
-		}
-		if err != nil {
-			fmt.Printf("error - %v", err)
-		}
-	})
-	fmt.Println("Starting...")
-	http.ListenAndServe(":8080", nil)
+	os.bot.Listen(os.signalHandler)
 }

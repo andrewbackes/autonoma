@@ -1,16 +1,15 @@
 package main
 
 import (
-	"github.com/andrewbackes/autonoma/pkg/control"
+	"github.com/andrewbackes/autonoma/pkg/bot/v3"
 	"github.com/andrewbackes/autonoma/pkg/os"
-	"github.com/andrewbackes/autonoma/pkg/perception"
-	"github.com/andrewbackes/autonoma/pkg/planning"
+	"github.com/andrewbackes/autonoma/pkg/ui"
 )
 
 func main() {
-	(&os.OperatingSystem{
-		Perceiver:  perception.NewPerceiver(),
-		Planner:    planning.NewPlanner(),
-		Controller: control.NewController(),
-	}).Start()
+	b := &v3.Bot{}
+	botOS := os.New(b)
+	webUI := ui.New(botOS)
+	go webUI.ListenAndServe()
+	botOS.Start()
 }
