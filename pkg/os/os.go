@@ -2,6 +2,8 @@
 package os
 
 import (
+	log "github.com/sirupsen/logrus"
+
 	"github.com/andrewbackes/autonoma/pkg/bot/comm"
 	"github.com/andrewbackes/autonoma/pkg/bot/specs"
 	"github.com/andrewbackes/autonoma/pkg/control"
@@ -23,8 +25,12 @@ func (os *OperatingSystem) Perception() *perception.Perception {
 }
 
 func (os *OperatingSystem) signalHandler(s *signal.Signal) {
+	log.Info("Received signal: ", *s)
+	log.Info("Updating perception with signal...")
 	os.p = signal.UpdatePerception(s, os.p)
+	log.Info("Generating plan...")
 	actions := planning.Plan(os.p, os.m)
+	log.Info("Executing actions...")
 	control.Execute(actions, os.c)
 }
 
