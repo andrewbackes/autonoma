@@ -2,7 +2,8 @@
 package os
 
 import (
-	"github.com/andrewbackes/autonoma/pkg/bot/v3"
+	"github.com/andrewbackes/autonoma/pkg/bot/comm"
+	"github.com/andrewbackes/autonoma/pkg/bot/specs"
 	"github.com/andrewbackes/autonoma/pkg/control"
 	"github.com/andrewbackes/autonoma/pkg/perception"
 	"github.com/andrewbackes/autonoma/pkg/perception/signal"
@@ -11,9 +12,10 @@ import (
 
 // OperatingSystem is the stack used in the operation of an autonomous robot.
 type OperatingSystem struct {
-	p   *perception.Perception
-	m   *planning.Mission
-	bot *v3.Bot
+	p *perception.Perception
+	m *planning.Mission
+	c *comm.Comm
+	s specs.Spec
 }
 
 func (os *OperatingSystem) Perception() *perception.Perception {
@@ -23,17 +25,18 @@ func (os *OperatingSystem) Perception() *perception.Perception {
 func (os *OperatingSystem) signalHandler(s *signal.Signal) {
 	os.p = signal.UpdatePerception(s, os.p)
 	actions := planning.Plan(os.p, os.m)
-	control.Execute(actions, os.bot)
+	control.Execute(actions, os.c)
 }
 
-func New(bot *v3.Bot) *OperatingSystem {
+func New(c *comm.Comm, s specs.Spec) *OperatingSystem {
 	return &OperatingSystem{
-		p:   perception.New(),
-		m:   planning.DefaultMission,
-		bot: bot,
+		p: perception.New(),
+		m: planning.DefaultMission,
+		c: c,
+		s: s,
 	}
 }
 
 func (os *OperatingSystem) Start() {
-	os.bot.Listen(os.signalHandler)
+	os.c.Listen(os.signalHandler)
 }

@@ -4,10 +4,10 @@ import (
 	"github.com/andrewbackes/autonoma/pkg/planning"
 )
 
-type bot interface {
+type sender interface {
 	Send(Commands)
 }
 
-func Execute(m *planning.Motions, b bot) {
+func Execute(m *planning.Motions, s sender) {
 	return
 }
