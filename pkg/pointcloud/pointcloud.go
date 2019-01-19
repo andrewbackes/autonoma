@@ -142,3 +142,16 @@ func printMatrix(m mat.Matrix) {
 	}
 	fmt.Println()
 }
+
+func (p *PointCloud) Uniques() int {
+	type point struct {
+		x float64
+		y float64
+		z float64
+	}
+	pts := map[point]struct{}{}
+	for _, pt := range p.Points {
+		pts[point{x: pt.X[0], y: pt.X[1], z: pt.X[2]}] = struct{}{}
+	}
+	return len(pts)
+}

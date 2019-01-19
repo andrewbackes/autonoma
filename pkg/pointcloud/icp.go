@@ -1,25 +1,33 @@
 package pointcloud
 
 import (
+	"fmt"
 	"gonum.org/v1/gonum/mat"
 	"math"
 )
 
 // ICP is an implementation of iterative closest point.
-func ICP(source, target *PointCloud, epsilon float64, interations int) (*PointCloud, float64) {
+func ICP(source, target *PointCloud, epsilon float64, interations int) (*PointCloud, *Transformation, float64) {
+	transformation := NewTransformation()
+	if len(target.Points) == 0 {
+		return source, transformation, 0
+	}
 	transformed := source.Copy()
 	dist := math.MaxFloat64
 	for i := 0; (dist > epsilon) && (i < interations); i++ {
 		// for each source point match the closest target point
 		var matched *PointCloud
 		matched, dist = closestPoints(transformed, target)
+		fmt.Println("---> source points", source.Uniques())
+		fmt.Println("---> matched uniques", matched.Uniques())
+		fmt.Println("---> error dist", dist)
 		// get transformation that moves source to matched target
-		t := findTransformation(transformed, matched)
+		transformation = findTransformation(transformed, matched)
 		//printMatrix(t.Rotation)
 		// perform transformation on source to move it closer
-		transformed = t.Transform(transformed)
+		transformed = transformation.Transform(transformed)
 	}
-	return transformed, dist
+	return transformed, transformation, dist
 }
 
 func findTransformation(source, matched *PointCloud) *Transformation {

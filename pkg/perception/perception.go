@@ -9,7 +9,7 @@ import (
 type Perception struct {
 	EnvironmentModel EnvironmentModel `json:"environmentModel"`
 	DrivableSurface  Surface          `json:"drivableSurface"`
-	VehiclePose      VehiclePose      `json:"vehiclePose"`
+	Vehicle          Vehicle          `json:"vehicle"`
 }
 
 func New() *Perception {

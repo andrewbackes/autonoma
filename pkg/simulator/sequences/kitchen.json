@@ -2028,7 +2028,7 @@
     {
         "type": "lidarscan",
         "event": {
-            "odometer": 30.5,
+            "odometer": 61,
             "origin": {
                 "x": 0,
                 "y": 0,
@@ -2771,7 +2771,7 @@
     {
         "type": "lidarscan",
         "event": {
-            "odometer": 30.5,
+            "odometer": 91.5,
             "origin": {
                 "x": 0,
                 "y": 0,
@@ -3779,7 +3779,7 @@
     {
         "type": "lidarscan",
         "event": {
-            "odometer": 41.91,
+            "odometer": 133.41,
             "origin": {
                 "x": 0,
                 "y": 0,
@@ -4552,7 +4552,7 @@
     {
         "type": "lidarscan",
         "event": {
-            "odometer": 41.91,
+            "odometer": 175.32,
             "origin": {
                 "x": 0,
                 "y": 0,
@@ -5515,7 +5515,7 @@
     {
         "type": "lidarscan",
         "event": {
-            "odometer": 30.5,
+            "odometer": 205.82,
             "origin": {
                 "x": 0,
                 "y": 0,
@@ -6533,7 +6533,7 @@
     {
         "type": "lidarscan",
         "event": {
-            "odometer": 30.5,
+            "odometer": 236.32,
             "origin": {
                 "x": 0,
                 "y": 0,
@@ -7486,7 +7486,7 @@
     {
         "type": "lidarscan",
         "event": {
-            "odometer": 41.91,
+            "odometer": 278.23,
             "origin": {
                 "x": 0,
                 "y": 0,
@@ -8359,7 +8359,7 @@
     {
         "type": "lidarscan",
         "event": {
-            "odometer": 30.5,
+            "odometer": 308.73,
             "origin": {
                 "x": 0,
                 "y": 0,
@@ -9377,7 +9377,7 @@
     {
         "type": "lidarscan",
         "event": {
-            "odometer": 30.5,
+            "odometer": 339.23,
             "origin": {
                 "x": 0,
                 "y": 0,
@@ -10395,7 +10395,7 @@
     {
         "type": "lidarscan",
         "event": {
-            "odometer": 30.5,
+            "odometer": 369.73,
             "origin": {
                 "x": 0,
                 "y": 0,

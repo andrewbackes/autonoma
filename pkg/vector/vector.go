@@ -19,6 +19,21 @@ func Add(v1, v2 Vector) Vector {
 	}
 }
 
+// Rotate by angle in 2d space.
+func (v *Vector) Rotate(angle float64) Vector {
+	/*
+		β is the angle to rotate counterclockwise.
+		x2=cosβx1−sinβy1
+		y2=sinβx1+cosβy1
+	*/
+	rad := toRadians(angle)
+	return Vector{
+		X: v.X*math.Cos(rad) - v.Y*math.Sin(rad),
+		Y: v.X*math.Sin(rad) + v.Y*math.Cos(rad),
+		Z: v.Z,
+	}
+}
+
 // PolarLikeCoordToVector takes a heading from a compass and distance travelled,
 // then returns a vector.
 func PolarLikeCoordToVector(compassAngle float64, distance float64) Vector {
@@ -29,8 +44,8 @@ func PolarLikeCoordToVector(compassAngle float64, distance float64) Vector {
 	//		polardir = -compassdir + 90
 	angle := math.Mod(-compassAngle+90, 360)
 	return Vector{
-		X: float64(distance) * math.Cos(toRadians(angle)),
-		Y: float64(distance) * math.Sin(toRadians(angle)),
+		X: distance * math.Cos(toRadians(angle)),
+		Y: distance * math.Sin(toRadians(angle)),
 		Z: 0,
 	}
 }
