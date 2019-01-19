@@ -1,7 +1,9 @@
 package perception
 
-type EnvironmentModel struct {
-	PointCloud PointCloud `json:"pointCloud"`
-}
+import (
+	"github.com/andrewbackes/autonoma/pkg/pointcloud"
+)
 
-type PointCloud struct{}
+type EnvironmentModel struct {
+	PointCloud *pointcloud.PointCloud `json:"pointCloud"`
+}

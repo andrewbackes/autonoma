@@ -8,62 +8,68 @@ import (
 
 // Point in space.
 type Point struct {
-	x []float64
+	X []float64
 }
 
 func NewPoint(x ...float64) Point {
-	p := Point{x: make([]float64, len(x))}
+	p := Point{X: make([]float64, len(x))}
 	for i, xv := range x {
-		p.x[i] = xv
+		p.X[i] = xv
 	}
 	return p
 }
 
 func (p Point) ColMatrix() mat.Matrix {
-	m := mat.NewDense(len(p.x), 1, nil)
-	for i, x := range p.x {
+	m := mat.NewDense(len(p.X), 1, nil)
+	for i, x := range p.X {
 		m.Set(i, 0, float64(x))
 	}
 	return m
 }
 
 func Subtract(a, b Point) Point {
-	p := Point{x: make([]float64, len(a.x))}
-	for i := range a.x {
-		p.x[i] = a.x[i] - b.x[i]
+	p := Point{X: make([]float64, len(a.X))}
+	for i := range a.X {
+		p.X[i] = a.X[i] - b.X[i]
 	}
 	return p
 }
 
-// PointCloud is a collection of points.
+// PointCloud is a collection of Points.
 type PointCloud struct {
-	points []Point
+	Points []Point
+}
+
+func New() *PointCloud {
+	return &PointCloud{
+		Points: make([]Point, 0),
+	}
 }
 
 // Add a point to the cloud.
 func (p *PointCloud) Add(pt Point) {
-	p.points = append(p.points, pt)
+	p.Points = append(p.Points, pt)
 }
 func (p *PointCloud) Copy() *PointCloud {
-	c := &PointCloud{points: make([]Point, len(p.points))}
-	for i, v := range p.points {
-		c.points[i] = v
+	c := &PointCloud{Points: make([]Point, len(p.Points))}
+	for i, v := range p.Points {
+		c.Points[i] = v
 	}
 	return c
 }
 
 func (p *PointCloud) Centroid() Point {
-	if len(p.points) == 0 {
+	if len(p.Points) == 0 {
 		return Point{}
 	}
 	dimensions := p.Dimensions()
-	centroid := Point{x: make([]float64, dimensions)}
+	centroid := Point{X: make([]float64, dimensions)}
 	for dim := 0; dim < dimensions; dim++ {
 		sum := float64(0)
-		for _, pt := range p.points {
-			sum += pt.x[dim]
+		for _, pt := range p.Points {
+			sum += pt.X[dim]
 		}
-		centroid.x[dim] = sum / float64(len(p.points))
+		centroid.X[dim] = sum / float64(len(p.Points))
 	}
 	return centroid
 }
@@ -71,8 +77,8 @@ func (p *PointCloud) Centroid() Point {
 // Subtract a point from every point in the point cloud. Returns a copy.
 func (p *PointCloud) Subtract(pt Point) *PointCloud {
 	c := p.Copy()
-	for i := range c.points {
-		c.points[i] = Subtract(c.points[i], pt)
+	for i := range c.Points {
+		c.Points[i] = Subtract(c.Points[i], pt)
 	}
 	return c
 }
@@ -80,12 +86,12 @@ func (p *PointCloud) Subtract(pt Point) *PointCloud {
 /*
 // Distance is the shortest distance from a point to the point cloud.
 func (p *PointCloud) Distance(to Point) float64 {
-	if len(p.points) == 0 {
+	if len(p.Points) == 0 {
 		return math.MaxFloat64
 	}
-	min := dist(p.points[0], to)
-	for i := 1; i < len(p.points); i++ {
-		d := dist(p.points[i], to)
+	min := dist(p.Points[0], to)
+	for i := 1; i < len(p.Points); i++ {
+		d := dist(p.Points[i], to)
 		if d < min {
 			min = d
 		}
@@ -96,30 +102,30 @@ func (p *PointCloud) Distance(to Point) float64 {
 
 func dist(p, q Point) float64 {
 	sum := float64(0)
-	for i := 0; i < len(p.x); i++ {
-		sum += math.Pow(float64(p.x[i]-q.x[i]), 2)
+	for i := 0; i < len(p.X); i++ {
+		sum += math.Pow(float64(p.X[i]-q.X[i]), 2)
 	}
 	return math.Sqrt(sum)
 }
 
 func (p *PointCloud) Dimensions() int {
-	if len(p.points) == 0 {
+	if len(p.Points) == 0 {
 		return 0
 	}
-	return len(p.points[0].x)
+	return len(p.Points[0].X)
 }
 
 func (p *PointCloud) Len() int {
-	return len(p.points)
+	return len(p.Points)
 }
 
 func (p *PointCloud) Matrix() mat.Matrix {
-	if len(p.points) == 0 {
+	if len(p.Points) == 0 {
 		return &mat.Dense{}
 	}
 	m := mat.NewDense(p.Dimensions(), p.Len(), nil)
-	for col, pt := range p.points {
-		for row, val := range pt.x {
+	for col, pt := range p.Points {
+		for row, val := range pt.X {
 			m.Set(row, col, float64(val))
 		}
 	}

@@ -10,14 +10,14 @@ type Transformation struct {
 }
 
 func (t *Transformation) Transform(p *PointCloud) *PointCloud {
-	result := &PointCloud{points: make([]Point, len(p.points))}
-	for i, pt := range p.points {
+	result := &PointCloud{Points: make([]Point, len(p.Points))}
+	for i, pt := range p.Points {
 		col := pt.ColMatrix()
 		var mult mat.Dense
 		mult.Mul(t.Rotation, col)
 		afterRotation := matToPoint(&mult)
 		transformed := Subtract(afterRotation, t.Translation)
-		result.points[i] = transformed
+		result.Points[i] = transformed
 	}
 	return result
 }

@@ -31,10 +31,6 @@ type perceiver interface {
 	Perception() *perception.Perception
 }
 
-func ListenAndServe(p perceiver) {
-
-}
-
 func (ui *UI) perceptionHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(ui.p.Perception())
 	if err != nil {

@@ -71,40 +71,40 @@ func translation(sourceCentroid, matchedCentroid Point, rotation mat.Matrix) Poi
 
 func matToPoint(m mat.Matrix) Point {
 	r, _ := m.Dims()
-	p := Point{x: make([]float64, r)}
+	p := Point{X: make([]float64, r)}
 	for i := 0; i < r; i++ {
-		p.x[i] = m.At(i, 0)
+		p.X[i] = m.At(i, 0)
 	}
 	return p
 }
 
 func closestPoints(source, target *PointCloud) (*PointCloud, float64) {
-	if len(target.points) < len(source.points) {
+	if len(target.Points) < len(source.Points) {
 		return source, math.MaxFloat64
 	}
-	closest := &PointCloud{points: make([]Point, 0, len(source.points))}
+	closest := &PointCloud{Points: make([]Point, 0, len(source.Points))}
 	distances := float64(0)
-	for _, p := range source.points {
+	for _, p := range source.Points {
 		c, d := target.closest(p)
 		distances += d
 		closest.Add(c)
 	}
-	aveDist := distances / float64(len(source.points))
+	aveDist := distances / float64(len(source.Points))
 	return closest, aveDist
 }
 
 // Distance is the shortest distance from a point to the point cloud.
 func (p *PointCloud) closest(to Point) (Point, float64) {
-	if len(p.points) == 0 {
+	if len(p.Points) == 0 {
 		return Point{}, math.MaxFloat64
 	}
-	min := dist(p.points[0], to)
-	closest := p.points[0]
-	for i := 1; i < len(p.points); i++ {
-		d := dist(p.points[i], to)
+	min := dist(p.Points[0], to)
+	closest := p.Points[0]
+	for i := 1; i < len(p.Points); i++ {
+		d := dist(p.Points[i], to)
 		if d < min {
 			min = d
-			closest = p.points[i]
+			closest = p.Points[i]
 		}
 	}
 	return closest, min
