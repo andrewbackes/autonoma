@@ -2,76 +2,49 @@ package pointcloud
 
 import (
 	"fmt"
+	"github.com/andrewbackes/autonoma/pkg/vector"
 	"gonum.org/v1/gonum/mat"
-	"math"
 )
-
-// Point in space.
-type Point struct {
-	X []float64
-}
-
-func NewPoint(x ...float64) Point {
-	p := Point{X: make([]float64, len(x))}
-	for i, xv := range x {
-		p.X[i] = xv
-	}
-	return p
-}
-
-func (p Point) ColMatrix() mat.Matrix {
-	m := mat.NewDense(len(p.X), 1, nil)
-	for i, x := range p.X {
-		m.Set(i, 0, float64(x))
-	}
-	return m
-}
-
-func Subtract(a, b Point) Point {
-	p := Point{X: make([]float64, len(a.X))}
-	for i := range a.X {
-		p.X[i] = a.X[i] - b.X[i]
-	}
-	return p
-}
 
 // PointCloud is a collection of Points.
 type PointCloud struct {
-	Points []Point
+	Points map[vector.Vector]int
 }
+
+const Dimensions = 3
 
 func New() *PointCloud {
 	return &PointCloud{
-		Points: make([]Point, 0),
+		Points: map[vector.Vector]int,
 	}
 }
 
 // Add a point to the cloud.
-func (p *PointCloud) Add(pt Point) {
-	p.Points = append(p.Points, pt)
-}
-func (p *PointCloud) Copy() *PointCloud {
-	c := &PointCloud{Points: make([]Point, len(p.Points))}
-	for i, v := range p.Points {
-		c.Points[i] = v
-	}
-	return c
+func (p *PointCloud) Add(v vector.Vector) {
+	val := p.Points[v]
+	p.Points[v] = val + 1
 }
 
-func (p *PointCloud) Centroid() Point {
+func Copy(p *PointCloud) *PointCloud {
+	n := New()
+	for k, v := range p.Points {
+		n[k] = v
+	}
+}
+
+func (p *PointCloud) Centroid() vector.Vector {
 	if len(p.Points) == 0 {
-		return Point{}
+		return vector.Vector{}
 	}
-	dimensions := p.Dimensions()
-	centroid := Point{X: make([]float64, dimensions)}
-	for dim := 0; dim < dimensions; dim++ {
+	centroid := &vector.Vector{}
+	for dim := 0; dim < 3; dim++ {
 		sum := float64(0)
-		for _, pt := range p.Points {
-			sum += pt.X[dim]
+		for v := range p.Points {
+			sum += v.Array()[dim]
 		}
-		centroid.X[dim] = sum / float64(len(p.Points))
+		centroid.SetIndex(dim, sum / float64(len(p.Points)))
 	}
-	return centroid
+	return *centroid
 }
 
 // Subtract a point from every point in the point cloud. Returns a copy.
@@ -100,20 +73,6 @@ func (p *PointCloud) Distance(to Point) float64 {
 }
 */
 
-func dist(p, q Point) float64 {
-	sum := float64(0)
-	for i := 0; i < len(p.X); i++ {
-		sum += math.Pow(float64(p.X[i]-q.X[i]), 2)
-	}
-	return math.Sqrt(sum)
-}
-
-func (p *PointCloud) Dimensions() int {
-	if len(p.Points) == 0 {
-		return 0
-	}
-	return len(p.Points[0].X)
-}
 
 func (p *PointCloud) Len() int {
 	return len(p.Points)
@@ -141,17 +100,4 @@ func printMatrix(m mat.Matrix) {
 		fmt.Println()
 	}
 	fmt.Println()
-}
-
-func (p *PointCloud) Uniques() int {
-	type point struct {
-		x float64
-		y float64
-		z float64
-	}
-	pts := map[point]struct{}{}
-	for _, pt := range p.Points {
-		pts[point{x: pt.X[0], y: pt.X[1], z: pt.X[2]}] = struct{}{}
-	}
-	return len(pts)
 }

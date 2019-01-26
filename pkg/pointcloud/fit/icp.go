@@ -1,4 +1,4 @@
-package pointcloud
+package fit
 
 import (
 	"fmt"
@@ -33,7 +33,9 @@ func ICP(source, target *PointCloud, epsilon float64, interations int) (*PointCl
 func findTransformation(source, matched *PointCloud) *Transformation {
 	// compute centroid of the source set (C_s) and matched set (C_m)
 	cs := source.Centroid()
+	fmt.Println("source centroid", cs)
 	cm := matched.Centroid()
+	fmt.Println("matched centroid", cm)
 	// get the cross covariance matrix
 	cc := crossCovariance(source, matched, cs, cm)
 	rot := rotation(cc)
@@ -91,11 +93,13 @@ func closestPoints(source, target *PointCloud) (*PointCloud, float64) {
 		return source, math.MaxFloat64
 	}
 	closest := &PointCloud{Points: make([]Point, 0, len(source.Points))}
+	available := target.Copy()
 	distances := float64(0)
 	for _, p := range source.Points {
 		c, d := target.closest(p)
 		distances += d
 		closest.Add(c)
+
 	}
 	aveDist := distances / float64(len(source.Points))
 	return closest, aveDist
@@ -106,14 +110,15 @@ func (p *PointCloud) closest(to Point) (Point, float64) {
 	if len(p.Points) == 0 {
 		return Point{}, math.MaxFloat64
 	}
-	min := dist(p.Points[0], to)
-	closest := p.Points[0]
-	for i := 1; i < len(p.Points); i++ {
+	min := math.MaxFloat64
+	closest := Point{}
+	for i := 0; i < len(p.Points); i++ {
 		d := dist(p.Points[i], to)
 		if d < min {
 			min = d
 			closest = p.Points[i]
 		}
 	}
+	fmt.Println("--->", to, "to", closest)
 	return closest, min
 }
