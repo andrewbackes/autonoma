@@ -1,5 +1,6 @@
 package fit
 
+/*
 import (
 	"fmt"
 	"gonum.org/v1/gonum/mat"
@@ -7,7 +8,7 @@ import (
 )
 
 // ICP is an implementation of iterative closest point.
-func ICP(source, target *PointCloud, epsilon float64, interations int) (*PointCloud, *Transformation, float64) {
+func ICP_old(source, target *PointCloud, epsilon float64, interations int) (*PointCloud, *Transformation, float64) {
 	transformation := NewTransformation()
 	if len(target.Points) == 0 {
 		return source, transformation, 0
@@ -79,15 +80,6 @@ func translation(sourceCentroid, matchedCentroid Point, rotation mat.Matrix) Poi
 	return pt
 }
 
-func matToPoint(m mat.Matrix) Point {
-	r, _ := m.Dims()
-	p := Point{X: make([]float64, r)}
-	for i := 0; i < r; i++ {
-		p.X[i] = m.At(i, 0)
-	}
-	return p
-}
-
 func closestPoints(source, target *PointCloud) (*PointCloud, float64) {
 	if len(target.Points) < len(source.Points) {
 		return source, math.MaxFloat64
@@ -122,3 +114,4 @@ func (p *PointCloud) closest(to Point) (Point, float64) {
 	fmt.Println("--->", to, "to", closest)
 	return closest, min
 }
+*/

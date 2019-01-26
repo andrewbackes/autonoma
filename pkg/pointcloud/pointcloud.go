@@ -15,7 +15,7 @@ const Dimensions = 3
 
 func New() *PointCloud {
 	return &PointCloud{
-		Points: map[vector.Vector]int,
+		Points: map[vector.Vector]int{},
 	}
 }
 
@@ -23,13 +23,6 @@ func New() *PointCloud {
 func (p *PointCloud) Add(v vector.Vector) {
 	val := p.Points[v]
 	p.Points[v] = val + 1
-}
-
-func Copy(p *PointCloud) *PointCloud {
-	n := New()
-	for k, v := range p.Points {
-		n[k] = v
-	}
 }
 
 func (p *PointCloud) Centroid() vector.Vector {
@@ -42,42 +35,16 @@ func (p *PointCloud) Centroid() vector.Vector {
 		for v := range p.Points {
 			sum += v.Array()[dim]
 		}
-		centroid.SetIndex(dim, sum / float64(len(p.Points)))
+		centroid.SetIndex(dim, sum/float64(len(p.Points)))
 	}
 	return *centroid
 }
-
-// Subtract a point from every point in the point cloud. Returns a copy.
-func (p *PointCloud) Subtract(pt Point) *PointCloud {
-	c := p.Copy()
-	for i := range c.Points {
-		c.Points[i] = Subtract(c.Points[i], pt)
-	}
-	return c
-}
-
-/*
-// Distance is the shortest distance from a point to the point cloud.
-func (p *PointCloud) Distance(to Point) float64 {
-	if len(p.Points) == 0 {
-		return math.MaxFloat64
-	}
-	min := dist(p.Points[0], to)
-	for i := 1; i < len(p.Points); i++ {
-		d := dist(p.Points[i], to)
-		if d < min {
-			min = d
-		}
-	}
-	return min
-}
-*/
-
 
 func (p *PointCloud) Len() int {
 	return len(p.Points)
 }
 
+/*
 func (p *PointCloud) Matrix() mat.Matrix {
 	if len(p.Points) == 0 {
 		return &mat.Dense{}
@@ -90,6 +57,7 @@ func (p *PointCloud) Matrix() mat.Matrix {
 	}
 	return m
 }
+*/
 
 func printMatrix(m mat.Matrix) {
 	r, c := m.Dims()

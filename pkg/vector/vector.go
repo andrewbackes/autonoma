@@ -112,3 +112,15 @@ func PolarLikeCoordToVector(compassAngle float64, distance float64) Vector {
 func toRadians(deg float64) float64 {
 	return (deg * math.Pi) / 180
 }
+
+func FromMatrix(m mat.Matrix) Vector {
+	r, _ := m.Dims()
+	if r != Dimensions {
+		panic("matrix is the wrong dimension")
+	}
+	v := Vector{}
+	for i := 0; i < Dimensions; i++ {
+		v.SetIndex(i, m.At(i, 0))
+	}
+	return v
+}
