@@ -10,12 +10,20 @@ import (
 	"math"
 )
 
-func ICP(source []vector.Vector, target *pointcloud.PointCloud, epsilon float64, iterations int) ([]vector.Vector, float64) {
+func ICP(
+	source []vector.Vector,
+	origin vector.Vector,
+	target *pointcloud.PointCloud,
+	epsilon float64,
+	iterations int,
+) ([]vector.Vector, vector.Vector, float64) {
+
 	// handle starting condition
 	if len(target.Points) == 0 {
-		return source, 0
+		return source, origin, 0
 	}
 	transformed := vector.Copy(source)
+	transformedOrigin := origin
 	dist := math.MaxFloat64
 	for i := 0; (dist > epsilon) && (i < iterations); i++ {
 		fmt.Println("Iteration", i)
@@ -23,9 +31,10 @@ func ICP(source []vector.Vector, target *pointcloud.PointCloud, epsilon float64,
 		dist = vector.AveDistance(transformed, matched)
 		fmt.Println("Average Distance", dist)
 		trans := nextTransformation(transformed, matched)
+		transformedOrigin = trans.Apply(transformedOrigin)
 		apply(trans, transformed)
 	}
-	return transformed, dist
+	return transformed, transformedOrigin, dist
 }
 
 func apply(trans *transformation.Transformation, to []vector.Vector) {
@@ -67,6 +76,8 @@ func closestUnusedPoint(v vector.Vector, to *pointcloud.PointCloud, used map[vec
 func nextTransformation(source, pairs []vector.Vector) *transformation.Transformation {
 	sourceCentroid := vector.Centroid(source)
 	pairsCentroid := vector.Centroid(pairs)
+	fmt.Println("--> source centroid", sourceCentroid)
+	fmt.Println("--> pairs centroid", pairsCentroid)
 	crossCovarianceMatrix := crossCovarianceOf(source, pairs, sourceCentroid, pairsCentroid)
 	rotation := rotationOf(crossCovarianceMatrix)
 	return &transformation.Transformation{

@@ -17,7 +17,7 @@ func TestICPTranslation(t *testing.T) {
 	src[0] = vector.Vector{3, 1, 0}
 	src[1] = vector.Vector{3, 3, 0}
 	src[2] = vector.Vector{3, 6, 0}
-	result, e := ICP(src, env, 0.5, 10)
+	result, _, e := ICP(src, vector.Vector{}, env, 0.5, 10)
 	fmt.Println("result: ", result, "error: ", e)
 	assert.InDelta(t, 0, e, 0.01)
 }
@@ -31,7 +31,7 @@ func TestICPRotation90(t *testing.T) {
 	src[0] = vector.Vector{3, 0, 0}
 	src[1] = vector.Vector{5, 0, 0}
 	src[2] = vector.Vector{8, 0, 0}
-	result, e := ICP(src, env, 0.5, 10)
+	result, _, e := ICP(src, vector.Vector{}, env, 0.5, 10)
 	fmt.Println("result: ", result, "error: ", e)
 	assert.InDelta(t, 0, e, 0.01)
 }
@@ -45,7 +45,7 @@ func TestICPRotation(t *testing.T) {
 	src[0] = vector.Vector{-0.32, 1.38, 0}
 	src[1] = vector.Vector{-2.02, 2.44, 0}
 	src[2] = vector.Vector{-4.57, 4.03, 0}
-	result, e := ICP(src, env, 0.5, 10)
+	result, _, e := ICP(src, vector.Vector{}, env, 0.5, 10)
 	fmt.Println("result: ", result, "error: ", e)
 	assert.InDelta(t, 0, e, 0.01)
 }
@@ -63,7 +63,7 @@ func TestICPBox(t *testing.T) {
 	src[2] = vector.Vector{2, 12, 0}
 	src[3] = vector.Vector{12, 2, 0}
 
-	result, e := ICP(src, env, 0.5, 10)
+	result, _, e := ICP(src, vector.Vector{}, env, 0.5, 10)
 	fmt.Println("result: ", result, "error: ", e)
 	assert.InDelta(t, 0, e, 0.01)
 }
@@ -81,7 +81,7 @@ func TestICPBoxRotate30(t *testing.T) {
 	src[2] = vector.Vector{6.3660254037844, 9.0262794416288, 0}
 	src[3] = vector.Vector{10.026279441629, -4.6339745962156, 0}
 
-	result, e := ICP(src, env, 0.5, 10)
+	result, _, e := ICP(src, vector.Vector{}, env, 0.5, 10)
 	fmt.Println("result: ", result, "error: ", e)
 	assert.InDelta(t, 0, e, 0.01)
 }
@@ -99,7 +99,7 @@ func TestICPBoxRotate10(t *testing.T) {
 	src[2] = vector.Vector{2.8949377073484, 10.659237105467, 0}
 	src[3] = vector.Vector{11.006533460801, -0.92532220132403, 0}
 
-	result, e := ICP(src, env, 0.5, 10)
+	result, _, e := ICP(src, vector.Vector{}, env, 0.5, 10)
 	fmt.Println("result: ", result, "error: ", e)
 	assert.InDelta(t, 0, e, 0.01)
 }

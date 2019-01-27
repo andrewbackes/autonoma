@@ -79,16 +79,11 @@ func (v Vector) Index(i int) float64 {
 }
 
 // Rotate by angle in 2d space.
-func (v *Vector) Rotate(angle float64) Vector {
-	/*
-		β is the angle to rotate counterclockwise.
-		x2=cosβx1−sinβy1
-		y2=sinβx1+cosβy1
-	*/
-	rad := toRadians(angle)
+func Rotate(v Vector, compassAngle float64) Vector {
+	rad := toRadians(compassAngle)
 	return Vector{
-		X: v.X*math.Cos(rad) - v.Y*math.Sin(rad),
-		Y: v.X*math.Sin(rad) + v.Y*math.Cos(rad),
+		X: v.X*math.Cos(rad) + v.Y*math.Sin(rad),
+		Y: v.Y*math.Cos(rad) - v.X*math.Sin(rad),
 		Z: v.Z,
 	}
 }

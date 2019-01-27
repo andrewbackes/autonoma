@@ -2,7 +2,6 @@ package signal
 
 import (
 	"fmt"
-	"github.com/andrewbackes/autonoma/pkg/pointcloud"
 	"github.com/andrewbackes/autonoma/pkg/vector"
 	"github.com/mitchellh/mapstructure"
 	log "github.com/sirupsen/logrus"
@@ -31,25 +30,31 @@ func fitLidarscan(l *LidarScan, p *perception.Perception) *perception.Perception
 	fmt.Println("--> dist", dist)
 	fmt.Println("--> yaw", l.Orientation.Yaw)
 	// I don't understand why 360-yaw works =/
-	delta := vector.PolarLikeCoordToVector(360-l.Orientation.Yaw, dist)
+	angle := l.Orientation.Yaw
+	fmt.Println("--> angle", angle)
+	delta := vector.PolarLikeCoordToVector(angle, dist)
 	fmt.Println("--> delta", delta)
 	origin := vector.Add(p.Vehicle.Location, delta)
-	fmt.Println("--> origin", origin)
-	source := pointcloud.New()
-	for _, pt := range l.Vectors {
-		rotated := pt.Rotate(l.Orientation.Yaw)
-		source.Add(pointcloud.NewPoint(origin.X+rotated.X, origin.Y+rotated.Y, origin.Z+rotated.Z))
+	deadReckoning := make([]vector.Vector, len(l.Vectors))
+	for i, v := range l.Vectors {
+		deadReckoning[i] = vector.Add(origin, vector.Rotate(v, angle))
 	}
-	fitted, transformation, e := pointcloud.ICP(source, p.EnvironmentModel.PointCloud, 1.0, 5)
-	//fitted, transformation := source, pointcloud.NewTransformation()
-	fmt.Println("--> error", e)
-	fmt.Println("--> transformation", transformation)
-	for _, pt := range fitted.Points {
-		p.EnvironmentModel.PointCloud.Add(pt)
+	p.Vehicle.Location = origin
+	for _, v := range deadReckoning {
+		p.EnvironmentModel.PointCloud.Add(v)
 	}
-	newOriginPt := transformation.TransformPoint(pointcloud.NewPoint(origin.X, origin.Y, origin.Z))
-	p.Vehicle.Location = vector.Vector{X: newOriginPt.X[0], Y: newOriginPt.X[1], Z: newOriginPt.X[2]}
-	fmt.Println("--> new origin", p.Vehicle.Location)
+
+	/*
+		fitted, newOriginVector, e := fit.ICP(deadReckoning, origin, p.EnvironmentModel.PointCloud, 1.0, 10)
+
+		fmt.Println("--> error", e)
+
+		for _, v := range fitted {
+			p.EnvironmentModel.PointCloud.Add(v)
+		}
+		p.Vehicle.Location = newOriginVector
+	*/
+	fmt.Println("--> origin", origin, "to", p.Vehicle.Location)
 	p.Vehicle.Odometer = l.Odometer
 
 	return p

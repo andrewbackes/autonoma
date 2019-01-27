@@ -1,6 +1,8 @@
 package pointcloud
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/andrewbackes/autonoma/pkg/vector"
 	"gonum.org/v1/gonum/mat"
@@ -9,6 +11,25 @@ import (
 // PointCloud is a collection of Points.
 type PointCloud struct {
 	Points map[vector.Vector]int
+}
+
+func (p *PointCloud) MarshalJSON() ([]byte, error) {
+	buffer := bytes.NewBufferString(`{"points":[`)
+	length := len(p.Points)
+	count := 0
+	for key := range p.Points {
+		jsonKey, err := json.Marshal(key)
+		if err != nil {
+			return nil, err
+		}
+		buffer.Write(jsonKey)
+		count++
+		if count < length {
+			buffer.WriteString(",")
+		}
+	}
+	buffer.WriteString("]}")
+	return buffer.Bytes(), nil
 }
 
 const Dimensions = 3

@@ -15,7 +15,7 @@ func main() {
 		os.Exit(1)
 	}
 	sequenceFile := os.Args[1]
-	sequenceDelay := time.Second
+	sequenceDelay := 100 * time.Millisecond
 	if len(os.Args) >= 3 {
 		d, err := strconv.Atoi(os.Args[2])
 		if err != nil {
