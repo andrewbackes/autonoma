@@ -4,6 +4,22 @@ import (
 	"gonum.org/v1/gonum/mat"
 )
 
+func RemoveOutliers(vs []Vector, ptCount int, perDist float64) []Vector {
+	ret := make([]Vector, 0, len(vs))
+	for _, v := range vs {
+		count := 0
+		for _, w := range vs {
+			if Distance(v, w) < perDist {
+				count++
+			}
+		}
+		if count >= ptCount {
+			ret = append(ret, v)
+		}
+	}
+	return ret
+}
+
 func AveDistance(vs, ws []Vector) float64 {
 	if len(vs) != len(ws) {
 		panic("can not find average distance of different length sets")

@@ -42,7 +42,7 @@ func (s *Simulator) sendSequence() {
 	fmt.Println("Sending sequence.")
 	for i, sig := range s.sequence {
 		if i > 1 {
-			return
+			//return
 		}
 		b, err := json.Marshal(sig)
 		if err != nil {

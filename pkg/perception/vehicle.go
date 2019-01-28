@@ -5,6 +5,6 @@ import (
 )
 
 type Vehicle struct {
-	Location vector.Vector
-	Odometer float64
+	Location vector.Vector `json:"location"`
+	Odometer float64       `json:"odometer"`
 }

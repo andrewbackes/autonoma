@@ -3,6 +3,7 @@ package perception
 
 import (
 	"github.com/andrewbackes/autonoma/pkg/pointcloud"
+	"github.com/andrewbackes/autonoma/pkg/vector"
 )
 
 // Perception of the vehicle given sensor data.
@@ -10,6 +11,7 @@ type Perception struct {
 	EnvironmentModel EnvironmentModel `json:"environmentModel"`
 	DrivableSurface  Surface          `json:"drivableSurface"`
 	Vehicle          Vehicle          `json:"vehicle"`
+	Path             []vector.Vector  `json:"path"`
 }
 
 func New() *Perception {
@@ -17,5 +19,6 @@ func New() *Perception {
 		EnvironmentModel: EnvironmentModel{
 			PointCloud: pointcloud.New(),
 		},
+		Path: make([]vector.Vector, 0),
 	}
 }
