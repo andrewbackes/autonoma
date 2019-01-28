@@ -35,17 +35,19 @@ func fitLidarscan(l *LidarScan, p *perception.Perception) *perception.Perception
 	delta := vector.PolarLikeCoordToVector(angle, dist)
 	fmt.Println("--> delta", delta)
 	origin := vector.Add(p.Vehicle.Location, delta)
-	withoutOutliers := vector.RemoveOutliers(l.Vectors, 2, 10)
+	withoutOutliers := vector.RemoveOutliers(l.Vectors, 1, 5)
 	fmt.Println("--> points remaining after outlier removal", len(withoutOutliers))
 	deadReckoning := make([]vector.Vector, len(withoutOutliers))
 	for i, v := range withoutOutliers {
 		deadReckoning[i] = vector.Add(origin, vector.Rotate(v, angle))
 	}
-	p.Vehicle.Location = origin
 	p.Path = append(p.Path, origin)
+
+	p.Vehicle.Location = origin
 	for _, v := range deadReckoning {
 		p.EnvironmentModel.PointCloud.Add(v)
 	}
+
 	/*
 		fitted, newOriginVector, e := fit.ICP(withoutOutliers, origin, p.EnvironmentModel.PointCloud, 1.0, 10)
 		fmt.Println("--> error", e)
