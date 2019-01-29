@@ -40,10 +40,7 @@ func New(sequenceFile string, sequenceDelay time.Duration) *Simulator {
 
 func (s *Simulator) sendSequence() {
 	fmt.Println("Sending sequence.")
-	for i, sig := range s.sequence {
-		if i > 2 {
-			//return
-		}
+	for _, sig := range s.sequence {
 		b, err := json.Marshal(sig)
 		if err != nil {
 			panic(err)

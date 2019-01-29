@@ -8,10 +8,11 @@ import (
 
 // Perception of the vehicle given sensor data.
 type Perception struct {
-	EnvironmentModel EnvironmentModel `json:"environmentModel"`
-	DrivableSurface  Surface          `json:"drivableSurface"`
-	Vehicle          Vehicle          `json:"vehicle"`
-	Path             []vector.Vector  `json:"path"`
+	EnvironmentModel EnvironmentModel  `json:"environmentModel"`
+	DrivableSurface  Surface           `json:"drivableSurface"`
+	Vehicle          Vehicle           `json:"vehicle"`
+	Path             []vector.Vector   `json:"path"`
+	Scans            [][]vector.Vector `json:"scans"`
 }
 
 func New() *Perception {
@@ -19,6 +20,7 @@ func New() *Perception {
 		EnvironmentModel: EnvironmentModel{
 			PointCloud: pointcloud.New(),
 		},
-		Path: make([]vector.Vector, 0),
+		Path:  make([]vector.Vector, 0),
+		Scans: make([][]vector.Vector, 0),
 	}
 }

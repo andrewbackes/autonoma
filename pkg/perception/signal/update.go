@@ -21,6 +21,7 @@ func UpdatePerception(s *Signal, p *perception.Perception) *perception.Perceptio
 			return p
 		}
 		fitLidarscan(&l, p)
+		updateLocalDrivableSurface(p)
 	}
 	return p
 }
@@ -43,6 +44,7 @@ func fitLidarscan(l *LidarScan, p *perception.Perception) *perception.Perception
 	for i, v := range withoutOutliers {
 		deadReckoning[i] = vector.Add(origin, vector.Rotate(v, angle))
 	}
+	p.Scans = append(p.Scans, deadReckoning)
 	/*
 		p.Path = append(p.Path, origin)
 		p.Vehicle.Location = origin
@@ -53,6 +55,7 @@ func fitLidarscan(l *LidarScan, p *perception.Perception) *perception.Perception
 
 	fitted, newOriginVector, e := fit.ICP(deadReckoning, origin, p.EnvironmentModel.PointCloud, 1.1, 15)
 	fmt.Println("--> error", e)
+
 	for _, v := range fitted {
 		p.EnvironmentModel.PointCloud.Add(v)
 	}
@@ -61,4 +64,8 @@ func fitLidarscan(l *LidarScan, p *perception.Perception) *perception.Perception
 	fmt.Println("--> origin", origin, "to", p.Vehicle.Location)
 	p.Vehicle.Odometer = l.Odometer
 	return p
+}
+
+func updateLocalDrivableSurface(p *perception.Perception) {
+
 }
