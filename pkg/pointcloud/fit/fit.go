@@ -6,6 +6,7 @@ import (
 	"github.com/andrewbackes/autonoma/pkg/pointcloud"
 	"github.com/andrewbackes/autonoma/pkg/vector"
 	"github.com/andrewbackes/autonoma/pkg/vector/transformation"
+	"github.com/montanaflynn/stats"
 	"gonum.org/v1/gonum/mat"
 	"math"
 )
@@ -28,13 +29,33 @@ func ICP(
 	for i := 0; (dist > epsilon) && (i < iterations); i++ {
 		fmt.Println("Iteration", i)
 		matched := closestPoints(transformed, target)
-		dist = vector.AveDistance(transformed, matched)
+		cleanTransformed, cleanMatched := clean(transformed, matched)
+		dist = vector.AveDistance(cleanTransformed, cleanMatched)
 		fmt.Println("Average Distance", dist)
-		trans := nextTransformation(transformed, matched)
+		trans := nextTransformation(cleanTransformed, cleanMatched)
 		transformedOrigin = trans.Apply(transformedOrigin)
 		apply(trans, transformed)
 	}
 	return transformed, transformedOrigin, dist
+}
+
+func clean(a, b []vector.Vector) ([]vector.Vector, []vector.Vector) {
+	k := 2.0
+	dists := make([]float64, len(a))
+	for i := range a {
+		dists[i] = vector.Distance(a[i], b[i])
+	}
+	median, _ := stats.Median(dists)
+	fmt.Println("--> median", median)
+	outA := make([]vector.Vector, 0)
+	outB := make([]vector.Vector, 0)
+	for i := range a {
+		if dists[i] <= k*median {
+			outA = append(outA, a[i])
+			outB = append(outB, b[i])
+		}
+	}
+	return outA, outB
 }
 
 func apply(trans *transformation.Transformation, to []vector.Vector) {
@@ -44,6 +65,27 @@ func apply(trans *transformation.Transformation, to []vector.Vector) {
 }
 
 func closestPoints(source []vector.Vector, target *pointcloud.PointCloud) []vector.Vector {
+	matches := make([]vector.Vector, len(source))
+	for i, v := range source {
+		matches[i] = closestPoint(v, target)
+	}
+	return matches
+}
+
+func closestPoint(v vector.Vector, to *pointcloud.PointCloud) vector.Vector {
+	min := math.MaxFloat64
+	closest := vector.Vector{}
+	for w := range to.Points {
+		d := vector.Distance(v, w)
+		if d < min {
+			min = d
+			closest = w
+		}
+	}
+	return closest
+}
+
+func closestUniquePoints(source []vector.Vector, target *pointcloud.PointCloud) []vector.Vector {
 	if len(target.Points) < len(source) {
 		panic("not enough target vectors to match")
 	}

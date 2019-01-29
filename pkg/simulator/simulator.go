@@ -41,7 +41,7 @@ func New(sequenceFile string, sequenceDelay time.Duration) *Simulator {
 func (s *Simulator) sendSequence() {
 	fmt.Println("Sending sequence.")
 	for i, sig := range s.sequence {
-		if i > 1 {
+		if i > 2 {
 			//return
 		}
 		b, err := json.Marshal(sig)

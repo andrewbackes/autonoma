@@ -63,3 +63,21 @@ func TestRotate180(t *testing.T) {
 	assert.InDelta(t, 0, v2.Y, 0.01)
 	assert.InDelta(t, 0, v2.Z, 0.01)
 }
+
+func TestDistance(t *testing.T) {
+	x := Vector{-4, 2, 2}
+	y := Vector{1, -4, 1}
+	expected := 7.874007874011811
+	actual := Distance(x, y)
+	assert.InDelta(t, expected, actual, 0.001)
+}
+
+func TestRemoveOutliers(t *testing.T) {
+	vs := []Vector{
+		{1, 0, 0},
+		{2, 0, 0},
+		{4, 0, 0},
+	}
+	actual := RemoveOutliers(vs, 1, 1)
+	assert.Equal(t, 2, len(actual))
+}

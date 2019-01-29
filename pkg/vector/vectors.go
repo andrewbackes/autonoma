@@ -9,9 +9,10 @@ func RemoveOutliers(vs []Vector, ptCount int, perDist float64) []Vector {
 	for _, v := range vs {
 		count := 0
 		for _, w := range vs {
-			if Distance(v, w) < perDist {
+			if v != w && Distance(v, w) <= perDist {
 				count++
 			}
+
 		}
 		if count >= ptCount {
 			ret = append(ret, v)
