@@ -30,6 +30,7 @@ func ICP(
 		fmt.Println("Iteration", i)
 		matched := closestPoints(transformed, target)
 		cleanTransformed, cleanMatched := clean(transformed, matched)
+		fmt.Println("Cleaned set size:", len(cleanMatched))
 		dist = vector.AveDistance(cleanTransformed, cleanMatched)
 		fmt.Println("Average Distance", dist)
 		trans := nextTransformation(cleanTransformed, cleanMatched)
@@ -40,7 +41,7 @@ func ICP(
 }
 
 func clean(a, b []vector.Vector) ([]vector.Vector, []vector.Vector) {
-	k := 2.0
+	k := 1.0
 	dists := make([]float64, len(a))
 	for i := range a {
 		dists[i] = vector.Distance(a[i], b[i])

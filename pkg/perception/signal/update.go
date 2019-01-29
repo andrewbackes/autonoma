@@ -37,7 +37,7 @@ func fitLidarscan(l *LidarScan, p *perception.Perception) *perception.Perception
 	origin := vector.Add(p.Vehicle.Location, delta)
 
 	// Attempt to remove noise
-	withoutOutliers := vector.RemoveOutliers(l.Vectors, 1, 6)
+	withoutOutliers := vector.RemoveOutliers(l.Vectors, 1, 8)
 	fmt.Println("--> points remaining after outlier removal", len(withoutOutliers))
 	deadReckoning := make([]vector.Vector, len(withoutOutliers))
 	for i, v := range withoutOutliers {
@@ -51,7 +51,7 @@ func fitLidarscan(l *LidarScan, p *perception.Perception) *perception.Perception
 			}
 	*/
 
-	fitted, newOriginVector, e := fit.ICP(deadReckoning, origin, p.EnvironmentModel.PointCloud, 2.0, 10)
+	fitted, newOriginVector, e := fit.ICP(deadReckoning, origin, p.EnvironmentModel.PointCloud, 1.1, 15)
 	fmt.Println("--> error", e)
 	for _, v := range fitted {
 		p.EnvironmentModel.PointCloud.Add(v)
@@ -60,6 +60,5 @@ func fitLidarscan(l *LidarScan, p *perception.Perception) *perception.Perception
 	p.Path = append(p.Path, newOriginVector)
 	fmt.Println("--> origin", origin, "to", p.Vehicle.Location)
 	p.Vehicle.Odometer = l.Odometer
-
 	return p
 }

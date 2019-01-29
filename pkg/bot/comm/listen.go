@@ -20,7 +20,7 @@ func (c *Comm) Listen(h SignalHandler) {
 			c.conn.Close()
 			c.conn = nil
 		}
-		log.Debug("Recieved:", string(b[:len(b)-1]))
+		log.Info("Recieved raw:", string(b[:len(b)-1]))
 		var sig signal.Signal
 		err = json.Unmarshal(b, &sig)
 		if err == nil {

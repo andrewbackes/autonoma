@@ -49,9 +49,12 @@ func (s *Simulator) sendSequence() {
 			panic(err)
 		}
 		b = append(b, '\n')
-		_, err = s.conn.Write(b)
+		n, err := s.conn.Write(b)
 		if err != nil {
 			panic(err)
+		}
+		if n != len(b) {
+			fmt.Println("Did not send all bytes")
 		}
 		fmt.Println("Sent. Waiting...")
 		time.Sleep(s.sequenceDelay)
