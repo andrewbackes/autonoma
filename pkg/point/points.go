@@ -1,11 +1,11 @@
-package vector
+package point
 
 import (
 	"gonum.org/v1/gonum/mat"
 )
 
-func RemoveOutliers(vs []Vector, ptCount int, perDist float64) []Vector {
-	ret := make([]Vector, 0, len(vs))
+func RemoveOutliers(vs []Point, ptCount int, perDist float64) []Point {
+	ret := make([]Point, 0, len(vs))
 	for _, v := range vs {
 		count := 0
 		for _, w := range vs {
@@ -21,7 +21,7 @@ func RemoveOutliers(vs []Vector, ptCount int, perDist float64) []Vector {
 	return ret
 }
 
-func AveDistance(vs, ws []Vector) float64 {
+func AveDistance(vs, ws []Point) float64 {
 	if len(vs) != len(ws) {
 		panic("can not find average distance of different length sets")
 	}
@@ -32,11 +32,11 @@ func AveDistance(vs, ws []Vector) float64 {
 	return sum / float64(len(vs))
 }
 
-func Centroid(vs []Vector) Vector {
+func Centroid(vs []Point) Point {
 	if len(vs) == 0 {
-		panic("can not find centroid of empty vector array")
+		panic("can not find centroid of empty Point array")
 	}
-	centroid := &Vector{}
+	centroid := &Point{}
 	for dim := 0; dim < Dimensions; dim++ {
 		sum := float64(0)
 		for _, v := range vs {
@@ -47,27 +47,27 @@ func Centroid(vs []Vector) Vector {
 	return *centroid
 }
 
-func Copy(source []Vector) []Vector {
-	c := make([]Vector, len(source))
+func Copy(source []Point) []Point {
+	c := make([]Point, len(source))
 	for i, v := range source {
 		c[i] = v
 	}
 	return c
 }
 
-// Shift in place by a vector.
-func Shift(vectors []Vector, by Vector) {
-	for i, v := range vectors {
-		vectors[i] = Subtract(v, by)
+// Shift in place by a Point.
+func Shift(Points []Point, by Point) {
+	for i, v := range Points {
+		Points[i] = Subtract(v, by)
 	}
 }
 
-func Matrix(vectors []Vector) mat.Matrix {
-	if len(vectors) == 0 {
-		panic("can not create matrix from an empty array of vectors")
+func Matrix(Points []Point) mat.Matrix {
+	if len(Points) == 0 {
+		panic("can not create matrix from an empty array of Points")
 	}
-	m := mat.NewDense(Dimensions, len(vectors), nil)
-	for col, v := range vectors {
+	m := mat.NewDense(Dimensions, len(Points), nil)
+	for col, v := range Points {
 		for row, val := range v.Array() {
 			m.Set(row, col, float64(val))
 		}

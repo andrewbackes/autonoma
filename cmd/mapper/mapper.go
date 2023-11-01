@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"strings"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	//"github.com/andrewbackes/autonoma/pkg/bot/simulator"
 	"github.com/andrewbackes/autonoma/pkg/bot"
@@ -48,8 +49,8 @@ func main() {
 	log.SetLevel(logLevel)
 	log.Info("Mapper started.")
 	d := pointfeed.New()
-	//b := slamBot(d)
-	//go slam.ThreeD(b)
+	b := slamBot(d)
+	go slam.ThreeD(b)
 	//go slam.TwoD(b)
 	web.NewAPI(d).Start()
 }

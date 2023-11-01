@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/andrewbackes/autonoma/pkg/vector"
+
+	"github.com/andrewbackes/autonoma/pkg/point"
 	"gonum.org/v1/gonum/mat"
 )
 
 // PointCloud is a collection of Points.
 type PointCloud struct {
-	Points map[vector.Vector]int
+	Points map[point.Point]int
 }
 
 func (p *PointCloud) MarshalJSON() ([]byte, error) {
@@ -36,21 +37,23 @@ const Dimensions = 3
 
 func New() *PointCloud {
 	return &PointCloud{
-		Points: map[vector.Vector]int{},
+		Points: map[point.Point]int{},
 	}
 }
 
 // Add a point to the cloud.
-func (p *PointCloud) Add(v vector.Vector) {
-	val := p.Points[v]
-	p.Points[v] = val + 1
+func (p *PointCloud) Add(points ...point.Point) {
+	for _, t := range points {
+		val := p.Points[t]
+		p.Points[t] = val + 1
+	}
 }
 
-func (p *PointCloud) Centroid() vector.Vector {
+func (p *PointCloud) Centroid() point.Point {
 	if len(p.Points) == 0 {
-		return vector.Vector{}
+		return point.Point{}
 	}
-	centroid := &vector.Vector{}
+	centroid := &point.Point{}
 	for dim := 0; dim < 3; dim++ {
 		sum := float64(0)
 		for v := range p.Points {

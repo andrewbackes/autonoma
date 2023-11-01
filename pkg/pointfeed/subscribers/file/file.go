@@ -3,11 +3,12 @@ package file
 
 import (
 	"encoding/json"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"os"
 
-	"github.com/andrewbackes/autonoma/pkg/coordinates"
+	log "github.com/sirupsen/logrus"
+
+	"github.com/andrewbackes/autonoma/pkg/point"
 	"github.com/andrewbackes/autonoma/pkg/pointfeed/subscribers"
 )
 
@@ -16,7 +17,7 @@ const bufferSize = 380800
 type file struct {
 	filename string
 	f        io.Writer
-	buffer   chan coordinates.Point
+	buffer   chan point.Point
 	done     chan struct{}
 }
 
@@ -28,7 +29,7 @@ func newFile(filename string) (*file, error) {
 	return &file{
 		filename: filename,
 		f:        f,
-		buffer:   make(chan coordinates.Point, bufferSize),
+		buffer:   make(chan point.Point, bufferSize),
 		done:     make(chan struct{}),
 	}, nil
 }
@@ -46,7 +47,7 @@ func (f *file) subscribe(to subscribers.SubscribeUnsubscriber) {
 	}
 }
 
-func (f *file) write(p coordinates.Point) {
+func (f *file) write(p point.Point) {
 	j, err := json.Marshal(p)
 	if err != nil {
 		log.Error("Could not write to file - ", err)

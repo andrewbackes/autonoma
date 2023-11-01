@@ -2,12 +2,12 @@
 package subscribers
 
 import (
-	"github.com/andrewbackes/autonoma/pkg/coordinates"
+	"github.com/andrewbackes/autonoma/pkg/point"
 )
 
 // Subscriber can subscribe.
 type Subscriber interface {
-	Subscribe(string, chan coordinates.Point)
+	Subscribe(string, chan point.Point)
 }
 
 // Unsubscriber can unsubscribe.

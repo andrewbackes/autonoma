@@ -3,12 +3,13 @@ package transformation
 
 import (
 	"fmt"
-	"github.com/andrewbackes/autonoma/pkg/vector"
+
+	"github.com/andrewbackes/autonoma/pkg/point"
 	"gonum.org/v1/gonum/mat"
 )
 
 type Transformation struct {
-	Translation vector.Vector
+	Translation point.Point
 	Rotation    mat.Matrix
 }
 
@@ -27,7 +28,7 @@ func (t Transformation) String() string {
 
 func NewTransformation() *Transformation {
 	return &Transformation{
-		Translation: vector.Vector{},
+		Translation: point.Point{},
 		Rotation: mat.NewDense(3, 3, []float64{
 			1, 0, 0,
 			0, 1, 0,
@@ -36,11 +37,11 @@ func NewTransformation() *Transformation {
 	}
 }
 
-func (t *Transformation) Apply(v vector.Vector) vector.Vector {
+func (t *Transformation) Apply(v point.Point) point.Point {
 	col := v.Matrix()
 	var mult mat.Dense
 	mult.Mul(t.Rotation, col)
-	afterRotation := vector.FromMatrix(&mult)
-	transformed := vector.Subtract(afterRotation, t.Translation)
+	afterRotation := point.FromMatrix(&mult)
+	transformed := point.Subtract(afterRotation, t.Translation)
 	return transformed
 }
